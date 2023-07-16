@@ -208,7 +208,7 @@ TEST_CASE( "pop_front method", "[pop_front method]" )
     REQUIRE( B.capacity() == 3 );
 
     B.pop_front();
-    
+
 #if print
     std::cout << A << std::endl;
     std::cout << B << std::endl;

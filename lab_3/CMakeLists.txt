@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.25)
-project(algorithms_lab_3)
+project(lab_3)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(algorithms_lab_3 main.cpp Array.cpp Array.h)
+add_executable(lab_3 main.cpp Array.cpp)
 
 Include(FetchContent)
 
