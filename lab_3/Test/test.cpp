@@ -35,7 +35,9 @@ std::vector<Record> rec
         {2010, "C++ with Love", "Thomson-Reuters", 5.70},
         {2023, "Algorithms and data structures", "Oxford University", 7.24},
         {2023, "C++ the best lang", "Pearson", 4.99},
-        {2022, "C++ 💜", "Pearson", 5.00}
+        {2022, "C++ 💜", "Pearson", 5.00},
+        {2020, "Algorithms in C++", "Oxford University", 4.20},
+        {2021, "Data structures in C++", "Oxford University", 5.18}
 };
 
 
@@ -163,7 +165,6 @@ TEST_CASE( "push_front method", "[push_front method]" )
     REQUIRE( B.size() == 5 );
     REQUIRE( B.capacity() == 6 );
 
-
 #if print
     std::cout << A << std::endl;
     std::cout << B << std::endl;
@@ -215,3 +216,45 @@ TEST_CASE( "pop_front method", "[pop_front method]" )
 #endif
 }
 //--------------------------------------------------
+TEST_CASE( "erase method", "[erase method]" )
+{
+    Array W{{2020, "C++ programming", "Pearson", 9.99},
+            {2019, "Databases", "Pearson", 8.75},
+            {2017, "Postgres", "Thomson-Reuters", 3.12},
+            {2010, "C++ with Love", "Thomson-Reuters", 5.70},
+            {2023, "Algorithms and data structures", "Oxford University", 7.24}};
+
+    REQUIRE( W.size() == 5 );
+
+    W.erase(0);
+    REQUIRE( W.size() == 4 );
+
+    W.erase(9);
+    REQUIRE( W.size() == 4 );
+}
+//--------------------------------------------------
+TEST_CASE( "insert method", "[insert method]" )
+{
+    Array W{{2020, "C++ programming", "Pearson", 9.99},
+            {2019, "Databases", "Pearson", 8.75},
+            {2017, "Postgres", "Thomson-Reuters", 3.12},
+            {2010, "C++ with Love", "Thomson-Reuters", 5.70}};
+
+    REQUIRE( W.size() == 4 );
+
+    W.insert(1, Record{2023, "Algorithms in C++", "Oxford University", 4.20});
+    REQUIRE( W.size() == 5 );
+
+
+    W.insert(8, Record{2021, "Data structures in C++", "Oxford University", 5.18});
+    REQUIRE( W.size() == 5 );
+
+#if print
+    std::cout << W << std::endl;
+#endif
+}
+//--------------------------------------------------
+//TEST_CASE( "insert with iter method", "[insert with iter method]" )
+//{
+//
+//}

@@ -10,6 +10,7 @@ Record::Record(size_t year, std::string name, std::string pub, double price) // 
 
 
 
+
 //--------------------------------------------------
 Array::Array() : Array(10)
 {}
@@ -176,7 +177,7 @@ void Array::pop_back() noexcept
 {
     if(size_ == 0) return; // по-хорошему здесь нужно бросить исключение, но метод по условию noexcept
 
-    (data_ + size_)->~Record();
+//    (data_ + size_)->~Record();
     --size_;
 }
 //--------------------------------------------------
@@ -211,29 +212,45 @@ void Array::pop_front() noexcept
     --size_;
 }
 //--------------------------------------------------
-void Array::insert(size_type idx)
-{}
+void Array::insert(size_type index, value_type &&value)
+{// вставить элемент перед index
+//#if for_test
+    if ((index < 0) or (index > size_))
+    {
+        std::cout << "Error => Index out of range --- [insert method]" << std::endl;
+        return;
+    }
+//#endif
+#if prod
+    if ((index < 0) or (index > allocated_))
+        throw std::out_of_range("Error => Index out of range");
+#endif
+
+    if (size_ == allocated_)
+        realloc(size_ * 2);
+
+    for (int i = size_; i >= index; --i)
+        data_[i + 1] = data_[i];
+    data_[index] = value;
+    ++size_;
+}
 //--------------------------------------------------
-void Array::insert(iterator it)
-{}
+//void Array::insert(iterator it)
+//{}
 //--------------------------------------------------
 void Array::erase(size_type idx)
 {
     if (idx < 0 || idx >= size_)
-        throw std::out_of_range("index out of range");
+    {
+//        throw std::out_of_range("index out of range");
+        std::cout << "Error => Index out of range --- [erase method]" << std::endl;
+        return;
+    }
 
-    for (int i = idx; i < size_-1; i++)
+    for (int i = idx; i < size_-1; ++i)
         data_[i] = data_[i + 1];
 
     --size_;
-}
-//--------------------------------------------------
-void Array::erase(iterator it)
-{
-    if (it < begin() || it >= end())
-        throw std::out_of_range("index out of range");
-    size_type index = it - begin();
-    erase(index);
 }
 //--------------------------------------------------
 void Array::clear() noexcept
@@ -250,13 +267,25 @@ void Array::swap(Array &rhs)
 //--------------------------------------------------
 std::ostream &operator<<(std::ostream &os, const Array &rhs)
 {
+#if detailed_print
+    for (int i = 0; i < rhs.size_; ++i)
+        os << "#" << i+1 << " " << "Catalog ID: " << rhs.data_[i].bookId_ << "\n";
+
+    os << "| ";
+
+    for (size_t i = rhs.size_; i < rhs.allocated_; ++i)
+        os << "#" << i+1 << " " << rhs.data_[i].bookId_ << ' ';
+#endif
+
     for (int i = 0; i < rhs.size_; ++i)
     {
+        os << "#" << i << ' ';
         os << "\nCatalog ID: " << rhs.data_[i].bookId_ << "\n";
         os << "Year of publishing: " << rhs.data_[i].yearOfPub_ << "\n";
         os << "Book name: " << rhs.data_[i].bookName_ << "\n";
         os << "Publisher: " << rhs.data_[i].publisher_ << "\n";
         os << "Price: " << rhs.data_[i].price_ << "\n";
     }
+
     return os;
 }

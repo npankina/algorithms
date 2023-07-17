@@ -3,12 +3,12 @@
 
 #pragma once
 
+#include <iostream>
 #include <algorithm>
 #include <initializer_list>
 #include <tuple>
 #include <algorithm>
-#include <iostream>
-//#include "Config.h"
+
 
 // интерфейс хранилища данных
 struct Record
@@ -77,10 +77,9 @@ public:
     void pop_back() noexcept;
     void push_front(const value_type &value);
     void pop_front() noexcept;   // удалить первый элемент
-    void insert(size_type indx); // -- вставить елемент перед элементом idx
-    void insert(iterator it);    // -- вставить елемент перед элементом it
-    void erase(size_type indx);  // -- удалить элемент idx
-    void erase(iterator it);
+    void insert(size_type index, value_type &&value); // -- вставить елемент перед элементом idx
+//    void insert(iterator it);    // -- вставить елемент перед элементом it
+    void erase(size_type idx);  // -- удалить элемент idx
 
     void clear() noexcept;
     void swap(Array &rhs);
