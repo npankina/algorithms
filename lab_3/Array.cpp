@@ -69,6 +69,26 @@ Array::~Array() noexcept
     delete[] data_;
 }
 //--------------------------------------------------
+bool Array::operator==(const Array &rhs) const
+{
+    bool flag = false;
+
+    if (rhs.size_ == size_)
+    {
+        for (int i = 0; i < size_; ++i)
+            if ((rhs[i].bookId_ == data_[i].bookId_) and (rhs[i].price_ == data_[i].price_) and
+                (rhs[i].publisher_ == data_[i].publisher_) and (rhs[i].bookName_ == data_[i].bookName_) and
+                (rhs[i].yearOfPub_ == data_[i].yearOfPub_))
+                flag = true;
+    }
+    return flag;
+}
+//--------------------------------------------------
+bool Array::operator!=(const Array &rhs) const
+{
+    return !(data_ == rhs.data_);
+}
+//--------------------------------------------------
 size_t Array::size() const noexcept
 {
     return size_;
@@ -103,6 +123,7 @@ Array::const_iterator Array::cend() const noexcept
 {
     return data_ + size_;
 }
+
 //--------------------------------------------------
 void Array::realloc(size_type new_capacity)
 {
@@ -125,14 +146,14 @@ void Array::realloc(size_type new_capacity)
 //--------------------------------------------------
 bool Array::at(size_t idx) const noexcept
 {
-    if (idx < size_ )
-        return true;
-    return false;
+    if (idx >= size_ or idx < 0)
+        return false;
+    return true;
 }
 //--------------------------------------------------
 Array::reference Array::operator[](size_type index)
 {
-    if (index >= size_)
+    if (index >= size_ or index < 0)
         throw std::out_of_range("Error => index out of range");
     return data_[index];
 }
@@ -235,8 +256,8 @@ void Array::insert(size_type index, value_type &&value)
     ++size_;
 }
 //--------------------------------------------------
-//void Array::insert(iterator it)
-//{}
+void Array::insert(iterator it, value_type &&value)
+{}
 //--------------------------------------------------
 void Array::erase(size_type idx)
 {
@@ -279,13 +300,18 @@ std::ostream &operator<<(std::ostream &os, const Array &rhs)
 
     for (int i = 0; i < rhs.size_; ++i)
     {
-        os << "#" << i << ' ';
-        os << "\nCatalog ID: " << rhs.data_[i].bookId_ << "\n";
+        os << "#" << i + 1 << '\n';
+        os << "Catalog ID: " << rhs.data_[i].bookId_ << "\n";
         os << "Year of publishing: " << rhs.data_[i].yearOfPub_ << "\n";
         os << "Book name: " << rhs.data_[i].bookName_ << "\n";
         os << "Publisher: " << rhs.data_[i].publisher_ << "\n";
-        os << "Price: " << rhs.data_[i].price_ << "\n";
+        os << "Price: " << rhs.data_[i].price_ << "\n\n";
     }
+
+    os << "| ";
+
+    for (size_t i = rhs.size_; i < rhs.allocated_; ++i)
+        os << "#" << i + 1 << " " << rhs.data_[i].bookId_ << ' ';
 
     return os;
 }

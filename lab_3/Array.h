@@ -4,14 +4,12 @@
 #pragma once
 
 #include <iostream>
-#include <algorithm>
 #include <initializer_list>
 #include <tuple>
 #include <algorithm>
 
 
-// интерфейс хранилища данных
-struct Record
+struct Record // интерфейс хранилища данных
 { //    std::tuple<std::string, int, std::string, std::string, double>
     size_t bookId_;
     size_t yearOfPub_;
@@ -36,12 +34,6 @@ public:
     using reference = value_type &;
     using const_reference = const value_type &;
 
-private:
-    size_type allocated_;
-    size_type size_;
-    value_type *data_ = nullptr;
-
-public:
     Array();
     explicit Array(const size_type &alloc_size);
     Array(const std::initializer_list<value_type> &t);
@@ -51,10 +43,12 @@ public:
     Array &operator=(Array &&other) noexcept; // move assign
     virtual ~Array() noexcept;
 
+    bool operator==(const Array &rhs) const;
+    bool operator!=(const Array &rhs) const;
+
     size_type size() const noexcept;
     bool empty() const noexcept;
     size_type capacity() const noexcept;
-
     // -- iterators
     iterator begin() noexcept;
     const_iterator cbegin() const noexcept;
@@ -68,22 +62,27 @@ public:
     reference back() noexcept;
     const_reference back() const noexcept;
     bool at(size_t idx) const noexcept;
-
-    // аллокация памяти
-    void realloc(size_type new_capacity);
-
     // -- методы-модификаторы
     void push_back(const value_type &value);
     void pop_back() noexcept;
     void push_front(const value_type &value);
     void pop_front() noexcept;   // удалить первый элемент
     void insert(size_type index, value_type &&value); // -- вставить елемент перед элементом idx
-//    void insert(iterator it);    // -- вставить елемент перед элементом it
+    void insert(iterator it, value_type &&value); // вставить элемент перед элементом it
     void erase(size_type idx);  // -- удалить элемент idx
 
     void clear() noexcept;
     void swap(Array &rhs);
 
     friend std::ostream &operator<<(std::ostream &os, const Array &rhs);
+
+private:
+    void realloc(size_type new_capacity); // аллокация памяти
+
+    size_type allocated_;
+    size_type size_;
+    value_type *data_ = nullptr;
+    iterator iterator_ = data_;
 };
+
 #endif //ALGORITHMS_LAB_3_ARRAY_H

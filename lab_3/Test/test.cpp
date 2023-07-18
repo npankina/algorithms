@@ -120,6 +120,7 @@ TEST_CASE( "indexes access", "[indexes]" )
             {2017, "Postgres", "Thomson-Reuters", 3.12}};
     REQUIRE(D.at(3) == false );
     REQUIRE(D.at(2) == true );
+    REQUIRE(D.at(-1) == false );
 }
 //--------------------------------------------------
 TEST_CASE( "push_back method", "[push_back method]" )
@@ -254,7 +255,14 @@ TEST_CASE( "insert method", "[insert method]" )
 #endif
 }
 //--------------------------------------------------
-//TEST_CASE( "insert with iter method", "[insert with iter method]" )
-//{
-//
-//}
+TEST_CASE( "bool == method", "[bool == method]" )
+{
+    Array A{{2020, "C++ programming", "Pearson", 9.99},
+            {2019, "Databases", "Pearson", 8.75},
+            {2017, "Postgres", "Thomson-Reuters", 3.12}};
+
+    REQUIRE( A.empty() == false );
+
+    Array B = A;
+    REQUIRE( (B == A) == true );
+}
