@@ -76,17 +76,36 @@ bool Array::operator==(const Array &rhs) const
     if (rhs.size_ == size_)
     {
         for (int i = 0; i < size_; ++i)
+        {
             if ((rhs[i].bookId_ == data_[i].bookId_) and (rhs[i].price_ == data_[i].price_) and
                 (rhs[i].publisher_ == data_[i].publisher_) and (rhs[i].bookName_ == data_[i].bookName_) and
                 (rhs[i].yearOfPub_ == data_[i].yearOfPub_))
                 flag = true;
+            else
+                return false;
+        }
     }
     return flag;
 }
 //--------------------------------------------------
 bool Array::operator!=(const Array &rhs) const
 {
-    return !(data_ == rhs.data_);
+    bool flag = true;
+
+    if (rhs.size_ == size_)
+    {
+        for (int i = 0; i < size_; ++i)
+        {
+            if ((rhs[i].bookId_ == data_[i].bookId_) and (rhs[i].price_ == data_[i].price_) and
+                (rhs[i].publisher_ == data_[i].publisher_) and (rhs[i].bookName_ == data_[i].bookName_) and
+                (rhs[i].yearOfPub_ == data_[i].yearOfPub_))
+                flag = false;
+            else
+                return true;
+        }
+    }
+    return flag;
+//    return !(data_ == rhs.data_);
 }
 //--------------------------------------------------
 size_t Array::size() const noexcept

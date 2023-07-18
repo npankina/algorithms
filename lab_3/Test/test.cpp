@@ -266,3 +266,26 @@ TEST_CASE( "bool == method", "[bool == method]" )
     Array B = A;
     REQUIRE( (B == A) == true );
 }
+//--------------------------------------------------
+TEST_CASE( "bool != method", "[bool != method]" )
+{
+    Array A{{2020, "C++ programming", "Pearson", 9.99},
+            {2019, "Databases", "Pearson", 8.75},
+            {2017, "Postgres", "Thomson-Reuters", 3.12}};
+
+    Array D;
+    REQUIRE( (A != D) == true );
+
+    Array B{{2020, "C++ programming", "Pearson", 9.99},
+            {2019, "Databases", "Pearson", 8.75},
+            {2017, "U", "Thomson-Reuters", 3.12}};
+
+    REQUIRE( (B != A) == true );
+
+    // равенство
+    Array U(B);
+    REQUIRE( (U != B) == false );
+
+    Array Z = U;
+    REQUIRE( (Z != U) == false );
+}
