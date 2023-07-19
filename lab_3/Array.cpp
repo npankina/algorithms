@@ -305,6 +305,44 @@ void Array::swap(Array &rhs)
     std::swap(allocated_, rhs.allocated_);
 }
 //--------------------------------------------------
+// последовательный поиск с барьером
+int Array::Linear_Search_with_barier(size_t key, std::string index)
+{
+    int i = 0, amount = 0;
+    for (; i < size_; i++)
+    {
+        if (data_[i].yearOfPub_ == key)
+        {
+            ++amount;
+            index += std::to_string(i); index += ", ";
+//            std::cout << i << " ";
+        }
+    }
+    return amount;
+}
+//--------------------------------------------------
+// последовательный поиск с барьером
+int Array::Linear_Search_with_barier(std::string key, std::string index)
+{
+    unsigned count{};       // количество вхождений
+    for (int j = 0; j < size_; ++j)
+    {
+        for (unsigned i {}; i <= data_[j].bookName_.size();)
+        {
+            // получаем индекс
+            size_t position = data_[j].bookName_.find(key, i);
+            // если не найдено ни одного вхождения с индекса i, выходим из цикла
+            if (position == std::string::npos) break;
+            // если же вхождение найдено, увеличиваем счетчик вхождений
+            ++count;
+            // переходим к следующему индексу после position
+            i = position + 1;
+        }
+    }
+    std::cout << "The word is found " << count << " times." << std::endl;
+    return count;
+}
+//--------------------------------------------------
 std::ostream &operator<<(std::ostream &os, const Array &rhs)
 {
 #if detailed_print

@@ -289,3 +289,23 @@ TEST_CASE( "bool != method", "[bool != method]" )
     Array Z = U;
     REQUIRE( (Z != U) == false );
 }
+//--------------------------------------------------
+TEST_CASE( "Linear Search with barier", "[Linear_Search_with_barier]" )
+{
+    Array A{{2020, "C++ programming", "Pearson", 9.99},
+            {2019, "Databases", "Pearson", 8.75},
+            {2017, "Postgres", "Thomson-Reuters", 3.12},
+            {2010, "C++ with Love", "Thomson-Reuters", 5.70},
+            {2023, "Algorithms and data structures", "Oxford University", 7.24},
+            {2023, "C++ the best lang", "Pearson", 4.99},
+            {2022, "C++ 💜", "Pearson", 5.00},
+            {2020, "Algorithms in C++", "Oxford University", 4.20},
+            {2021, "Data structures in C++", "Oxford University", 5.18}};
+
+    std::string index = "";
+    REQUIRE( A.Linear_Search_with_barier(2020, index) == 2 );
+    REQUIRE( A.Linear_Search_with_barier(1999, index) == 0 );
+
+    REQUIRE( A.Linear_Search_with_barier("C++", index) == 6 );
+    REQUIRE( A.Linear_Search_with_barier("C#", index) == 0 );
+}

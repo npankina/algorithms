@@ -74,6 +74,10 @@ public:
     void clear() noexcept;
     void swap(Array &rhs);
 
+    int Linear_Search_with_barier(size_t key, std::string index);
+    int Linear_Search_with_barier(std::string key, std::string index);
+
+
     friend std::ostream &operator<<(std::ostream &os, const Array &rhs);
 
 private:
