@@ -305,8 +305,25 @@ void Array::swap(Array &rhs)
     std::swap(allocated_, rhs.allocated_);
 }
 //--------------------------------------------------
-// последовательный поиск с барьером
-int Array::Linear_Search_with_barier(size_t key, std::string index)
+size_t Array::Linear_Search_with_barier(int value) // последовательный поиск с барьером
+{
+    auto end = size_ - 1;
+    if (size_ != 0) {
+        auto last = data_[end]; //Сохраним прежний элемент массива
+        data_[end] = value; //Гарантируем, что value есть в массиве
+        //Есть гарантия того, что элемент есть в массиве, значит индекс можно не проверять
+        size_t i = 0;
+        for (; data_[i].yearOfPub_ != value; ++i) { //Одно условие в цикле
+        }
+        data_[end] = last; //Восстанавливаем последний элемент
+        if (i != (end) || value == last.yearOfPub_) { //Не уткнулись в барьер или последний элемент был искомым
+            return i;
+        }
+    }
+    return std::numeric_limits<size_t>::max();
+}
+//--------------------------------------------------
+int Array::Linear_Search(size_t key, std::string index)
 {
     int i = 0, amount = 0;
     for (; i < size_; i++)
@@ -321,8 +338,7 @@ int Array::Linear_Search_with_barier(size_t key, std::string index)
     return amount;
 }
 //--------------------------------------------------
-// последовательный поиск с барьером
-int Array::Linear_Search_with_barier(std::string key, std::string index)
+int Array::Linear_Search(std::string key, std::string index)
 {
     unsigned count{};       // количество вхождений
     for (int j = 0; j < size_; ++j)

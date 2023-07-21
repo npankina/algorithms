@@ -5,23 +5,10 @@
 
 #include <iostream>
 #include <initializer_list>
-#include <tuple>
+#include <cstdlib>
 #include <algorithm>
+#include "Config.h"
 
-
-struct Record // интерфейс хранилища данных
-{ //    std::tuple<std::string, int, std::string, std::string, double>
-    size_t bookId_;
-    size_t yearOfPub_;
-    std::string bookName_;
-    std::string publisher_;
-    double price_;
-
-    Record(size_t year = 0, std::string name = "", std::string pub = "", double price = .0);
-
-private:
-    static size_t counter;
-};
 
 // интерфейс контейнера
 class Array : private Record
@@ -74,8 +61,9 @@ public:
     void clear() noexcept;
     void swap(Array &rhs);
 
-    int Linear_Search_with_barier(size_t key, std::string index);
-    int Linear_Search_with_barier(std::string key, std::string index);
+    size_t Linear_Search_with_barier(int value);
+    int Linear_Search(size_t key, std::string index);
+    int Linear_Search(std::string key, std::string index);
 
 
     friend std::ostream &operator<<(std::ostream &os, const Array &rhs);
@@ -86,7 +74,6 @@ private:
     size_type allocated_;
     size_type size_;
     value_type *data_ = nullptr;
-    iterator iterator_ = data_;
+//    iterator iterator_ = data_;
 };
-
 #endif //ALGORITHMS_LAB_3_ARRAY_H
