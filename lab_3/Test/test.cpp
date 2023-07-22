@@ -309,11 +309,13 @@ TEST_CASE( "Fill container", "[Random elements in container]" )
     Array U;
     REQUIRE( Fill_Container(U, 5) == true );
 
-    std::cout << U << std::endl;
-
     // 1. Реализовать алгоритм последовательного поиска с барьером по неупорядоченному контейнеру.
     // TEST_CASE( "Linear Search with barier")
 
+    // 4. Для упорядочения элементов массива реализовать алгоритм сортировки выбором.
+    U.selection_sort();
 
-
+#if print
+    std::cout << "U\n" << U << std::endl;
+#endif
 }

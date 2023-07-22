@@ -61,10 +61,14 @@ public:
     void clear() noexcept;
     void swap(Array &rhs);
 
+    // Алгоритм последовательного поиска с барьером
     size_t Linear_Search_with_barier(int value);
     int Linear_Search(size_t key, std::string index);
     int Linear_Search(std::string key, std::string index);
 
+    // Сортировка выбором
+    void selection_sort();
+    bool is_less(Array &arr1, Array &arr2);
 
     friend std::ostream &operator<<(std::ostream &os, const Array &rhs);
 

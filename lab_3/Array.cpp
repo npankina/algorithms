@@ -359,6 +359,18 @@ int Array::Linear_Search(std::string key, std::string index)
     return count;
 }
 //--------------------------------------------------
+void Array::selection_sort() // по году выпуска книги
+{
+    for (int j = 0; j < size_; ++j)
+    {
+        int min_idx = j;
+        for (int i = j + 1; i < size_; ++i)
+            if (data_[min_idx].yearOfPub_ > data_[i].yearOfPub_)
+                min_idx = i;
+        std::swap(data_[j], data_[min_idx]);
+    }
+}
+//--------------------------------------------------
 std::ostream &operator<<(std::ostream &os, const Array &rhs)
 {
 #if detailed_print
