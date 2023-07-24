@@ -62,13 +62,17 @@ public:
     void swap(Array &rhs);
 
     // Алгоритм последовательного поиска с барьером
-    size_t Linear_Search_with_barier(int value);
-    int Linear_Search(size_t key, std::string index);
-    int Linear_Search(std::string key, std::string index);
+    size_t linear_search_with_barier(int value);
+    int linear_search(size_t key, std::string index);
+    int linear_search(std::string key, std::string index = "");
 
     // Сортировка выбором
-    void selection_sort();
-    bool is_less(Array &arr1, Array &arr2);
+    void selection_sort(int x);
+    void selection_sort(double x);
+    bool binary_search(int target); // by year_of_pub
+    bool binary_search(double target); // by price
+    bool interpolation_serch(int target); // by year_of_pub
+    bool interpolation_serch(double target); // by price
 
     friend std::ostream &operator<<(std::ostream &os, const Array &rhs);
 

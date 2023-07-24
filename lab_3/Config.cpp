@@ -4,7 +4,7 @@
 size_t random_number(size_t min, size_t max)
 {
     size_t num = min + rand() % (max - min + 1);
-    std::cout << "Rand number = " << num << " ";
+//    std::cout << "Rand number = " << num << " ";
     return num;
 }
 //--------------------------------------------------

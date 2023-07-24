@@ -305,7 +305,7 @@ void Array::swap(Array &rhs)
     std::swap(allocated_, rhs.allocated_);
 }
 //--------------------------------------------------
-size_t Array::Linear_Search_with_barier(int value) // последовательный поиск с барьером
+size_t Array::linear_search_with_barier(int value) // последовательный поиск с барьером
 {
     auto end = size_ - 1;
     if (size_ != 0) {
@@ -323,7 +323,7 @@ size_t Array::Linear_Search_with_barier(int value) // последователь
     return std::numeric_limits<size_t>::max();
 }
 //--------------------------------------------------
-int Array::Linear_Search(size_t key, std::string index)
+int Array::linear_search(size_t key, std::string index)
 {
     int i = 0, amount = 0;
     for (; i < size_; i++)
@@ -338,7 +338,7 @@ int Array::Linear_Search(size_t key, std::string index)
     return amount;
 }
 //--------------------------------------------------
-int Array::Linear_Search(std::string key, std::string index)
+int Array::linear_search(std::string key, std::string index)
 {
     unsigned count{};       // количество вхождений
     for (int j = 0; j < size_; ++j)
@@ -355,11 +355,11 @@ int Array::Linear_Search(std::string key, std::string index)
             i = position + 1;
         }
     }
-    std::cout << "The word is found " << count << " times." << std::endl;
+//    std::cout << "The word is found " << count << " times." << std::endl;
     return count;
 }
 //--------------------------------------------------
-void Array::selection_sort() // по году выпуска книги
+void Array::selection_sort(int x) // по году выпуска книги
 {
     for (int j = 0; j < size_; ++j)
     {
@@ -368,6 +368,88 @@ void Array::selection_sort() // по году выпуска книги
             if (data_[min_idx].yearOfPub_ > data_[i].yearOfPub_)
                 min_idx = i;
         std::swap(data_[j], data_[min_idx]);
+    }
+}
+//--------------------------------------------------
+void Array::selection_sort(double x) // по году выпуска книги
+{
+    for (int j = 0; j < size_; ++j)
+    {
+        int min_idx = j;
+        for (int i = j + 1; i < size_; ++i)
+            if (data_[min_idx].price_ > data_[i].price_)
+                min_idx = i;
+        std::swap(data_[j], data_[min_idx]);
+    }
+}
+//--------------------------------------------------
+bool  Array::binary_search(int x)
+{
+    int min = 0, max = size_ - 1, mid = 0;
+    while (min <= max)
+    {
+        mid = (min + max) / 2;
+        if (data_[mid].yearOfPub_ == x)
+            return true;
+        if (data_[mid].yearOfPub_ < x)
+            min = mid + 1;
+        else
+            max = mid - 1;
+    }
+    return false;
+}
+//--------------------------------------------------
+bool  Array::binary_search(double x)
+{
+    int min = 0, max = size_ - 1, mid = 0;
+    while (min <= max)
+    {
+        mid = (min + max) / 2;
+        if (data_[mid].price_ == x)
+            return true;
+        if (data_[mid].price_ < x)
+            min = mid + 1;
+        else
+            max = mid - 1;
+    }
+    return false;
+}
+//--------------------------------------------------
+bool Array::interpolation_serch(int target)
+{
+    int min = 0, max = size_ - 1, pos = 0;
+    while (min <= max)
+    {
+        pos = min + (((target - data_[min].yearOfPub_) * (max - min) ) / (data_[max].yearOfPub_ - data_[min].yearOfPub_) );
+
+        if (pos < 0)
+            return false;
+
+        if (data_[pos].yearOfPub_ == target)
+            return true;
+        if (data_[pos].yearOfPub_ < target)
+            min = pos + 1;
+        else
+            max = pos - 1;
+    }
+}
+//--------------------------------------------------
+bool Array::interpolation_serch(double target)
+{
+    int min = 0, max = size_ - 1, pos = 0;
+    while (min <= max)
+    {
+        pos = min + (((target - data_[min].price_) * (max - min) ) / (data_[max].price_ - data_[min].price_) );
+
+        if (pos < 0)
+            return false;
+
+        if (data_[pos].price_ == target)
+            return true;
+        if (data_[pos].price_ < target)
+            min = pos + 1;
+        else
+            max = pos - 1;
     }
 }
 //--------------------------------------------------

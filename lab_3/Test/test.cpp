@@ -277,45 +277,49 @@ TEST_CASE( "bool != method", "[bool != method]" )
     REQUIRE( (Z != U) == false );
 }
 //--------------------------------------------------
-TEST_CASE( "Linear Search with barier", "[Linear_Search_with_barier]" )
+Array A{{2020, "C++ programming", "Pearson", 9.99},
+        {2019, "Databases", "Pearson", 8.75},
+        {2017, "Postgres", "Thomson-Reuters", 3.12},
+        {2010, "C++ with Love", "Thomson-Reuters", 5.70},
+        {2023, "Algorithms and data structures", "Oxford University", 7.24},
+        {2023, "C++ the best lang", "Pearson", 4.99},
+        {2022, "C++ 💜", "Pearson", 5.00},
+        {2020, "Algorithms in C++", "Oxford University", 4.20},
+        {2021, "Data structures in C++", "Oxford University", 5.18}};
+
+TEST_CASE( "Linear Search with barier", "[linear_search_with_barier]" )
 {
-    Array A{{2020, "C++ programming", "Pearson", 9.99},
-            {2019, "Databases", "Pearson", 8.75},
-            {2017, "Postgres", "Thomson-Reuters", 3.12},
-            {2010, "C++ with Love", "Thomson-Reuters", 5.70},
-            {2023, "Algorithms and data structures", "Oxford University", 7.24},
-            {2023, "C++ the best lang", "Pearson", 4.99},
-            {2022, "C++ 💜", "Pearson", 5.00},
-            {2020, "Algorithms in C++", "Oxford University", 4.20},
-            {2021, "Data structures in C++", "Oxford University", 5.18}};
-
     std::string index = "";
-    REQUIRE( A.Linear_Search(2020, index) == 2 );
-    REQUIRE( A.Linear_Search(1999, index) == 0 );
+    REQUIRE(A.linear_search(2020, index) == 2);
+    REQUIRE(A.linear_search(1999, index) == 0);
 
-    REQUIRE( A.Linear_Search("C++", index) == 6 );
-    REQUIRE( A.Linear_Search("C#", index) == 0 );
+    REQUIRE(A.linear_search("C++", index) == 6);
+    REQUIRE(A.linear_search("C#", index) == 0);
 
-    REQUIRE( A.Linear_Search_with_barier(2020) == 0 );
-    REQUIRE( A.Linear_Search_with_barier(2021) == 8 );
-
-//    std::cout << A.Linear_Search_with_barier(2021) << std::endl;
-
+    REQUIRE(A.linear_search_with_barier(2020) == 1);
+    REQUIRE(A.linear_search_with_barier(2021) == 4);
 }
 //--------------------------------------------------
 TEST_CASE( "Fill container", "[Random elements in container]" )
 {
-    // 0. Заполнить контейнер случайными данными.
     Array U;
     REQUIRE( Fill_Container(U, 5) == true );
-
-    // 1. Реализовать алгоритм последовательного поиска с барьером по неупорядоченному контейнеру.
-    // TEST_CASE( "Linear Search with barier")
-
-    // 4. Для упорядочения элементов массива реализовать алгоритм сортировки выбором.
-    U.selection_sort();
-
-#if print
-    std::cout << "U\n" << U << std::endl;
-#endif
+}
+//--------------------------------------------------
+TEST_CASE( "Binary Search method", "[Binary Search]" )
+{
+    A.selection_sort(1);
+    REQUIRE(A.binary_search(2020) == true );
+    REQUIRE(A.binary_search(2000) == false );
+    REQUIRE(A.interpolation_serch(2020) == true );
+    REQUIRE(A.interpolation_serch(2000) == false );
+}
+//--------------------------------------------------
+TEST_CASE( "Interpolation Search method", "[Interpolation Search]" )
+{
+    A.selection_sort(0.0);
+    REQUIRE(A.binary_search(9.99) == true );
+    REQUIRE(A.binary_search(0.0) == false );
+    REQUIRE(A.interpolation_serch(4.99) == true );
+    REQUIRE(A.interpolation_serch(0.0) == false );
 }
