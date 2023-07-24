@@ -1,32 +1,8 @@
 #include "catch_amalgamated.hpp"
 #include "catch_amalgamated.cpp"
 
-// #include "../Subscriber.cpp"
 #include "../Array.cpp"
-#include "../Config.cpp"
 
-
-#if Subscr
-Subscriber A("Alex"), B("Jane"), D("Ken");
-//--------------------------------------------------
-TEST_CASE( "id Generating", "[Subscriber ID]" )
-{
-    REQUIRE( A.Get_id() == "10000001" );
-    REQUIRE( B.Get_id() == "10000002" );
-    REQUIRE( D.Get_id() == "10000003" );
-}
-//--------------------------------------------------
-TEST_CASE( "BooksCounter", "[Subscriber BooksCounter]" )
-{
-    REQUIRE( A.Get_BookCounter() == 0 );
-    REQUIRE( B.Get_BookCounter() == 0 );
-    REQUIRE( D.Get_BookCounter() == 0 );
-}
-//--------------------------------------------------
-#endif
-
-
-// Array classic
 //--------------------------------------------------
 TEST_CASE( "default ctor", "[default]" )
 {
@@ -90,14 +66,6 @@ TEST_CASE( "{} ctor", "[initialize ctor]" )
     REQUIRE( W.empty() == false );
     W.push_back({2010, "C++ with Love", "Thomson-Reuters", 5.70});
     REQUIRE( W.capacity() == 10);
-
-#if print
-    std::cout << "{initialize} ctor\n";
-    std::cout << D << std::endl;
-
-    std::cout << "{initialize} ctor 2\n";
-    std::cout << W << std::endl;
-#endif
 }
 //--------------------------------------------------
 TEST_CASE( "indexes access", "[indexes]" )
@@ -105,6 +73,7 @@ TEST_CASE( "indexes access", "[indexes]" )
     Array D{{2020, "C++ programming", "Pearson", 9.99},
             {2019, "Databases", "Pearson", 8.75},
             {2017, "Postgres", "Thomson-Reuters", 3.12}};
+
     REQUIRE(D.at(3) == false );
     REQUIRE(D.at(2) == true );
     REQUIRE(D.at(-1) == false );
@@ -131,7 +100,7 @@ TEST_CASE( "realloc method", "[realloc method]" )
 
     A.push_back({2023, "C++ the best lang", "Pearson", 4.99});
 
-    // new momory is allocated
+    // new memory is allocated
     REQUIRE( A.size() == 4 );
     REQUIRE( A.capacity() == 6 );
 }
@@ -152,11 +121,6 @@ TEST_CASE( "push_front method", "[push_front method]" )
     REQUIRE( B.empty() == false );
     REQUIRE( B.size() == 5 );
     REQUIRE( B.capacity() == 6 );
-
-#if print
-    std::cout << A << std::endl;
-    std::cout << B << std::endl;
-#endif
 }
 //--------------------------------------------------
 TEST_CASE( "pop_back method", "[pop_back method]" )
@@ -168,15 +132,9 @@ TEST_CASE( "pop_back method", "[pop_back method]" )
     A.pop_back();
     REQUIRE( A.size() == 2 );
 
-
     Array B = A;
     B.pop_back();
     REQUIRE( B.size() == 1 );
-
-#if print
-    std::cout << A << std::endl;
-    std::cout << B << std::endl;
-#endif
 }
 //--------------------------------------------------
 TEST_CASE( "pop_front method", "[pop_front method]" )
@@ -195,13 +153,6 @@ TEST_CASE( "pop_front method", "[pop_front method]" )
     B.clear();
     REQUIRE( B.empty() == true );
     REQUIRE( B.capacity() == 3 );
-
-    B.pop_front();
-
-#if print
-    std::cout << A << std::endl;
-    std::cout << B << std::endl;
-#endif
 }
 //--------------------------------------------------
 TEST_CASE( "erase method", "[erase method]" )
@@ -233,13 +184,8 @@ TEST_CASE( "insert method", "[insert method]" )
     W.insert(1, Record{2023, "Algorithms in C++", "Oxford University", 4.20});
     REQUIRE( W.size() == 5 );
 
-
     W.insert(8, Record{2021, "Data structures in C++", "Oxford University", 5.18});
     REQUIRE( W.size() == 5 );
-
-#if print
-    std::cout << W << std::endl;
-#endif
 }
 //--------------------------------------------------
 TEST_CASE( "bool == method", "[bool == method]" )

@@ -1,11 +1,74 @@
 #include "Array.h"
 
-
 size_t Record::counter = 1000;
 //--------------------------------------------------
-Record::Record(size_t year, std::string name, std::string pub, double price) // set default value
+Record::Record(size_t year, std::string name, std::string pub, double price)
 : bookId_(counter++), yearOfPub_(year), bookName_(name), publisher_(pub), price_(price)
 {}
+//--------------------------------------------------
+
+
+
+
+
+//--------------------------------------------------
+size_t random_number(size_t min, size_t max)
+{
+    size_t num = min + rand() % (max - min + 1);
+//    std::cout << "Rand number = " << num << " ";
+    return num;
+}
+//--------------------------------------------------
+double random_number_d(double min, double max)
+{
+    srand(time(NULL));
+
+    double value;
+
+    // получить случайное число как целое число с порядком precision
+    value = rand() % (int)pow(10, 2);
+
+    // получить вещественное число
+    value = min + (value / pow(10, 2)) * (max - min);
+
+    return value;
+}
+//--------------------------------------------------
+bool Fill_Container(Array &obj, size_t size)
+{
+    srand(time(NULL)); // установка seed для ГСП
+
+    for (size_t i = 0; i < size; ++i)
+    {
+//        obj.push_back(rec[random_number(0, 9)]);
+        obj.push_back(Record());
+    }
+    return obj.size() == size;
+}
+//--------------------------------------------------
+std::string random_pub()
+{
+    std::string arr[] = {"Pearson", "Oxford University", "Thomson-Reuters", "Alpina", "Exmo", "MIF", "Willey", "Addison Wesley"};
+    return arr[random_number(0, 7)];
+}
+//--------------------------------------------------
+std::string random_name()
+{
+    std::string arr[] = {"Algorithms", "Data Structures", "C++ Foreva", "C++", "Automata theory", "Discreete Math", "Graph Theory", "Programming Languages"};
+    return arr[random_number(0, 7)];
+}
+//--------------------------------------------------
+void Fill_Container_1(Array &obj, size_t arr_sz)
+{
+    for (int i = 0; i < arr_sz; ++i)
+        obj.push_back({random_number(1999, 2023), random_name(), random_pub(), random_number_d(0.99, 100.00)});
+}
+//--------------------------------------------------
+void Fill_Container_2(std::vector<Record> &obj, size_t arr_sz)
+{
+    for (int i = 0; i < arr_sz; ++i)
+        obj.push_back({random_number(1999, 2023), random_name(), random_pub(), random_number_d(0.99, 100.00)});
+}
 //--------------------------------------------------
 
 
@@ -33,11 +96,11 @@ Array::Array(const Array &other) // copy ctor
 }
 //--------------------------------------------------
 Array::Array(Array &&other) noexcept // move ctor
-: size_(other.size_), allocated_(other.allocated_), data_(new value_type[allocated_])
-{
-    std::swap(size_, other.size_);
-    std::swap(allocated_, other.allocated_);
-    std::swap(data_, other.data_);
+: size_(other.size_), allocated_(other.allocated_), data_(other.data_)
+{ // производим обнуление старого объекта
+    other.data_ = nullptr;
+    other.size_ = 0;
+    other.allocated_ = 0;
 }
 //--------------------------------------------------
 Array &Array::operator=(const Array &other) // copy assignment
@@ -105,7 +168,6 @@ bool Array::operator!=(const Array &rhs) const
         }
     }
     return flag;
-//    return !(data_ == rhs.data_);
 }
 //--------------------------------------------------
 size_t Array::size() const noexcept
@@ -142,7 +204,6 @@ Array::const_iterator Array::cend() const noexcept
 {
     return data_ + size_;
 }
-
 //--------------------------------------------------
 void Array::realloc(size_type new_capacity)
 {
@@ -432,6 +493,7 @@ bool Array::interpolation_serch(int target)
         else
             max = pos - 1;
     }
+    return false;
 }
 //--------------------------------------------------
 bool Array::interpolation_serch(double target)
@@ -451,20 +513,11 @@ bool Array::interpolation_serch(double target)
         else
             max = pos - 1;
     }
+    return false;
 }
 //--------------------------------------------------
 std::ostream &operator<<(std::ostream &os, const Array &rhs)
 {
-#if detailed_print
-    for (int i = 0; i < rhs.size_; ++i)
-        os << "#" << i+1 << " " << "Catalog ID: " << rhs.data_[i].bookId_ << "\n";
-
-    os << "| ";
-
-    for (size_t i = rhs.size_; i < rhs.allocated_; ++i)
-        os << "#" << i+1 << " " << rhs.data_[i].bookId_ << ' ';
-#endif
-
     for (int i = 0; i < rhs.size_; ++i)
     {
         os << "#" << i + 1 << '\n';
@@ -475,10 +528,12 @@ std::ostream &operator<<(std::ostream &os, const Array &rhs)
         os << "Price: " << rhs.data_[i].price_ << "\n\n";
     }
 
+#if print
     os << "| ";
 
     for (size_t i = rhs.size_; i < rhs.allocated_; ++i)
         os << "#" << i + 1 << " " << rhs.data_[i].bookId_ << ' ';
+#endif
 
     return os;
 }

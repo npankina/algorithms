@@ -1,17 +1,42 @@
-#ifndef ALGORITHMS_LAB_3_ARRAY_H
-#define ALGORITHMS_LAB_3_ARRAY_H
-
 #pragma once
 
 #include <iostream>
 #include <initializer_list>
 #include <cstdlib>
 #include <algorithm>
-#include "Config.h"
+#include <chrono>
 
 
-// интерфейс контейнера
-class Array : private Record
+struct Record // интерфейс хранилища данных
+{
+    size_t bookId_;
+    size_t yearOfPub_;
+    std::string bookName_;
+    std::string publisher_;
+    double price_;
+
+    Record(size_t year = 0, std::string name = "", std::string pub = "", double price = .0);
+
+private:
+    static size_t counter;
+};
+
+
+//std::vector<Record> rec
+//{
+//        {2016, "C++ programming", "Pearson", 9.99},
+//        {2019, "Databases", "Pearson", 8.75},
+//        {2017, "Postgres", "Thomson-Reuters", 3.12},
+//        {2010, "C++ with Love", "Thomson-Reuters", 5.70},
+//        {2018, "Algorithms and data structures", "Oxford University", 7.24},
+//        {2023, "C++ the best lang", "Pearson", 4.99},
+//        {2022, "C++ 💜", "Pearson", 5.00},
+//        {2020, "Algorithms in C++", "Oxford University", 4.20},
+//        {2021, "Data structures in C++", "Oxford University", 5.18},
+//        {2015, "Project Management", "Pearson", 5.22}
+//};
+
+class Array : private Record // интерфейс контейнера
 {
 public:
     using size_type = size_t;
@@ -82,6 +107,10 @@ private:
     size_type allocated_;
     size_type size_;
     value_type *data_ = nullptr;
-//    iterator iterator_ = data_;
 };
-#endif //ALGORITHMS_LAB_3_ARRAY_H
+
+size_t random_number(size_t min, size_t max);
+double random_number_d(double min, double max);
+bool Fill_Container(Array &obj, size_t size);
+void Fill_Container_1(Array &obj, size_t arr_sz);
+void Fill_Container_2(std::vector<Record> &obj, size_t arr_sz);
