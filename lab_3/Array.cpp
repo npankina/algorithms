@@ -64,10 +64,12 @@ void Fill_Container_1(Array &obj, size_t arr_sz)
         obj.push_back({random_number(1999, 2023), random_name(), random_pub(), random_number_d(0.99, 100.00)});
 }
 //--------------------------------------------------
-void Fill_Container_2(std::vector<Record> &obj, size_t arr_sz)
+void Fill_Container_2(std::vector<int> &obj, size_t arr_sz)
 {
     for (int i = 0; i < arr_sz; ++i)
-        obj.push_back({random_number(1999, 2023), random_name(), random_pub(), random_number_d(0.99, 100.00)});
+    {
+        obj.push_back(random_number(0, 100));
+    }
 }
 //--------------------------------------------------
 

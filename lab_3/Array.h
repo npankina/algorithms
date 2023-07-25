@@ -113,4 +113,4 @@ size_t random_number(size_t min, size_t max);
 double random_number_d(double min, double max);
 bool Fill_Container(Array &obj, size_t size);
 void Fill_Container_1(Array &obj, size_t arr_sz);
-void Fill_Container_2(std::vector<Record> &obj, size_t arr_sz);
+void Fill_Container_2(std::vector<int> &obj, size_t arr_sz);
