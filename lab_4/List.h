@@ -2,46 +2,42 @@
 #define LAB_4_LIST_H
 
 #include <iostream>
+#include <tuple>
 #include <iterator>
+#include <string>
 
-template <typename T>
-class List {
+class List
+{
 public:
-    using value_type = T;
+    struct Node
+    {
+        std::tuple<std::string, size_t, std::string, std::string, double> data_;
+        Node *prev;
+        Node *next;
+    };
+
     using size_type = size_t;
-    using iterator = value_type *;
-    using const_iterator = const value_type *;
+    using value_type = Node;
     using reference = value_type &;
     using const_reference = const value_type &;
 
-private:
-    // -- структура элемента списка – определить самостоятельно --
-
-public:
-    // -- Вложенный класс-итератор –
-    struct iterator {   // Конструкторы --
-        explicit iterator(node *t) noexcept;
-
+    struct iterator
+    {
+        explicit iterator(Node *t) noexcept;
         iterator() noexcept;
-
-        // Сравнение итераторов
         bool operator==(const iterator &it) const noexcept;
-
         bool operator!=(const iterator &it) const noexcept;
+        iterator &operator++();
+        iterator &operator--();
+        reference operator*();
+    };
 
-        // Перемещение итератора
-        iterator &operator++();              // вперед
-        iterator &operator--();              // назад
-        reference operator*();               // разыменование
-    };  // -- конец итератора --
-
-    /* Конструкторы/деструктор/присваивания */
     List();
     virtual ~List();
     List(const std::initializer_list <value_type> &t);
     List(const List &other);
-    List(List &&other) noexcept;              // -- конструктор переноса --
-    List &operator=(List &&other) noexcept;   // -- операция перемещения --
+    List(List &&other) noexcept;
+    List &operator=(List &&other) noexcept;
     List &operator=(const List &other);
 
 // Итераторы ----------------
@@ -68,7 +64,11 @@ public:
     iterator erase(iterator);                    // удалить указанный (в позиции)
     void clear();                                // удалить все
     void swap(List &t) noexcept;        // обменять с заданным списком
+
+private:
+    Node *data_;
+    Node *head_;
+    Node *tail_;
+    iterator it_;
 };
-
-
 #endif //LAB_4_LIST_H
