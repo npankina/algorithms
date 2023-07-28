@@ -6,6 +6,7 @@
 #include <iterator>
 #include <string>
 
+
 class List
 {
 public:
@@ -23,13 +24,17 @@ public:
 
     struct iterator
     {
-        explicit iterator(Node *t) noexcept;
+    public:
+        explicit iterator(List::Node *t) noexcept;
         iterator() noexcept;
         bool operator==(const iterator &it) const noexcept;
         bool operator!=(const iterator &it) const noexcept;
         iterator &operator++();
         iterator &operator--();
         reference operator*();
+    private:
+        value_type *data_;
+        size_t size_;
     };
 
     List();
@@ -41,8 +46,8 @@ public:
     List &operator=(const List &other);
 
 // Итераторы ----------------
-    iterator begin() noexcept;
-    iterator end() noexcept;
+    iterator begin() const noexcept;
+    iterator end() const noexcept;
 
 // Доступ к элементам -------
     reference front();
@@ -69,6 +74,7 @@ private:
     Node *data_;
     Node *head_;
     Node *tail_;
-    iterator it_;
+    size_t size_;
 };
+
 #endif //LAB_4_LIST_H

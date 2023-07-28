@@ -36,6 +36,7 @@ List::reference List::iterator::operator*()
 }
 //--------------------------------------------------
 List::List()
+: data_(nullptr), size_(0)
 {}
 //--------------------------------------------------
 List::~List()
@@ -68,34 +69,34 @@ List &List::operator=(const List &other)
 
 }
 //--------------------------------------------------
-List::iterator List::begin() noexcept
+List::iterator List::begin() const noexcept
 {
-
+    return iterator(data_);
 }
 //--------------------------------------------------
-List::iterator List::end() noexcept
+List::iterator List::end() const noexcept
 {
-
+    return iterator(data_ + size_);
 }
 //--------------------------------------------------
 List::reference List::front()
 {
-
+    return *(head_);
 }
 //--------------------------------------------------
 List::reference List::back()
 {
-
+    return *(tail_);
 }
 //--------------------------------------------------
 bool List::empty() const noexcept
 {
-
+    return size_ == 0;
 }
 //--------------------------------------------------
 List::size_type List::size() const noexcept
 {
-
+    return size_;
 }
 //--------------------------------------------------
 void List::push_front(const_reference)
