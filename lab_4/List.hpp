@@ -1,40 +1,50 @@
 #include "List.h"
 
 template <typename T>
-List<T>::iterator::iterator() noexcept
-//: ptr_()
+template <typename Iter>
+List<T>::Iterator<Iter>::Iterator(Iter *p) noexcept
+: value_(p)
+{}
+//--------------------------------------------------
+template <typename T>
+template <typename Iter>
+List<T>::Iterator<Iter>::Iterator(const Iter &it) // copy ctor
+: value_(it.value_)
+{}
+//--------------------------------------------------
+template <typename T>
+template <typename Iter>
+bool List<T>::Iterator<Iter>::operator==(const Iterator &it) const noexcept
 {
-
+    return value_ == it.value_;
 }
 //--------------------------------------------------
 template <typename T>
-bool List<T>::iterator::operator==(const iterator &it) const noexcept
+template <typename Iter>
+bool List<T>::Iterator<Iter>::operator!=(const Iterator &it) const noexcept
 {
-    return ptr_ == it.ptr_;
+    return value_ != it.value_;
 }
 //--------------------------------------------------
 template <typename T>
-bool List<T>::iterator::operator!=(const iterator &it) const noexcept
+template <typename Iter>
+List<T>::Iterator<Iter> &List<T>::Iterator<Iter>::operator++()
 {
-    return ptr_ != it.ptr_;
+    return *(++value_);
 }
 //--------------------------------------------------
 template <typename T>
-List<T>::iterator &List<T>::iterator::operator++()
+template <typename Iter>
+List<T>::Iterator<Iter> &List<T>::Iterator<Iter>::operator--()
 {
-    return *(++ptr_);
+    return *(--value_);
 }
 //--------------------------------------------------
 template <typename T>
-List<T>::iterator &List<T>::iterator::operator--()
+template <typename Iter>
+List<T>::Iterator<Iter>::reference List<T>::Iterator<Iter>::operator*()
 {
-    return *(--ptr_);
-}
-//--------------------------------------------------
-template <typename T>
-List<T>::reference List<T>::iterator::operator*()
-{
-    return *ptr_;
+    return *value_;
 }
 //--------------------------------------------------
 

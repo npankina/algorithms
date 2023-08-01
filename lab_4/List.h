@@ -16,8 +16,8 @@ public:
     struct Node
     {
         T value; // std::tuple<std::string, size_t, std::string, std::string, double> data_;
-        Node *prev;
-        Node *next;
+        Node *prev; // std::unique_ptr<Node>
+        Node *next; // std::unique_ptr<Node>
     };
 
     using size_type = size_t;
@@ -25,19 +25,30 @@ public:
     using reference = value_type &;
     using const_reference = const value_type &;
 
-    struct iterator
+    template <typename Iter>
+    class Iterator
     {
+        friend class List; // имеем полный доступ к классу и приватным методам
     public:
-        explicit iterator(Node *t) noexcept : ptr_(t) {};
-        iterator() noexcept;
-        bool operator==(const iterator &it) const noexcept;
-        bool operator!=(const iterator &it) const noexcept;
-        iterator &operator++();
-        iterator &operator--();
-        reference operator*();
-//        value_type *operator->();
+        typedef Iter iterator_type;
+        typedef std::bidirectional_iterator_tag iterator_category;
+        typedef iterator_type value_type;
+        typedef ptrdiff_t difference_type;
+        typedef iterator_type &reference;
+        typedef iterator_type *pointer;
+
+        iterator_type *value_;
+
     private:
-        value_type *ptr_;
+//        explicit Iterator(Node *t) noexcept;
+        explicit Iterator(Iter *p) noexcept;
+    public:
+        Iterator(const Iter &it); // copy ctor
+        bool operator==(const Iterator &it) const noexcept;
+        bool operator!=(const Iterator &it) const noexcept;
+        Iterator &operator++();
+        Iterator &operator--();
+        reference operator*();
     };
 
     List();
@@ -49,8 +60,13 @@ public:
     List &operator=(const List &other);
 
 // Итераторы ----------------
-    iterator begin() const noexcept;
-    iterator end() const noexcept;
+    typedef Iterator<Node> iterator; // для дружбы со стандартными алгоритмами
+    typedef Iterator<const Node> const_iterator; // для дружбы со стандартными алгоритмами
+
+    iterator begin() noexcept;
+    iterator end() noexcept;
+    const_iterator begin() const;
+    const_iterator end() const;
 
 // Доступ к элементам -------
     reference front();
