@@ -22,17 +22,24 @@ bool List::iterator::operator!=(const iterator &it) const noexcept
 //--------------------------------------------------
 List::iterator &List::iterator::operator++()
 {
-
+    ++ptr_;
+    return *this;
 }
 //--------------------------------------------------
 List::iterator &List::iterator::operator--()
 {
-
+    --ptr_;
+    return *this;
 }
 //--------------------------------------------------
 List::reference List::iterator::operator*()
 {
-
+    return *ptr_;
+}
+//--------------------------------------------------
+List::value_type *List::iterator::operator->()
+{
+    return ptr_;
 }
 //--------------------------------------------------
 List::List()

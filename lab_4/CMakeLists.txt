@@ -3,7 +3,7 @@ project(lab_4)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(lab_4 main.cpp List.cpp List.h)
+add_executable(lab_4 main.cpp)
 
 Include(FetchContent)
 

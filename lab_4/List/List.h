@@ -1,21 +1,18 @@
 #ifndef LAB_4_LIST_H
 #define LAB_4_LIST_H
 
-
 #include <iostream>
-#include <string>
 #include <tuple>
 #include <iterator>
-#include <type_traits>
+#include <string>
 
 
-template <typename T>
 class List
 {
 public:
     struct Node
     {
-        T value; // std::tuple<std::string, size_t, std::string, std::string, double> data_;
+        std::tuple<std::string, size_t, std::string, std::string, double> data_;
         Node *prev;
         Node *next;
     };
@@ -28,16 +25,17 @@ public:
     struct iterator
     {
     public:
-        explicit iterator(Node *t) noexcept : ptr_(t) {};
+        explicit iterator(List::Node *t) noexcept;
         iterator() noexcept;
         bool operator==(const iterator &it) const noexcept;
         bool operator!=(const iterator &it) const noexcept;
         iterator &operator++();
         iterator &operator--();
         reference operator*();
-//        value_type *operator->();
+        value_type *operator->();
     private:
         value_type *ptr_;
+        size_t size_;
     };
 
     List();
@@ -69,14 +67,14 @@ public:
     void pop_back();                         // удалить последний
     iterator insert(iterator, const_reference);  // вставить в позицию итератора
     iterator insert(iterator, value_type &&);     // вставить временный объект --
-    iterator erase(iterator pos);                    // удалить указанный (в позиции)
+    iterator erase(iterator);                    // удалить указанный (в позиции)
     void clear();                                // удалить все
     void swap(List &t) noexcept;        // обменять с заданным списком
 
 private:
     Node *data_;
-    Node *head_ = nullptr;
-    Node *tail_ = nullptr;
+    Node *head_;
+    Node *tail_;
 
     size_t size_;
     iterator it;
