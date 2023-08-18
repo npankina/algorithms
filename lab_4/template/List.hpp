@@ -53,7 +53,8 @@ List<T>::Iterator<Iter>::reference List<T>::Iterator<Iter>::operator*()
 
 //--------------------------------------------------
 template <typename T>
-List<T>::List()
+List<T>::List() //noexcept(std::is_nothrow_default_constructible<allocator_type>::value)
+
 {
 
 }
