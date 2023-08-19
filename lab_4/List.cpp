@@ -1,5 +1,6 @@
 #include "List.h"
 
+#if need
 // class iterator
 //----------------------------------------------------------------------
 List::iterator::iterator(Node *t) noexcept
@@ -23,130 +24,165 @@ List::iterator &List::iterator::operator--()
 List::reference List::iterator::operator*()
 {}
 //----------------------------------------------------------------------
-
+#endif
 
 
 
 // class List
 //----------------------------------------------------------------------
-List::List()
-: head_(nullptr), tail_(nullptr), size_(0)
+template <typename T>
+List<T>::List()
+: size_(0), head_(nullptr), tail_(nullptr)
 {}
 //----------------------------------------------------------------------
-List::~List()
+template <typename T>
+List<T>::~List()
 {}
 //----------------------------------------------------------------------
-List::List(const std::initializer_list<value_type> &t)
-: head_(nullptr), tail_(nullptr), size_(t.size())
+template <typename T>
+List<T>::List(const std::initializer_list<value_type> &t)
+: size_(t.size()), head_(nullptr), tail_(nullptr)
+{
+    for (auto item : t)
+        push_front(item);
+}
+//----------------------------------------------------------------------
+template <typename T>
+List<T>::List(const List& other)
 {}
 //----------------------------------------------------------------------
-List::List(const List& other)
-{}
-//----------------------------------------------------------------------
-List::List(List&& other) noexcept
+template <typename T>
+List<T>::List(List&& other) noexcept
 { // -- конструктор переноса --
 
 }
 //----------------------------------------------------------------------
-List &List::operator=(List&& other) noexcept
+template <typename T>
+List<T> &List<T>::operator=(List&& other) noexcept
 { // -- операция перемещения --
 
 }
 //----------------------------------------------------------------------
-List &List::operator=(const List& other)
+template <typename T>
+List<T> &List<T>::operator=(const List& other)
 {}
 //----------------------------------------------------------------------
-List::iterator List::begin() noexcept
+template <typename T>
+List<T>::iterator List<T>::begin() noexcept
 {}
 //----------------------------------------------------------------------
-List::iterator List::end() noexcept
+template <typename T>
+List<T>::iterator List<T>::end() noexcept
 {}
 //----------------------------------------------------------------------
-List::reference List::front()
+template <typename T>
+List<T>::reference List<T>::front()
 {}
 //----------------------------------------------------------------------
-List::reference List::back()
+template <typename T>
+List<T>::reference List<T>::back()
 {}
 //----------------------------------------------------------------------
-bool List::empty() const noexcept
+template <typename T>
+bool List<T>::empty() const noexcept
 {
     return size_ == 0;
 }
 //----------------------------------------------------------------------
-List::size_type List::size() const noexcept
+template <typename T>
+List<T>::size_type List<T>::size() const noexcept
 {
     return size_;
 }
 //----------------------------------------------------------------------
-void List::push_front(const_reference rhs)
+template <typename T>
+void List<T>::push_front(const_reference rhs)
 { // добавить в начало; Time Complexity: O(1)
-    // 1. allocate node
-    Node *new_node = new Node();
+    T *new_node = new Node(rhs);
 
-    // 2. put in the data
+    if (head_ != nullptr)
+    {
+        head_->next = new_node;
+        new_node->prev_ = head_;
+    }
+
+    head_ = new_node;
+    new_node->next_ = nullptr;
     new_node->data_ = rhs.data_;
 
-    // 3. Make next of new node as head and previous as NULL
-    new_node->next_ = (*head_);
-    new_node->prev_ = nullptr;
-
-    // 4. change prev of head node to new node
-    if ((*head_) != nullptr)
-        (*head_)->prev_ = new_node;
-
-    // 5. move the head to point to the new node
-    (*head_) = new_node;
     ++size_;
 }
 //----------------------------------------------------------------------
-void List::push_front(value_type &&tmp)
+template <typename T>
+void List<T>::push_front(value_type &&tmp)
 { // добавить в начало - временный объект --
+    T *new_node = std::move(tmp);
 
+    if (head_ != nullptr)
+    {
+        head_->next = new_node;
+        new_node->prev_ = head_;
+    }
+
+    head_ = new_node;
+    new_node->next_ = nullptr;
+    new_node->data_ = tmp.data_;
+
+    ++size_;
 }
 //----------------------------------------------------------------------
-void List::pop_front()
+template <typename T>
+void List<T>::pop_front()
 { // удалить первый
 
 }
 //----------------------------------------------------------------------
-void List::push_back(const_reference)
+template <typename T>
+void List<T>::push_back(const_reference)
 { // добавить в конец
 
 }
 //----------------------------------------------------------------------
-void List::push_back(value_type &&)
+template <typename T>
+void List<T>::push_back(value_type &&)
 { // добавить в начало - временный объект --
 
 }
 //----------------------------------------------------------------------
-void List::pop_back()
+template <typename T>
+void List<T>::pop_back()
 { // удалить последний
 
 }
 //----------------------------------------------------------------------
-List::iterator List::insert(iterator, const_reference)
+template <typename T>
+List<T>::iterator List<T>::insert(iterator, const_reference)
 { // вставить в позицию итератора
 
 }
 //----------------------------------------------------------------------
-List::iterator List::insert(iterator, value_type&&)
+template <typename T>
+List<T>::iterator List<T>::insert(iterator, value_type&&)
 {  // вставить временный объект --
 
 }
 //----------------------------------------------------------------------
-List::iterator List::erase(iterator)
+template <typename T>
+List<T>::iterator List<T>::erase(iterator)
 { // удалить указанный (в позиции)
 
 }
 //----------------------------------------------------------------------
-void List::clear()
+template <typename T>
+void List<T>::clear()
 { // удалить все
     size_ = 0;
     head_ = nullptr;
     tail_ = nullptr;
 }
 //----------------------------------------------------------------------
-void List::swap(List &t) noexcept
+template <typename T>
+void List<T>::swap(List &t) noexcept
 {
 
 }
