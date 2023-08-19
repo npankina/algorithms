@@ -1,5 +1,35 @@
 #include "List.h"
 
+// class Node
+//----------------------------------------------------------------------
+template <typename T>
+Node<T>::Node()
+: prev_(nullptr), next_(nullptr)
+{}
+//----------------------------------------------------------------------
+template <typename T>
+Node<T>::Node(Node *prev, const T &value, Node *next) // copy ctor
+: prev_(prev), next_(next)
+{
+    value = std::copy(value);
+}
+//----------------------------------------------------------------------
+template <typename T>
+Node<T>::Node(Node *prev, const T &&value, Node *next) // move ctor
+: prev_(prev), next_(next)
+{
+    data_ = std::move(value);
+    if (prev == nullptr or next == nullptr) // выбросить исключение nullptr
+        throw std::exception();
+}
+//----------------------------------------------------------------------
+template <typename T>
+Node<T>::Node(Node *prev, Node *next)
+: prev_(prev), next_(next)
+{}
+//----------------------------------------------------------------------
+
+
 #if need
 // class iterator
 //----------------------------------------------------------------------

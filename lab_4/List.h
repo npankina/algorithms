@@ -9,23 +9,18 @@
 #include <type_traits>
 #include <list>
 
-template <typename U>
+template <typename T>
 class Node
 {
 public:
-    U data_;
-    Node *prev_ = nullptr;
-    Node *next_ = nullptr;
+    T data_;
+    Node *prev_;
+    Node *next_;
 
-    Node(Node *prev, const U &&value, Node *next) // move ctor
-    {
-        data_ = std::move(value);
-        if (prev == nullptr or next == nullptr) // выбросить исключение nullptr
-            throw std::exception();
-    }
-    Node(Node *prev, const U &value, Node *next) : prev_(prev), data_(value), next_(next) {}; // copy ctor
-    Node(Node *prev, Node *next) : prev_(prev), next_(next) {};
-
+    Node();
+    Node(Node *prev, const T &value, Node *next);  // copy ctor
+    Node(Node *prev, const T &&value, Node *next);  // move ctor
+    Node(Node *prev, Node *next);
 };
 
 template <typename T>
