@@ -20,7 +20,7 @@ Node<T>::Node(Node *prev, const T &&value, Node *next) // move ctor
 {
     data_ = std::move(value);
     if (prev == nullptr or next == nullptr) // выбросить исключение nullptr
-        throw std::exception();
+        throw 22; // объект не будет создан
 }
 //----------------------------------------------------------------------
 template <typename T>
@@ -30,31 +30,50 @@ Node<T>::Node(Node *prev, Node *next)
 //----------------------------------------------------------------------
 
 
-#if need
+
 // class iterator
 //----------------------------------------------------------------------
-List::iterator::iterator(Node *t) noexcept
+template <typename T>
+List<T>::iterator::iterator(Node<T> *t) noexcept
+: ptr_(t)
 {}
 //----------------------------------------------------------------------
-List::iterator::iterator() noexcept
+template <typename T>
+List<T>::iterator::iterator() noexcept
+: ptr_(nullptr)
 {}
 //----------------------------------------------------------------------
-bool List::iterator::operator==(const iterator &it) const noexcept
-{}
+template <typename T>
+bool List<T>::iterator::operator==(const iterator &it) const noexcept
+{
+    return ptr_ == *it; // вернет Node
+}
 //----------------------------------------------------------------------
-bool List::iterator::operator!=(const iterator &it) const noexcept
-{}
+template <typename T>
+bool List<T>::iterator::operator!=(const iterator &it) const noexcept
+{
+    return ptr_ != *it;
+}
 //----------------------------------------------------------------------
-List::iterator &List::iterator::operator++()
-{}
+template <typename T>
+List<T>::iterator &List<T>::iterator::operator++()
+{
+    return iterator(ptr_++);
+}
 //----------------------------------------------------------------------
-List::iterator &List::iterator::operator--()
-{}
+template <typename T>
+List<T>::iterator &List<T>::iterator::operator--()
+{
+    return iterator(ptr_--);
+}
 //----------------------------------------------------------------------
-List::reference List::iterator::operator*()
-{}
+template <typename T>
+List<T>::reference List<T>::iterator::operator*()
+{
+    return *ptr_;
+}
 //----------------------------------------------------------------------
-#endif
+
 
 
 
@@ -67,7 +86,9 @@ List<T>::List()
 //----------------------------------------------------------------------
 template <typename T>
 List<T>::~List()
-{}
+{ // пройти по всей цепочке и удалить каждую Node
+
+}
 //----------------------------------------------------------------------
 template <typename T>
 List<T>::List(const std::initializer_list<value_type> &t)
@@ -78,40 +99,48 @@ List<T>::List(const std::initializer_list<value_type> &t)
 }
 //----------------------------------------------------------------------
 template <typename T>
-List<T>::List(const List& other)
+List<T>::List(const List& other) // copy ctor
 {}
 //----------------------------------------------------------------------
 template <typename T>
-List<T>::List(List&& other) noexcept
+List<T>::List(List&& other) noexcept // move ctor
 { // -- конструктор переноса --
 
 }
 //----------------------------------------------------------------------
 template <typename T>
-List<T> &List<T>::operator=(List&& other) noexcept
+List<T> &List<T>::operator=(List&& other) noexcept // move assign
 { // -- операция перемещения --
 
 }
 //----------------------------------------------------------------------
 template <typename T>
-List<T> &List<T>::operator=(const List& other)
+List<T> &List<T>::operator=(const List& other) // copy assign
 {}
 //----------------------------------------------------------------------
 template <typename T>
 List<T>::iterator List<T>::begin() noexcept
-{}
+{
+    return iterator(head_);
+}
 //----------------------------------------------------------------------
 template <typename T>
 List<T>::iterator List<T>::end() noexcept
-{}
+{
+    return iterator(tail_);
+}
 //----------------------------------------------------------------------
 template <typename T>
 List<T>::reference List<T>::front()
-{}
+{
+    return head_;
+}
 //----------------------------------------------------------------------
 template <typename T>
 List<T>::reference List<T>::back()
-{}
+{
+    return tail_;
+}
 //----------------------------------------------------------------------
 template <typename T>
 bool List<T>::empty() const noexcept
@@ -186,9 +215,26 @@ void List<T>::pop_back()
 }
 //----------------------------------------------------------------------
 template <typename T>
-List<T>::iterator List<T>::insert(iterator, const_reference)
+List<T>::iterator List<T>::insert(iterator fnd, const_reference obj)
 { // вставить в позицию итератора
 
+    for (auto it = begin(); it != end(); it++)
+    {
+        // итератор
+        if (it == fnd)
+        {
+            reference new_obj = *obj;
+            reference current_nd = *it;
+            reference next_nd = *(it++);
+
+            current_nd.next_ = new_obj;
+            next_nd.prev_ = new_obj;
+            new_obj.prev_ = current_nd;
+            new_obj.next_ = next_nd;
+            return fnd;
+        }
+    }
+    return nullptr;
 }
 //----------------------------------------------------------------------
 template <typename T>
@@ -207,6 +253,12 @@ template <typename T>
 void List<T>::clear()
 { // удалить все
     size_ = 0;
+
+    for (auto it = begin(); it != end(); it++)
+    {
+        delete *it;
+    }
+
     head_ = nullptr;
     tail_ = nullptr;
 }
@@ -214,6 +266,6 @@ void List<T>::clear()
 template <typename T>
 void List<T>::swap(List &t) noexcept
 {
-
+    this = std::move(t);
 }
 //----------------------------------------------------------------------

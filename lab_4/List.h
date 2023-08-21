@@ -5,9 +5,8 @@
 #include <iostream>
 #include <string>
 #include <tuple>
-#include <iterator>
-#include <type_traits>
-#include <list>
+//#include <iterator>
+//#include <type_traits>
 
 template <typename T>
 class Node
@@ -36,18 +35,14 @@ public:
 private:
     // -- структура элемента списка – определить самостоятельно --
     size_type size_;
-    value_type *tail_;
     value_type *head_;
+    value_type *tail_;
 
 public:
     // -- Вложенный класс-итератор –
-    struct iterator : public std::iterator<std::bidirectional_iterator_tag, Node<T>, size_type, Node<T> *, T>
+    struct iterator
     {
-    private:
-        friend class List;
-//        friend class const_iterator;
-    public:
-        typename iterator::pointer ptr;
+        Node<T> *ptr_;
 
         explicit iterator(value_type *t) noexcept;
         iterator() noexcept;
