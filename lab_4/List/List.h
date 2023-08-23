@@ -29,7 +29,7 @@ public:
         iterator() noexcept;
         bool operator==(const iterator &it) const noexcept;
         bool operator!=(const iterator &it) const noexcept;
-        iterator &operator++();
+        iterator operator++();
         iterator &operator--();
         reference operator*();
         value_type *operator->();

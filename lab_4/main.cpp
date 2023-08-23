@@ -1,4 +1,4 @@
-#include "List.hpp"
+#include "List.h"
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
