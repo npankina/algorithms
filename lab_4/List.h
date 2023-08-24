@@ -5,8 +5,8 @@
 #include <iostream>
 #include <string>
 #include <tuple>
-//#include <iterator>
-//#include <type_traits>
+#include <iterator>
+#include <type_traits>
 
 #if template
 template <typename T>
@@ -120,7 +120,18 @@ public:
     // -- Вложенный класс-итератор –
     struct iterator
     {
+        friend List;
         Node *ptr_;
+
+        using iterator_category = std::bidirectional_iterator_tag;
+        using value_type = Node;
+        using difference_type = ptrdiff_t;
+        using pointer = Node *;
+        using reference = Node &;
+
+
+        iterator(const iterator &) = default; // copy ctor
+        iterator &operator=(const iterator &) = default;
 
         explicit iterator(value_type *t) noexcept;
         iterator() noexcept;
@@ -128,16 +139,18 @@ public:
         bool operator==(const iterator &it) const noexcept;
         bool operator!=(const iterator &it) const noexcept;
         // Перемещение итератора
-        const iterator &operator++();             // вперед
-        const iterator &operator--();             // назад
-        reference operator*();              // разыменование
+        iterator &operator++() noexcept;
+        iterator &operator--() noexcept;
+        iterator &operator++(int) noexcept;
+        iterator &operator--(int) noexcept;
+        reference operator*() const noexcept;
     };  // -- конец итератора --
 
     /* Конструкторы/деструктор/присваивания */
     List(size_type sz = 0);
     virtual ~List();
     List(const std::initializer_list<value_type> &t);
-    List(const List& other);
+    List(const List& other) noexcept;
     List(List&& other) noexcept;              // -- конструктор переноса --
     List& operator=(List&& other) noexcept;   // -- операция перемещания --
     List& operator=(const List& other);

@@ -35,27 +35,43 @@ List::iterator::iterator() noexcept
 : ptr_(nullptr)
 {}
 //----------------------------------------------------------------------
-bool List::iterator::operator==(const List::iterator &it) const noexcept
+bool List::iterator::operator==(const iterator &it) const noexcept
 {
-//    return ptr_ == *it; // вернет Node
+    return ptr_ == it.ptr_;
 }
 //----------------------------------------------------------------------
 bool List::iterator::operator!=(const iterator &it) const noexcept
 {
-//    return ptr_ != *it;
+    return ptr_ != it.ptr_;
 }
 //----------------------------------------------------------------------
-const List::iterator &List::iterator::operator++()
+List::iterator &List::iterator::operator++() noexcept
 {
-    return iterator(ptr_++);
+    ++ptr_;
+    return *this;
 }
 //----------------------------------------------------------------------
-const List::iterator &List::iterator::operator--()
+List::iterator &List::iterator::operator++(int) noexcept
 {
-    return iterator(ptr_--);
+    iterator copy{*this};
+    ++ptr_;
+    return copy;
 }
 //----------------------------------------------------------------------
-List::reference List::iterator::operator*()
+List::iterator &List::iterator::operator--() noexcept
+{
+    --ptr_;
+    return *this;
+}
+//----------------------------------------------------------------------
+List::iterator &List::iterator::operator--(int) noexcept
+{
+    iterator copy{*this};
+    --ptr_;
+    return copy;
+}
+//----------------------------------------------------------------------
+List::reference List::iterator::operator*() const noexcept
 {
     return *ptr_;
 }
@@ -78,31 +94,37 @@ List::~List()
 }
 //----------------------------------------------------------------------
 List::List(const std::initializer_list<value_type> &t)
-: List(t.size() )
+: List()
 {
     for (auto item : t)
         push_front(item);
 }
 //----------------------------------------------------------------------
-List::List(const List& other) // copy ctor
+List::List(const List& other) noexcept // copy ctor
+: size_(other.size_), head_(other.head_), tail_(other.tail_)
 {}
 //----------------------------------------------------------------------
 List::List(List&& other) noexcept // move ctor
-{ // -- конструктор переноса --
-
-}
+: size_(other.size_), head_(std::move(other.head_)), tail_(std::move(other.tail_))
+{}
 //----------------------------------------------------------------------
 List &List::operator=(List&& other) noexcept // move assign
 { // -- операция перемещения --
-
+    size_ = other.size_;
+    head_ = std::move(other.head_);
+    tail_ = std::move(other.tail_);
 }
 //----------------------------------------------------------------------
 List &List::operator=(const List& other) // copy assign
-{}
+{
+    size_ = other.size_;
+    head_ = other.head_;
+    tail_ = other.tail_;
+}
 //----------------------------------------------------------------------
 List::iterator List::begin() noexcept
 {
-    return iterator(head_);
+    return iterator(head_->next_);
 }
 //----------------------------------------------------------------------
 List::iterator List::end() noexcept
@@ -144,14 +166,14 @@ void List::push_front(const_reference rhs)
 //----------------------------------------------------------------------
 void List::push_front(value_type &&tmp)
 { // добавить в начало - временный объект --
-//    Node *new_node = std::move(tmp);
-//
-//    new_node->prev_ = head_;
-//    new_node->next_ = head_->next_;
-//    head_->next_ = new_node;
-//    new_node->next_->prev_ = new_node->next_;
-//
-//    ++size_;
+    Node *new_node = new Node(std::move(tmp));
+
+    new_node->prev_ = head_;
+    new_node->next_ = head_->next_;
+    head_->next_ = new_node;
+    new_node->next_->prev_ = new_node->next_;
+
+    ++size_;
 }
 //----------------------------------------------------------------------
 void List::pop_front()
