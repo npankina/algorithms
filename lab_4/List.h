@@ -96,8 +96,8 @@ public:
     Node *next_;
 
     Node();
-    Node(const int &value, Node *prev = nullptr, Node *next = nullptr);  // copy ctor
-    Node(Node *prev, const int &&value, Node *next);  // move ctor
+    Node(const int &lvalue, Node *prev = nullptr, Node *next = nullptr);  // copy ctor
+    Node(const int &&rvalue, Node *prev = nullptr, Node *next = nullptr);  // move ctor
     Node(Node *prev, Node *next);
 };
 

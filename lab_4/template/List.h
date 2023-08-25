@@ -9,31 +9,21 @@
 #include <type_traits>
 #include <list>
 
-#if need
-template <typename T>
-class Allocator
+
+template <class U>
+class Node
 {
-public:
-    T *allocate(int n);
-    void deallocate(T *p, int n);
-    void construct(T *p, const T &v);
-    void destroy(T *p);
+    U value_; // std::tuple<std::string, size_t, std::string, std::string, double> data_;
+    Node *prev_; // std::unique_ptr<Node>
+    Node *next_; // std::unique_ptr<Node>
 };
-#endif
 
 template <class T> // , class Alloc = allocator<T>
 class List
 {
-private:
-    struct Node
-    {
-        T value_; // std::tuple<std::string, size_t, std::string, std::string, double> data_;
-        Node *prev_; // std::unique_ptr<Node>
-        Node *next_; // std::unique_ptr<Node>
-    };
 public:
     using size_type = size_t;
-    using value_type = Node;
+    using value_type = Node<T>;
     // using iterator = value_type *; using const_iterator = const value_type *;
     using reference = value_type &;
     using const_reference = const value_type &;
@@ -64,10 +54,16 @@ public:
         reference operator*();
     };
 
-    typedef Iterator<Node> iterator;                // для дружбы со стандартными алгоритмами
-    typedef Iterator<const Node> const_iterator;    // для дружбы со стандартными алгоритмами
+    typedef Iterator<Node<T>> iterator;                // для дружбы со стандартными алгоритмами
+    typedef Iterator<const Node<T>> const_iterator;    // для дружбы со стандартными алгоритмами
 
+private:
+    value_type *head_;
+    value_type *tail_;
 
+    size_t size_;
+
+public:
     List(); //noexcept(std::is_nothrow_default_constructible<allocator_type>::value);
     virtual ~List();
     List(const std::initializer_list <value_type> &t);
@@ -105,12 +101,6 @@ public:
     iterator erase(iterator pos);               // удалить указанный (в позиции)
     void clear() noexcept;                      // удалить все
     void swap(List &t); // noexcept(std::allocator_traits<allocator_type>::is_always_equal::value); // обменять с заданным списком
-
-private:
-    Node *head_ = nullptr;
-    Node *tail_ = nullptr;
-
-    size_t size_;
 };
 
 #endif //LAB_4_LIST_H
