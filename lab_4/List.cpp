@@ -174,7 +174,13 @@ void List::push_front(value_type &&tmp)
 //----------------------------------------------------------------------
 void List::pop_front()
 { // удалить первый
+    if (head_->next_ == tail_) // список пуст
+        return;
 
+    head_->next_ = head_->next_->next_; // ссылка на ноду 2
+    head_->next_->next_ = head_; // ссылка в ноде 2 на начало
+
+    --size_;
 }
 //----------------------------------------------------------------------
 void List::push_back(const_reference obj)
@@ -204,7 +210,13 @@ void List::push_back(value_type &&tmp)
 //----------------------------------------------------------------------
 void List::pop_back()
 { // удалить последний
+    if ( tail_->prev_ == head_) // список пуст
+        return;
 
+    tail_->prev_ = tail_->prev_->prev_;
+    tail_->prev_->prev_ = tail_;
+
+    --size_;
 }
 //----------------------------------------------------------------------
 List::iterator List::insert(iterator fnd, const_reference obj)
@@ -223,14 +235,32 @@ List::iterator List::insert(iterator fnd, const_reference obj)
             new_obj->prev_ = current_nd;
             new_obj->next_ = next_nd;
             return it;
+            ++size_;
         }
     }
     return iterator(); // nullptr
 }
 //----------------------------------------------------------------------
-List::iterator List::insert(iterator, value_type&&)
+List::iterator List::insert(iterator fnd, value_type &&tmp)
 {  // вставить временный объект --
+    for (auto it = begin(); it != end(); it++)
+    {
+        if (it == fnd)
+        {
+            Node *new_obj = new Node(std::move(tmp.data_));
+            Node *current_nd = new Node(*it);
+            Node *next_nd = it.ptr_;
+            ++it;
 
+            current_nd->next_ = new_obj;
+            next_nd->prev_ = new_obj;
+            new_obj->prev_ = current_nd;
+            new_obj->next_ = next_nd;
+            return it;
+            ++size_;
+        }
+    }
+    return iterator(); // nullptr
 }
 //----------------------------------------------------------------------
 List::iterator List::erase(iterator)
@@ -240,11 +270,13 @@ List::iterator List::erase(iterator)
 //----------------------------------------------------------------------
 void List::clear()
 { // удалить все
-
+    size_ = 0;
+    head_->next_ = tail_;
+    tail_->prev_ = head_;
 }
 //----------------------------------------------------------------------
 void List::swap(List &t) noexcept
 {
-//    this = std::move(t);
+    std::swap(*this, t);
 }
 //----------------------------------------------------------------------
