@@ -37,14 +37,14 @@ Record &Record::operator=(Record &&rvalue) // move assign
 // class Node
 //----------------------------------------------------------------------
 Node::Node()
-: data_(Subscriber()), prev_(nullptr), next_(nullptr)
+: data_(Record()), prev_(nullptr), next_(nullptr)
 {}
 //----------------------------------------------------------------------
-Node::Node(const Subscriber &lvalue, Node *prev, Node *next) // copy ctor
+Node::Node(const Record &lvalue, Node *prev, Node *next) // copy ctor
 : data_(lvalue), prev_(prev), next_(next)
 {}
 //----------------------------------------------------------------------
-Node::Node(Subscriber &&rvalue, Node *prev, Node *next) // move ctor
+Node::Node(Record &&rvalue, Node *prev, Node *next) // move ctor
 : data_(std::move(rvalue)), prev_(prev), next_(next) // перемещаю данные rvalue, указатели выставляю в nullptr - ими манипулирует List
 {}
 //----------------------------------------------------------------------
