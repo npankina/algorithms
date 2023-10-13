@@ -22,10 +22,20 @@ Record::Record(const Record &lvalue)
 {}
 //----------------------------------------------------------------------
 Record::Record(Record &&rvalue)
-{}
+{
+    cypher_ = std::move(rvalue.cypher_); // ????
+    std::swap(year_of_pub, rvalue.year_of_pub); // ????
+    std::swap(publisher, rvalue.publisher);
+    std::swap(price_, rvalue.price_);
+}
 //----------------------------------------------------------------------
 Record &Record::operator=(const Record &lvalue) // copy assign
-{}
+{
+    cypher_ = lvalue.cypher_;
+    year_of_pub = lvalue.year_of_pub;
+    publisher = lvalue.publisher;
+    price_ = lvalue.price_;
+}
 //----------------------------------------------------------------------
 Record &Record::operator=(Record &&rvalue) // move assign
 {}
@@ -36,19 +46,19 @@ Record &Record::operator=(Record &&rvalue) // move assign
 
 // class Node
 //----------------------------------------------------------------------
-Node::Node()
+List::Node::Node()
 : data_(Record()), prev_(nullptr), next_(nullptr)
 {}
 //----------------------------------------------------------------------
-Node::Node(const Record &lvalue, Node *prev, Node *next) // copy ctor
+List::Node::Node(const Record &lvalue, Node *prev, Node *next) // copy ctor
 : data_(lvalue), prev_(prev), next_(next)
 {}
 //----------------------------------------------------------------------
-Node::Node(Record &&rvalue, Node *prev, Node *next) // move ctor
+List::Node::Node(Record &&rvalue, Node *prev, Node *next) // move ctor
 : data_(std::move(rvalue)), prev_(prev), next_(next) // перемещаю данные rvalue, указатели выставляю в nullptr - ими манипулирует List
 {}
 //----------------------------------------------------------------------
-Node::Node(Node *prev, Node *next)
+List::Node::Node(Node *prev, Node *next)
 : prev_(prev), next_(next)
 {}
 //----------------------------------------------------------------------
