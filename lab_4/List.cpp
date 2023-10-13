@@ -1,16 +1,50 @@
 #include "List.h"
 
+
+// class Subscriber
+//--------------------------------------------------------------------------------
+Subscriber::Subscriber(std::string name, int t_books, int s_cypher)
+: last_name(name), taken_books(t_books), sub_cypher(s_cypher)
+{}
+//--------------------------------------------------------------------------------
+
+
+
+
+//class Record
+//----------------------------------------------------------------------
+Record::Record(int cypher, int year, std::string pub, double price)
+: cypher_(cypher), year_of_pub(year), publisher(pub), price_(price)
+{}
+//----------------------------------------------------------------------
+Record::Record(const Record &lvalue)
+: cypher_(lvalue.cypher_), year_of_pub(lvalue.year_of_pub), publisher(lvalue.publisher), price_(lvalue.price_)
+{}
+//----------------------------------------------------------------------
+Record::Record(Record &&rvalue)
+{}
+//----------------------------------------------------------------------
+Record &Record::operator=(const Record &lvalue) // copy assign
+{}
+//----------------------------------------------------------------------
+Record &Record::operator=(Record &&rvalue) // move assign
+{}
+//----------------------------------------------------------------------
+
+
+
+
 // class Node
 //----------------------------------------------------------------------
 Node::Node()
-: data_(0), prev_(nullptr), next_(nullptr)
+: data_(Subscriber()), prev_(nullptr), next_(nullptr)
 {}
 //----------------------------------------------------------------------
-Node::Node(const int &lvalue, Node *prev, Node *next) // copy ctor
+Node::Node(const Subscriber &lvalue, Node *prev, Node *next) // copy ctor
 : data_(lvalue), prev_(prev), next_(next)
 {}
 //----------------------------------------------------------------------
-Node::Node(const int &&rvalue, Node *prev, Node *next) // move ctor
+Node::Node(Subscriber &&rvalue, Node *prev, Node *next) // move ctor
 : data_(std::move(rvalue)), prev_(prev), next_(next) // перемещаю данные rvalue, указатели выставляю в nullptr - ими манипулирует List
 {}
 //----------------------------------------------------------------------
@@ -49,7 +83,7 @@ List::iterator &List::iterator::operator++() noexcept
 //----------------------------------------------------------------------
 List::iterator &List::iterator::operator++(int) noexcept
 {
-    iterator copy{*this};
+    iterator copy(*this);
     ++ptr_;
     return copy;
 }
@@ -243,12 +277,12 @@ List::iterator List::insert(iterator fnd, const_reference obj)
 //----------------------------------------------------------------------
 List::iterator List::insert(iterator fnd, value_type &&tmp)
 {  // вставить временный объект --
-    for (auto it = begin(); it != end(); it++)
+    for (auto it = begin(); it != end(); it++) // перебираем в цикле все объекты в контейнере
     {
-        if (it == fnd)
+        if (it == fnd) // если искомый объект нашелся
         {
-            Node *new_obj = new Node(std::move(tmp.data_));
-            Node *current_nd = new Node(*it);
+            Node *new_obj = new Node(std::move(tmp)); // создать новую ноду и переместить в нее обхект rvalue
+            Node *current_nd = new Node(*it); //
             Node *next_nd = it.ptr_;
             ++it;
 
