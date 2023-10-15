@@ -33,67 +33,96 @@ private:
 class List
 {
 private:
-    struct Node
-    { // вложенный т.к. не имеет смысла без класса контейнера, более того - ни один из методов класса-контейнера не возвращает тип Node
-        Record data_;
-        Node *prev_, *next_;
-
-        Node();
-        Node(const Record &lvalue, Node *prev = nullptr, Node *next = nullptr);  // copy ctor
-        Node(Record &&rvalue, Node *prev = nullptr, Node *next = nullptr);  // move ctor
-        Node(Node *prev, Node *next);
-    };
-
+    struct Node;
 public:
     // -- типы – определить самостоятельно --
-    using size_type = size_t;
     using value_type = Node;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+    using pointer = value_type *;
+    using const_pointer = const value_type *;
     using reference = value_type &;
     using const_reference = const value_type &;
 
 private:
-    // -- структура элемента списка – определить самостоятельно --
-    size_type size_;
-    value_type *head_, *tail_;
+    struct Node
+    { // вложенный т.к. не имеет смысла без класса контейнера, более того - ни один из методов класса-контейнера не возвращает тип Node
+        Node *prev_ = nullptr;
+        Node *next_ = nullptr;
+        Record data_;
+
+        Node(Record item) noexcept;
+    };
 
 public:
-    struct iterator
-    { // -- Вложенный класс-итератор –
-        Node *ptr_;
+    class Const_Iterator
+    {
+    private:
+        friend class List;
+        explicit Const_Iterator(const value_type *ptr) noexcept;
 
+    public:
+        using difference_type = List::difference_type;
+        using value_type = List::value_type;
+        using pointer = List::const_pointer;
+        using reference = List::const_reference;
         using iterator_category = std::bidirectional_iterator_tag;
-        using value_type = Node;
-        using difference_type = ptrdiff_t;
-        using pointer = value_type *;
-        using reference = value_type &;
 
-        iterator(const iterator &) = default; // copy ctor
-        iterator &operator=(const iterator &) = default; // copy assign
-
-        explicit iterator(value_type *t) noexcept;
-        iterator() noexcept;
-
-        bool operator==(const iterator &it) const noexcept;
-        bool operator!=(const iterator &it) const noexcept;
-
-        // Перемещение итератора
-        iterator &operator++() noexcept;
-        iterator &operator--() noexcept;
-        iterator &operator++(int) noexcept;
-        iterator &operator--(int) noexcept;
         reference operator*() const noexcept;
+        Const_Iterator &operator++() noexcept;
+        Const_Iterator &operator--() noexcept;
+        Const_Iterator operator++(int) noexcept;
+        Const_Iterator operator--(int) noexcept;
+        bool operator==(Const_Iterator rhs) const noexcept;
+        bool operator!=(Const_Iterator rhs) const noexcept;
+
+    protected:
+        const value_type *Get() const noexcept;
+
+        const value_type *current_;
+    };  // -- конец const-итератора --
+
+    class Iterator : public Const_Iterator
+    {
+    private:
+        friend class List;
+        explicit Iterator(value_type *ptr) noexcept;
+
+    public:
+        using difference_type = List::difference_type;
+        using value_type = List::value_type;
+        using pointer = List::pointer;
+        using reference = List::reference;
+        using iterator_category = std::bidirectional_iterator_tag;
+
+        reference operator*() const noexcept;
+        Iterator &operator++() noexcept;
+        Iterator &operator--() noexcept;
+        Iterator operator++(int) noexcept;
+        Iterator operator--(int) noexcept;
     };  // -- конец итератора --
 
+    using iterator = Iterator;
+    using const_iterator = Const_Iterator;
+
+
     /* Конструкторы/деструктор/присваивания */
-    List(size_type sz = 0);
-    virtual ~List();
-    List(const std::initializer_list<value_type> &t);
-    List(const List& other) noexcept;
-    List(List&& other) noexcept;              // -- конструктор переноса --
-    List& operator=(List&& other) noexcept;   // -- операция перемещения --
-    List& operator=(const List& other);
+    List() = default;
+    List(const std::initializer_list<value_type> &items);
+    List(const List& other) noexcept;          // copy ctor
+    List(List&& other) noexcept;              // move ctor
+    List& operator=(List&& other) noexcept;  // move assign
+    List& operator=(const List& other);     // copy assign
+    ~List();
+
 
     // Итераторы ----------------
+    const_iterator begin() const noexcept;
+    const_iterator end() const noexcept;
+
+    const_iterator cbegin() const noexcept;
+    const_iterator cend() const noexcept;
+
     iterator begin() noexcept;
     iterator end() noexcept;
 
@@ -108,15 +137,23 @@ public:
     // Модификаторы контейнера --
     void push_front (const_reference);        // добавить в начало
     void push_front (value_type &&);          // добавить в начало - временный объект --
-    void pop_front ();                        // удалить первый
+    void pop_front () noexcept;               // удалить первый
     void push_back (const_reference);         // добавить в конец
     void push_back (value_type &&);           // добавить в начало - временный объект --
     void pop_back ();                         // удалить последний
-    iterator insert (iterator, const_reference);  // вставить в позицию итератора
-    iterator insert (iterator, value_type&&);     // вставить временный объект --
-    iterator erase (iterator);                    // удалить указанный (в позиции)
-    void clear ();                                // удалить все
+    void insert (Const_Iterator, const_reference);  // вставить в позицию итератора
+    const_iterator find(const_reference item) const noexcept;
+    iterator find(const_reference item) noexcept;
+    Iterator insert (Iterator, value_type&&);     // вставить временный объект --
+    Iterator erase (const_iterator place) noexcept;                    // удалить указанный (в позиции)
+    void clear () noexcept;                                // удалить все
     void swap (List &t) noexcept;        // обменять с заданным списком
+
+private:
+    // -- структура элемента списка – определить самостоятельно --
+    size_type size_;
+    pointer head_ = nullptr;
+    pointer tail_ = nullptr;
 };
 //--------------------------------------------------------------------------------
 class Subscriber

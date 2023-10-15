@@ -46,6 +46,15 @@ Record &Record::operator=(Record &&rvalue) // move assign
 
 // class Node
 //----------------------------------------------------------------------
+/*
+ * Почему не инициализированы указатели??
+ * они инициализированы сразу в классе - nullptr
+ */
+List::Node::Node(Record item) noexcept
+: data_{ std::move(item) }
+{}
+//----------------------------------------------------------------------
+#if node_old
 List::Node::Node()
 : data_(Record()), prev_(nullptr), next_(nullptr)
 {}
@@ -62,82 +71,111 @@ List::Node::Node(Node *prev, Node *next)
 : prev_(prev), next_(next)
 {}
 //----------------------------------------------------------------------
+#endif
 
-
-
-// class iterator
+// class Const_Iterator
 //----------------------------------------------------------------------
-List::iterator::iterator(value_type *t) noexcept
-: ptr_(t)
+List::Const_Iterator::Const_Iterator(const value_type *ptr) noexcept
+: current_(ptr)
 {}
 //----------------------------------------------------------------------
-List::iterator::iterator() noexcept
-: ptr_(nullptr)
-{}
-//----------------------------------------------------------------------
-bool List::iterator::operator==(const iterator &it) const noexcept
+List::Const_Iterator::reference
+List::Const_Iterator::operator*() const noexcept
 {
-    return ptr_ == it.ptr_;
+    return current_->data_;
 }
 //----------------------------------------------------------------------
-bool List::iterator::operator!=(const iterator &it) const noexcept
+List::Const_Iterator &List::Const_Iterator::operator++() noexcept
 {
-    return ptr_ != it.ptr_;
-}
-//----------------------------------------------------------------------
-List::iterator &List::iterator::operator++() noexcept
-{
-    ++ptr_;
+    current_ = current_->next_;
     return *this;
 }
 //----------------------------------------------------------------------
-List::iterator &List::iterator::operator++(int) noexcept
+List::Const_Iterator &List::Const_Iterator::operator--() noexcept
 {
-    iterator copy(*this);
-    ++ptr_;
-    return copy;
-}
-//----------------------------------------------------------------------
-List::iterator &List::iterator::operator--() noexcept
-{
-    --ptr_;
+    current_ = current_->prev_;
     return *this;
 }
 //----------------------------------------------------------------------
-List::iterator &List::iterator::operator--(int) noexcept
+List::Const_Iterator List::Const_Iterator::operator++(int) noexcept
 {
-    iterator copy{*this};
-    --ptr_;
+    List::Const_Iterator copy = *this;
+    current_ = current_->next_;
     return copy;
 }
 //----------------------------------------------------------------------
-List::reference List::iterator::operator*() const noexcept
+List::Const_Iterator List::Const_Iterator::operator--(int) noexcept
 {
-    return *ptr_;
+    List::Const_Iterator copy = *this;
+    current_ = current_->prev_;
+    return copy;
 }
 //----------------------------------------------------------------------
+bool List::Const_Iterator::operator==(Const_Iterator rhs) const noexcept
+{
+    return current_ == rhs.current_;
+}
+//----------------------------------------------------------------------
+bool List::Const_Iterator::operator!=(Const_Iterator rhs) const noexcept
+{
+    return !(*this == rhs);
+}
+//----------------------------------------------------------------------
+const List::Node *List::Const_Iterator::Get() const noexcept
+{
+    return current_;
+}
+//----------------------------------------------------------------------
+
+
+
+
+// class Iterator
+//----------------------------------------------------------------------
+List::Iterator::Iterator(value_type *ptr) noexcept
+: Const_Iterator(ptr)
+{}
+//----------------------------------------------------------------------
+List::reference List::Iterator::operator*() const noexcept
+{
+    auto &&res = Const_Iterator::operator*();
+    return const_cast<reference>(res);
+}
+//----------------------------------------------------------------------
+List::Iterator &List::Iterator::operator++() noexcept
+{
+    Const_Iterator::operator++();
+    return *this;
+}
+//----------------------------------------------------------------------
+List::Iterator &List::Iterator::operator--() noexcept
+{
+    Const_Iterator::operator--();
+    return *this;
+}
+//----------------------------------------------------------------------
+List::Iterator List::Iterator::operator++(int) noexcept
+{
+    auto res = Const_Iterator::operator++(0);
+    return List::Iterator {const_cast<Node *>(res.Get() ) };
+}
+//----------------------------------------------------------------------
+List::Iterator List::Iterator::operator--(int) noexcept
+{
+    auto res = Const_Iterator::operator--(0);
+    return Iterator {const_cast<Node *>(res.Get() ) };
+}
+//----------------------------------------------------------------------
+
 
 
 
 // class List
 //----------------------------------------------------------------------
-List::List(size_type sz)
-: size_(sz), head_(new Node()), tail_(new Node())
+List::List(const std::initializer_list<value_type> &items)
 {
-    head_->next_ = tail_;
-    tail_->prev_ = head_;
-}
-//----------------------------------------------------------------------
-List::~List()
-{ // пройти по всей цепочке и удалить каждую Node
-
-}
-//----------------------------------------------------------------------
-List::List(const std::initializer_list<value_type> &t)
-: List()
-{
-    for (auto item : t)
-        push_front(item);
+    for (auto &item : items)
+        push_back(item);
 }
 //----------------------------------------------------------------------
 List::List(const List& other) noexcept // copy ctor
@@ -162,14 +200,38 @@ List &List::operator=(const List& other) // copy assign
     tail_ = other.tail_;
 }
 //----------------------------------------------------------------------
+List::~List()
+{ // пройти по всей цепочке и удалить каждую Node
+    clear();
+}
+//----------------------------------------------------------------------
+List::const_iterator List::begin() const noexcept
+{
+    return const_iterator(head_);
+}
+//----------------------------------------------------------------------
+List::const_iterator List::end() const noexcept
+{
+    return const_iterator(tail_);
+}
+List::const_iterator List::cbegin() const noexcept
+{
+    return const_iterator(head_);
+}
+//----------------------------------------------------------------------
+List::const_iterator List::cend() const noexcept
+{
+    return const_iterator(nullptr);
+}
+//----------------------------------------------------------------------
 List::iterator List::begin() noexcept
 {
-    return iterator(head_->next_);
+    return iterator(head_);
 }
 //----------------------------------------------------------------------
 List::iterator List::end() noexcept
 {
-    return iterator(tail_);
+    return iterator(nullptr);
 }
 //----------------------------------------------------------------------
 List::reference List::front()
@@ -194,129 +256,142 @@ List::size_type List::size() const noexcept
 //----------------------------------------------------------------------
 void List::push_front(const_reference rhs)
 { // добавить в начало; Time Complexity: O(1)
-    Node *new_node = new Node(rhs);
+    auto new_node = new Node(rhs);
 
-    new_node->prev_ = head_;
-    new_node->next_ = head_->next_;
-    head_->next_ = new_node;
-    (new_node->next_)->prev_ = new_node->next_;
+    if (head_)
+    {
+        head_->prev_ = new_node;
+        new_node->next_ = head_;
+        head_ = new_node;
+    }
+    else
+        head_ = tail_ = new_node;
 
     ++size_;
 }
 //----------------------------------------------------------------------
 void List::push_front(value_type &&tmp)
 { // добавить в начало - временный объект --
-    Node *new_node = new Node(std::move(tmp.data_)); // создаю новую Node и перемещаю данные rvalue
-
-    new_node->prev_ = head_;
-    new_node->next_ = head_->next_;
-    head_->next_ = new_node;
-    new_node->next_->prev_ = new_node->next_;
+    auto new_node = new Node(std::move(tmp) ); // создаю новую Node и перемещаю данные rvalue
+    if (head_)
+    {
+        head_->prev_ = new_node;
+        new_node->next_ = head_;
+        head_ = new_node;
+    }
+    else
+        head_ = tail_ = new_node;
 
     ++size_;
 }
 //----------------------------------------------------------------------
-void List::pop_front()
-{ // удалить первый
-    if (head_->next_ == tail_) // список пуст
-        return;
-
-    head_->next_ = head_->next_->next_; // ссылка на ноду 2
-    head_->next_->next_ = head_; // ссылка в ноде 2 на начало
-
-    --size_;
+void List::pop_front() noexcept
+{
+    erase(begin() );
 }
 //----------------------------------------------------------------------
 void List::push_back(const_reference obj)
 { // добавить в конец
-    Node *new_nd = new Node(obj.data_); // создан новый объект Node<T> в куче
+    auto new_node = new Node(obj); // создан новый объект Node<T> в куче
 
-    // перекинуть ссылки в элементах
-    new_nd->next_ = tail_; // current_nd
-    new_nd->prev_ = tail_->prev_;
-    tail_->prev_->next_ = new_nd; // prev_nd
-    tail_->prev_ = new_nd; // next_nd
+   if (tail_)
+   {
+       tail_->next_ = new_node;
+       new_node->prev_ = tail_;
+       tail_ = new_node;
+   }
+   else
+       head_ = tail_ = new_node;
 
     ++size_;
 }
 //----------------------------------------------------------------------
 void List::push_back(value_type &&tmp)
 { // добавить в начало - временный объект --
-    Node *new_nd = new Node(std::move(tmp.data_));
-
-    new_nd->next_ = tail_;
-    new_nd->prev_ = tail_->prev_;
-    tail_->prev_->next_ = new_nd;
-    tail_->prev_ = new_nd;
+    auto new_node = new Node(std::move(tmp) );
+    if (tail_)
+    {
+        tail_->next_ = new_node;
+        new_node->prev_ = tail_;
+        tail_ = new_node;
+    }
+    else
+        head_ = tail_ = new_node;
 
     ++size_;
 }
 //----------------------------------------------------------------------
 void List::pop_back()
 { // удалить последний
-    if ( tail_->prev_ == head_) // список пуст
+//    if ( tail_->prev_ == head_) // список пуст
+//        return;
+//
+//    tail_->prev_ = tail_->prev_->prev_;
+//    tail_->prev_->prev_ = tail_;
+//
+//    --size_;
+}
+//----------------------------------------------------------------------
+void List::insert(const_iterator fnd, const_reference obj)
+{ // вставить в позицию итератора
+    auto ptr = const_cast<pointer>(fnd.Get() );
+    if (!ptr)
+    {
+        push_back(std::move(obj));
         return;
+    }
 
-    tail_->prev_ = tail_->prev_->prev_;
-    tail_->prev_->prev_ = tail_;
+    auto new_node = new value_type { std::move(obj) };
+    new_node->next_ = ptr;
+    new_node->prev_ = ptr->prev_;
 
+    if (ptr->prev_)
+        ptr->prev_->next_ = new_node;
+
+    ptr->prev_ = new_node;
+}
+//----------------------------------------------------------------------
+List::const_iterator List::find(const_reference item) const noexcept
+{
+    for (auto it = begin(); it != end(); ++it)
+        if (*it == item)
+            return it;
+    return const_iterator {nullptr};
+}
+//----------------------------------------------------------------------
+List::iterator List::find(const_reference item) noexcept
+{
+    auto it = static_cast<const List &>(*this).find(item);
+    return iterator { const_cast<pointer>(it.Get() ) };
+}
+//----------------------------------------------------------------------
+List::Iterator List::insert(iterator fnd, value_type &&tmp)
+{  // вставить временный объект --
+}
+//----------------------------------------------------------------------
+List::Iterator List::erase(const_iterator place) noexcept
+{ // удалить указанный (в позиции)
+    auto ptr = const_cast<pointer>(place.Get() );
+    if (ptr->prev_)
+        ptr->prev_->next_ = ptr->next_;
+    else
+        head_ = ptr->next_;
+
+    if (ptr->next_)
+        ptr->next_->prev_ = ptr->prev_;
+    else
+        tail_ = ptr->prev_;
+
+    delete ptr;
     --size_;
 }
 //----------------------------------------------------------------------
-List::iterator List::insert(iterator fnd, const_reference obj)
-{ // вставить в позицию итератора
-    for (auto it = begin(); it != end(); it++)
-    {
-        if (it == fnd)
-        {
-            Node *new_obj = new Node(obj);
-            Node *current_nd = new Node(*it);
-            Node *next_nd = it.ptr_;
-            ++it;
-
-            current_nd->next_ = new_obj;
-            next_nd->prev_ = new_obj;
-            new_obj->prev_ = current_nd;
-            new_obj->next_ = next_nd;
-            return it;
-            ++size_;
-        }
-    }
-    return iterator(); // nullptr
-}
-//----------------------------------------------------------------------
-List::iterator List::insert(iterator fnd, value_type &&tmp)
-{  // вставить временный объект --
-    for (auto it = begin(); it != end(); it++) // перебираем в цикле все объекты в контейнере
-    {
-        if (it == fnd) // если искомый объект нашелся
-        {
-            Node *new_obj = new Node(std::move(tmp)); // создать новую ноду и переместить в нее обхект rvalue
-            Node *current_nd = new Node(*it); //
-            Node *next_nd = it.ptr_;
-            ++it;
-
-            current_nd->next_ = new_obj;
-            next_nd->prev_ = new_obj;
-            new_obj->prev_ = current_nd;
-            new_obj->next_ = next_nd;
-            return it;
-            ++size_;
-        }
-    }
-    return iterator(); // nullptr
-}
-//----------------------------------------------------------------------
-List::iterator List::erase(iterator)
-{ // удалить указанный (в позиции)
-
-}
-//----------------------------------------------------------------------
-void List::clear()
-{ // удалить все
+void List::clear() noexcept
+{
+    while(tail_)
+        delete std::exchange(head_, head_->next_);
+    tail_ = nullptr;
     size_ = 0;
-    head_->next_ = tail_;
-    tail_->prev_ = head_;
 }
 //----------------------------------------------------------------------
 void List::swap(List &t) noexcept
