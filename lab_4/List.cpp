@@ -17,9 +17,15 @@ Record::Record(int cypher, int year, std::string pub, double price)
 : cypher_(cypher), year_of_pub(year), publisher(pub), price_(price)
 {}
 //----------------------------------------------------------------------
+Record::Record(std::tuple<int, std::string, double> &&item)
+: cypher_(tool::cypher++), year_of_pub(std::get<0>(item)), publisher(std::get<1>(item)), price_(std::get<2>(item))
+{}
+//----------------------------------------------------------------------
 Record::Record(const Record &lvalue)
 : cypher_(lvalue.cypher_), year_of_pub(lvalue.year_of_pub), publisher(lvalue.publisher), price_(lvalue.price_)
-{}
+{
+
+}
 //----------------------------------------------------------------------
 Record::Record(Record &&rvalue)
 {
@@ -46,32 +52,17 @@ Record &Record::operator=(Record &&rvalue) // move assign
 
 // class Node
 //----------------------------------------------------------------------
-/*
- * Почему не инициализированы указатели??
- * они инициализированы сразу в классе - nullptr
- */
 List::Node::Node(Record item) noexcept
 : data_{ std::move(item) }
 {}
 //----------------------------------------------------------------------
-#if node_old
-List::Node::Node()
-: data_(Record()), prev_(nullptr), next_(nullptr)
+List::Node::Node(std::tuple<int, int, std::string, double> item)
+: data_{ std::move(item) }
 {}
 //----------------------------------------------------------------------
-List::Node::Node(const Record &lvalue, Node *prev, Node *next) // copy ctor
-: data_(lvalue), prev_(prev), next_(next)
-{}
-//----------------------------------------------------------------------
-List::Node::Node(Record &&rvalue, Node *prev, Node *next) // move ctor
-: data_(std::move(rvalue)), prev_(prev), next_(next) // перемещаю данные rvalue, указатели выставляю в nullptr - ими манипулирует List
-{}
-//----------------------------------------------------------------------
-List::Node::Node(Node *prev, Node *next)
-: prev_(prev), next_(next)
-{}
-//----------------------------------------------------------------------
-#endif
+
+
+
 
 // class Const_Iterator
 //----------------------------------------------------------------------
@@ -79,8 +70,7 @@ List::Const_Iterator::Const_Iterator(const value_type *ptr) noexcept
 : current_(ptr)
 {}
 //----------------------------------------------------------------------
-List::Const_Iterator::reference
-List::Const_Iterator::operator*() const noexcept
+List::Const_Iterator::reference List::Const_Iterator::operator*() const noexcept
 {
     return current_->data_;
 }
@@ -178,22 +168,24 @@ List::List(const std::initializer_list<value_type> &items)
         push_back(item);
 }
 //----------------------------------------------------------------------
-List::List(const List& other) noexcept // copy ctor
-: size_(other.size_), head_(other.head_), tail_(other.tail_)
-{}
+List::List(const List &other) noexcept // copy ctor
+: size_(other.size_), head_(nullptr), tail_(nullptr)
+{
+
+}
 //----------------------------------------------------------------------
-List::List(List&& other) noexcept // move ctor
+List::List(List &&other) noexcept // move ctor
 : size_(other.size_), head_(std::move(other.head_)), tail_(std::move(other.tail_))
 {}
 //----------------------------------------------------------------------
-List &List::operator=(List&& other) noexcept // move assign
+List &List::operator=(List &&other) noexcept // move assign
 { // -- операция перемещения --
     size_ = other.size_;
     head_ = std::move(other.head_);
     tail_ = std::move(other.tail_);
 }
 //----------------------------------------------------------------------
-List &List::operator=(const List& other) // copy assign
+List &List::operator=(const List &other) // copy assign
 {
     size_ = other.size_;
     head_ = other.head_;
@@ -356,6 +348,7 @@ List::const_iterator List::find(const_reference item) const noexcept
     for (auto it = begin(); it != end(); ++it)
         if (*it == item)
             return it;
+
     return const_iterator {nullptr};
 }
 //----------------------------------------------------------------------

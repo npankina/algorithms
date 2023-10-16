@@ -17,7 +17,7 @@ namespace tool
 class Record
 {
 public:
-    Record(int cypher = tool::cypher++, int year=2023, std::string pub = "Berkly", double price = 10.);
+    Record(std::tuple<int, std::string, double> &&item);
     Record(const Record &lvalue); // copy ctor
     Record(Record &&rvalue); // move ctor
     Record &operator=(const Record &lvalue); // copy assign
@@ -30,6 +30,11 @@ private:
     double price_;
 };
 //--------------------------------------------------------------------------------
+Record Make_Tuple_for_Record(int year, std::string pub, double price)
+{
+    return Record(std::make_tuple(year, pub, price) );
+}
+//--------------------------------------------------------------------------------
 class List
 {
 private:
@@ -39,10 +44,10 @@ public:
     using value_type = Node;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
-    using pointer = value_type *;
-    using const_pointer = const value_type *;
-    using reference = value_type &;
-    using const_reference = const value_type &;
+    using pointer = Node *;
+    using const_pointer = const Node *;
+    using reference = Node &;
+    using const_reference = const Node &;
 
 private:
     struct Node
@@ -52,6 +57,7 @@ private:
         Record data_;
 
         Node(Record item) noexcept;
+        Node(std::tuple<int, int, std::string, double > item);
     };
 
 public:
@@ -59,7 +65,7 @@ public:
     {
     private:
         friend class List;
-        explicit Const_Iterator(const value_type *ptr) noexcept;
+        explicit Const_Iterator(const Node *ptr) noexcept;
 
     public:
         using difference_type = List::difference_type;
@@ -77,16 +83,16 @@ public:
         bool operator!=(Const_Iterator rhs) const noexcept;
 
     protected:
-        const value_type *Get() const noexcept;
+        const Node *Get() const noexcept;
 
-        const value_type *current_;
+        const Node *current_;
     };  // -- конец const-итератора --
 
     class Iterator : public Const_Iterator
     {
     private:
         friend class List;
-        explicit Iterator(value_type *ptr) noexcept;
+        explicit Iterator(Node *ptr) noexcept;
 
     public:
         using difference_type = List::difference_type;

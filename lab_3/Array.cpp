@@ -98,7 +98,7 @@ Array::Array(const Array &other) // copy ctor
 }
 //--------------------------------------------------
 Array::Array(Array &&other) noexcept // move ctor
-: size_(other.size_), allocated_(other.allocated_), data_(other.data_)
+: size_(other.size_), allocated_(other.allocated_), data_(std::move(other.data_))
 { // производим обнуление старого объекта
     other.data_ = nullptr;
     other.size_ = 0;
