@@ -13,19 +13,13 @@ Subscriber::Subscriber(std::string name, int t_books, int s_cypher)
 
 //class Record
 //----------------------------------------------------------------------
-Record::Record(int cypher, int year, std::string pub, double price)
-: cypher_(cypher), year_of_pub(year), publisher(pub), price_(price)
-{}
-//----------------------------------------------------------------------
 Record::Record(std::tuple<int, std::string, double> &&item)
 : cypher_(tool::cypher++), year_of_pub(std::get<0>(item)), publisher(std::get<1>(item)), price_(std::get<2>(item))
 {}
 //----------------------------------------------------------------------
 Record::Record(const Record &lvalue)
 : cypher_(lvalue.cypher_), year_of_pub(lvalue.year_of_pub), publisher(lvalue.publisher), price_(lvalue.price_)
-{
-
-}
+{}
 //----------------------------------------------------------------------
 Record::Record(Record &&rvalue)
 {
@@ -46,6 +40,11 @@ Record &Record::operator=(const Record &lvalue) // copy assign
 Record &Record::operator=(Record &&rvalue) // move assign
 {}
 //----------------------------------------------------------------------
+bool Record::operator==(const Record &item) const noexcept
+{
+    return cypher_ == item.cypher_;
+}
+//----------------------------------------------------------------------
 
 
 
@@ -56,10 +55,12 @@ List::Node::Node(Record item) noexcept
 : data_{ std::move(item) }
 {}
 //----------------------------------------------------------------------
-List::Node::Node(std::tuple<int, int, std::string, double> item)
-: data_{ std::move(item) }
-{}
+bool List::Node::operator==(const_reference item) const noexcept
+{
+    return data_ == item.data_;
+}
 //----------------------------------------------------------------------
+
 
 
 
@@ -162,6 +163,10 @@ List::Iterator List::Iterator::operator--(int) noexcept
 
 // class List
 //----------------------------------------------------------------------
+List::List()
+: size_(0), head_(nullptr), tail_(nullptr)
+{}
+//----------------------------------------------------------------------
 List::List(const std::initializer_list<value_type> &items)
 {
     for (auto &item : items)
@@ -171,25 +176,43 @@ List::List(const std::initializer_list<value_type> &items)
 List::List(const List &other) noexcept // copy ctor
 : size_(other.size_), head_(nullptr), tail_(nullptr)
 {
-
+    for (auto &item : other)
+        push_back(item);
 }
 //----------------------------------------------------------------------
 List::List(List &&other) noexcept // move ctor
-: size_(other.size_), head_(std::move(other.head_)), tail_(std::move(other.tail_))
-{}
-//----------------------------------------------------------------------
-List &List::operator=(List &&other) noexcept // move assign
-{ // -- операция перемещения --
-    size_ = other.size_;
-    head_ = std::move(other.head_);
-    tail_ = std::move(other.tail_);
+: size_(other.size_), head_(std::move(other.head_) ), tail_(std::move(other.tail_) )
+{ // производим обнуление старого объекта
+    other.size_ = 0;
+    other.head_ = nullptr;
+    other.tail_ = nullptr;
 }
 //----------------------------------------------------------------------
 List &List::operator=(const List &other) // copy assign
 {
-    size_ = other.size_;
-    head_ = other.head_;
-    tail_ = other.tail_;
+    if (this != &other)
+    {
+        size_ = other.size_;
+        head_ = other.head_;
+        tail_ = other.tail_;
+    }
+    return *this;
+}
+//----------------------------------------------------------------------
+List &List::operator=(List &&other) noexcept // move assign
+{
+    if (this != &other)
+    {
+        size_ = other.size_;
+        head_ = std::move(other.head_);
+        tail_ = std::move(other.tail_);
+
+        // производим обнуление старого объекта
+        other.size_ = 0;
+        other.head_ = nullptr;
+        other.tail_ = nullptr;
+    }
+    return *this;
 }
 //----------------------------------------------------------------------
 List::~List()
@@ -315,13 +338,13 @@ void List::push_back(value_type &&tmp)
 //----------------------------------------------------------------------
 void List::pop_back()
 { // удалить последний
-//    if ( tail_->prev_ == head_) // список пуст
-//        return;
-//
-//    tail_->prev_ = tail_->prev_->prev_;
-//    tail_->prev_->prev_ = tail_;
-//
-//    --size_;
+    if ( tail_ == head_) // список пуст
+        return;
+
+    tail_->prev_ = tail_->prev_->prev_;
+    tail_->prev_->prev_ = tail_;
+
+    --size_;
 }
 //----------------------------------------------------------------------
 void List::insert(const_iterator fnd, const_reference obj)
@@ -343,7 +366,7 @@ void List::insert(const_iterator fnd, const_reference obj)
     ptr->prev_ = new_node;
 }
 //----------------------------------------------------------------------
-List::const_iterator List::find(const_reference item) const noexcept
+List::const_iterator List::find(const Node &item) const noexcept
 {
     for (auto it = begin(); it != end(); ++it)
         if (*it == item)
@@ -377,6 +400,9 @@ List::Iterator List::erase(const_iterator place) noexcept
 
     delete ptr;
     --size_;
+
+    // !!!
+//    return ;
 }
 //----------------------------------------------------------------------
 void List::clear() noexcept

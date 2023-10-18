@@ -318,6 +318,7 @@ void Array::pop_front() noexcept
 void Array::insert(size_type index, value_type &&value)
 {// вставить элемент перед index
 //#if for_test
+
     if ((index < 0) or (index > size_))
     {
         std::cout << "Error => Index out of range --- [insert method]" << std::endl;

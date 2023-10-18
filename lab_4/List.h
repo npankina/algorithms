@@ -23,6 +23,8 @@ public:
     Record &operator=(const Record &lvalue); // copy assign
     Record &operator=(Record &&rvalue); // move assign
 
+    bool operator==(const Record &item)  const noexcept;
+
 private:
     int cypher_;
     int year_of_pub;
@@ -40,7 +42,6 @@ class List
 private:
     struct Node;
 public:
-    // -- типы – определить самостоятельно --
     using value_type = Node;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
@@ -57,7 +58,7 @@ private:
         Record data_;
 
         Node(Record item) noexcept;
-        Node(std::tuple<int, int, std::string, double > item);
+        bool operator==(const_reference item)  const noexcept;
     };
 
 public:
@@ -113,12 +114,12 @@ public:
 
 
     /* Конструкторы/деструктор/присваивания */
-    List() = default;
+    List();
     List(const std::initializer_list<value_type> &items);
-    List(const List& other) noexcept;          // copy ctor
-    List(List&& other) noexcept;              // move ctor
-    List& operator=(List&& other) noexcept;  // move assign
-    List& operator=(const List& other);     // copy assign
+    List(const List &other) noexcept;          // copy ctor
+    List(List &&other) noexcept;              // move ctor
+    List &operator=(List && other) noexcept;  // move assign
+    List &operator=(const List &other);     // copy assign
     ~List();
 
 
@@ -148,7 +149,7 @@ public:
     void push_back (value_type &&);           // добавить в начало - временный объект --
     void pop_back ();                         // удалить последний
     void insert (Const_Iterator, const_reference);  // вставить в позицию итератора
-    const_iterator find(const_reference item) const noexcept;
+    const_iterator find(const Node &item) const noexcept;
     iterator find(const_reference item) noexcept;
     Iterator insert (Iterator, value_type&&);     // вставить временный объект --
     Iterator erase (const_iterator place) noexcept;                    // удалить указанный (в позиции)
@@ -158,8 +159,8 @@ public:
 private:
     // -- структура элемента списка – определить самостоятельно --
     size_type size_;
-    pointer head_ = nullptr;
-    pointer tail_ = nullptr;
+    pointer head_;
+    pointer tail_;
 };
 //--------------------------------------------------------------------------------
 class Subscriber
@@ -187,15 +188,6 @@ private:
     int sub_cypher; // шифр пользователя
 };
 //--------------------------------------------------------------------------------
-namespace data_storage
-{
-    Record Lib[tool::lib_arr_size] {
-            Record(10000001, 2019, "Oxford", 12.0),
-            Record(10000002, 2014, "Berkly", 7.50),
-            Record(10000003, 2018, "Norman", 2.35),
-            Record(10000004, 2017, "Sky", 1.19),
-            Record(10000005, 2020, "Sherman", 35.0)
-    };
-}
+
 //--------------------------------------------------------------------------------
 #endif //LAB_4_LIST_H
