@@ -1,54 +1,5 @@
 #include "List.h"
 
-
-// class Subscriber
-//--------------------------------------------------------------------------------
-Subscriber::Subscriber(std::string name, int t_books, int s_cypher)
-: last_name(name), taken_books(t_books), sub_cypher(s_cypher)
-{}
-//--------------------------------------------------------------------------------
-
-
-
-
-//class Record
-//----------------------------------------------------------------------
-Record::Record(std::tuple<int, std::string, double> &&item)
-: cypher_(tool::cypher++), year_of_pub(std::get<0>(item)), publisher(std::get<1>(item)), price_(std::get<2>(item))
-{}
-//----------------------------------------------------------------------
-Record::Record(const Record &lvalue)
-: cypher_(lvalue.cypher_), year_of_pub(lvalue.year_of_pub), publisher(lvalue.publisher), price_(lvalue.price_)
-{}
-//----------------------------------------------------------------------
-Record::Record(Record &&rvalue)
-{
-    cypher_ = std::move(rvalue.cypher_); // ????
-    std::swap(year_of_pub, rvalue.year_of_pub); // ????
-    std::swap(publisher, rvalue.publisher);
-    std::swap(price_, rvalue.price_);
-}
-//----------------------------------------------------------------------
-Record &Record::operator=(const Record &lvalue) // copy assign
-{
-    cypher_ = lvalue.cypher_;
-    year_of_pub = lvalue.year_of_pub;
-    publisher = lvalue.publisher;
-    price_ = lvalue.price_;
-}
-//----------------------------------------------------------------------
-Record &Record::operator=(Record &&rvalue) // move assign
-{}
-//----------------------------------------------------------------------
-bool Record::operator==(const Record &item) const noexcept
-{
-    return cypher_ == item.cypher_;
-}
-//----------------------------------------------------------------------
-
-
-
-
 // class Node
 //----------------------------------------------------------------------
 List::Node::Node(Record item) noexcept
@@ -60,7 +11,6 @@ bool List::Node::operator==(const_reference item) const noexcept
     return data_ == item.data_;
 }
 //----------------------------------------------------------------------
-
 
 
 
@@ -336,7 +286,7 @@ void List::push_back(value_type &&tmp)
     ++size_;
 }
 //----------------------------------------------------------------------
-void List::pop_back()
+void List::pop_back() noexcept
 { // удалить последний
     if ( tail_ == head_) // список пуст
         return;
@@ -364,21 +314,6 @@ void List::insert(const_iterator fnd, const_reference obj)
         ptr->prev_->next_ = new_node;
 
     ptr->prev_ = new_node;
-}
-//----------------------------------------------------------------------
-List::const_iterator List::find(const Node &item) const noexcept
-{
-    for (auto it = begin(); it != end(); ++it)
-        if (*it == item)
-            return it;
-
-    return const_iterator {nullptr};
-}
-//----------------------------------------------------------------------
-List::iterator List::find(const_reference item) noexcept
-{
-    auto it = static_cast<const List &>(*this).find(item);
-    return iterator { const_cast<pointer>(it.Get() ) };
 }
 //----------------------------------------------------------------------
 List::Iterator List::insert(iterator fnd, value_type &&tmp)
@@ -409,12 +344,39 @@ void List::clear() noexcept
 {
     while(tail_)
         delete std::exchange(head_, head_->next_);
-    tail_ = nullptr;
+    tail_ = head_ = nullptr;
     size_ = 0;
 }
 //----------------------------------------------------------------------
 void List::swap(List &t) noexcept
 {
     std::swap(*this, t);
+}
+//----------------------------------------------------------------------
+void List::copy(const List &obj)
+{
+    clear(); // очистить список (освободить память)
+    Node *new_obj = obj.head_;
+
+    while (new_obj != nullptr)
+    {
+        push_back(new_obj->data_);
+        new_obj = new_obj->next_;
+    }
+}
+//----------------------------------------------------------------------
+List::const_iterator List::find(const Node &item) const noexcept
+{
+    for (auto it = begin(); it != end(); ++it)
+        if (*it == item)
+            return it;
+
+    return const_iterator {nullptr};
+}
+//----------------------------------------------------------------------
+List::iterator List::find(const_reference item) noexcept
+{
+    auto it = static_cast<const List &>(*this).find(item);
+    return iterator { const_cast<pointer>(it.Get() ) };
 }
 //----------------------------------------------------------------------

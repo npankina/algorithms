@@ -4,6 +4,10 @@ project(lab_4)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(lab_4 main.cpp List.cpp
+        Subcriber.cpp
+        Subcriber.h
+        Record.cpp
+        Record.h
 )
 
 Include(FetchContent)
@@ -17,6 +21,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 add_executable(tests Test/test.cpp
+        Subcriber.cpp
+        Subcriber.h
 )
 
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
