@@ -1,6 +1,7 @@
 #ifndef LAB_4_SUBCRIBER_H
 #define LAB_4_SUBCRIBER_H
 
+#pragma once
 #include "List.h"
 
 //--------------------------------------------------------------------------------

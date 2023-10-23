@@ -1,6 +1,7 @@
 #ifndef LAB_4_RECORD_H
 #define LAB_4_RECORD_H
 
+#pragma once
 #include <string>
 #include <tuple>
 
@@ -20,6 +21,11 @@ public:
     Record &operator=(Record &&rvalue); // move assign
     bool operator==(const Record &item) const noexcept;
 
+    int Get_cypher() { return cypher_; }
+    int Get_year_of_pub() { return year_of_pub; }
+    std::string Get_publisher() { return publisher; }
+    double Get_price_() { return price_; }
+
 private:
     int cypher_;
     int year_of_pub;
@@ -27,9 +33,9 @@ private:
     double price_;
 };
 //--------------------------------------------------------------------------------
-Record Make_Tuple_for_Record(int year, std::string pub, double price)
-{
-    return Record(std::make_tuple(year, pub, price) );
-}
+//Record Make_Tuple_for_Record(int year, std::string pub, double price)
+//{
+//    return Record(std::make_tuple(year, pub, price) );
+//}
 //--------------------------------------------------------------------------------
 #endif //LAB_4_RECORD_H

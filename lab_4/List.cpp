@@ -3,7 +3,7 @@
 // class Node
 //----------------------------------------------------------------------
 List::Node::Node(Record item) noexcept
-: data_{ std::move(item) }
+: prev_(nullptr), next_(nullptr), data_{ std::move(item) }
 {}
 //----------------------------------------------------------------------
 bool List::Node::operator==(const_reference item) const noexcept
@@ -98,13 +98,13 @@ List::Iterator &List::Iterator::operator--() noexcept
 List::Iterator List::Iterator::operator++(int) noexcept
 {
     auto res = Const_Iterator::operator++(0);
-    return List::Iterator {const_cast<Node *>(res.Get() ) };
+    return List::Iterator {const_cast<pointer>(res.Get() ) };
 }
 //----------------------------------------------------------------------
 List::Iterator List::Iterator::operator--(int) noexcept
 {
     auto res = Const_Iterator::operator--(0);
-    return Iterator {const_cast<Node *>(res.Get() ) };
+    return Iterator {const_cast<pointer>(res.Get() ) };
 }
 //----------------------------------------------------------------------
 
@@ -118,6 +118,7 @@ List::List()
 {}
 //----------------------------------------------------------------------
 List::List(const std::initializer_list<value_type> &items)
+: List()
 {
     for (auto &item : items)
         push_back(item);
@@ -126,25 +127,19 @@ List::List(const std::initializer_list<value_type> &items)
 List::List(const List &other) noexcept // copy ctor
 : size_(other.size_), head_(nullptr), tail_(nullptr)
 {
-    for (auto &item : other)
-        push_back(item);
+    copy(other);
 }
 //----------------------------------------------------------------------
 List::List(List &&other) noexcept // move ctor
 : size_(other.size_), head_(std::move(other.head_) ), tail_(std::move(other.tail_) )
-{ // производим обнуление старого объекта
-    other.size_ = 0;
-    other.head_ = nullptr;
-    other.tail_ = nullptr;
-}
+{}
 //----------------------------------------------------------------------
 List &List::operator=(const List &other) // copy assign
 {
     if (this != &other)
     {
         size_ = other.size_;
-        head_ = other.head_;
-        tail_ = other.tail_;
+        copy(other);
     }
     return *this;
 }
@@ -156,17 +151,12 @@ List &List::operator=(List &&other) noexcept // move assign
         size_ = other.size_;
         head_ = std::move(other.head_);
         tail_ = std::move(other.tail_);
-
-        // производим обнуление старого объекта
-        other.size_ = 0;
-        other.head_ = nullptr;
-        other.tail_ = nullptr;
     }
     return *this;
 }
 //----------------------------------------------------------------------
 List::~List()
-{ // пройти по всей цепочке и удалить каждую Node
+{
     clear();
 }
 //----------------------------------------------------------------------
@@ -222,7 +212,6 @@ List::size_type List::size() const noexcept
 void List::push_front(const_reference rhs)
 { // добавить в начало; Time Complexity: O(1)
     auto new_node = new Node(rhs);
-
     if (head_)
     {
         head_->prev_ = new_node;
@@ -280,7 +269,7 @@ void List::push_back(value_type &&tmp)
         new_node->prev_ = tail_;
         tail_ = new_node;
     }
-    else
+    else // список пуст
         head_ = tail_ = new_node;
 
     ++size_;
@@ -291,22 +280,44 @@ void List::pop_back() noexcept
     if ( tail_ == head_) // список пуст
         return;
 
-    tail_->prev_ = tail_->prev_->prev_;
-    tail_->prev_->prev_ = tail_;
+    tail_->prev_ = nullptr;
+    tail_ = tail_->prev_;
 
     --size_;
 }
 //----------------------------------------------------------------------
 void List::insert(const_iterator fnd, const_reference obj)
 { // вставить в позицию итератора
-    auto ptr = const_cast<pointer>(fnd.Get() );
-    if (!ptr)
+    auto ptr = const_cast<pointer>(fnd.Get() ); // Node *
+    if (!ptr) // вставка в конец
     {
-        push_back(std::move(obj));
+        push_back(obj);
         return;
     }
 
-    auto new_node = new value_type { std::move(obj) };
+    auto new_node = new value_type (obj);
+    new_node->next_ = ptr; // т.к. вставляем до итератора
+    new_node->prev_ = ptr->prev_;
+
+    if (ptr->prev_) // вставка в голову списка
+        ptr->prev_->next_ = new_node;
+
+    ptr->prev_ = new_node;
+
+    ++size_;
+}
+//----------------------------------------------------------------------
+void List::insert(iterator fnd, value_type &&tmp)
+{  // вставить временный объект --
+    auto ptr = const_cast<pointer>(fnd.Get() ); // снятие константности и разыменование указателя
+
+    if (!ptr)
+    {
+        push_back(std::move(tmp) );
+        return;
+    }
+
+    auto new_node = new value_type (std::move(tmp) );
     new_node->next_ = ptr;
     new_node->prev_ = ptr->prev_;
 
@@ -314,50 +325,59 @@ void List::insert(const_iterator fnd, const_reference obj)
         ptr->prev_->next_ = new_node;
 
     ptr->prev_ = new_node;
+    ++size_;
 }
 //----------------------------------------------------------------------
-List::Iterator List::insert(iterator fnd, value_type &&tmp)
-{  // вставить временный объект --
-}
-//----------------------------------------------------------------------
-List::Iterator List::erase(const_iterator place) noexcept
-{ // удалить указанный (в позиции)
-    auto ptr = const_cast<pointer>(place.Get() );
-    if (ptr->prev_)
+void List::erase(const_iterator place) noexcept
+{ // удалить указанный (в позиции) элемент
+    auto ptr = const_cast<pointer>(place.Get());
+
+    if (ptr->prev_) // не голова списка
         ptr->prev_->next_ = ptr->next_;
     else
         head_ = ptr->next_;
 
-    if (ptr->next_)
+    if (ptr->next_) // не хвост списка
         ptr->next_->prev_ = ptr->prev_;
     else
         tail_ = ptr->prev_;
 
     delete ptr;
     --size_;
-
-    // !!!
-//    return ;
 }
 //----------------------------------------------------------------------
 void List::clear() noexcept
-{
-    while(tail_)
+{ // пройти по всей цепочке и удалить каждую Node
+    while (head_)
         delete std::exchange(head_, head_->next_);
-    tail_ = head_ = nullptr;
+    head_ = tail_ = nullptr;
+    size_ = 0;
+}
+//----------------------------------------------------------------------
+void List::clear(const_iterator it) noexcept
+{
+    auto ptr = const_cast<pointer>(it.Get() );
+
+    while (ptr) // не хвост списка
+        delete std::exchange(ptr, ptr->next_);
+    head_ = tail_ = nullptr;
     size_ = 0;
 }
 //----------------------------------------------------------------------
 void List::swap(List &t) noexcept
-{
-    std::swap(*this, t);
+{ // обменять с заданным списком
+    std::swap(size_, t.size_);
+    std::swap(head_, t.head_);
+    std::swap(tail_, t.tail_);
 }
 //----------------------------------------------------------------------
 void List::copy(const List &obj)
 {
-    clear(); // очистить список (освободить память)
-    Node *new_obj = obj.head_;
+    // 1. очистить список (освободить память)
+    clear();
 
+    // 2. переписать все node в текущий список (this)
+    Node *new_obj = obj.head_;
     while (new_obj != nullptr)
     {
         push_back(new_obj->data_);
@@ -378,5 +398,36 @@ List::iterator List::find(const_reference item) noexcept
 {
     auto it = static_cast<const List &>(*this).find(item);
     return iterator { const_cast<pointer>(it.Get() ) };
+}
+//----------------------------------------------------------------------
+
+
+
+
+//----------------------------------------------------------------------
+void swap(List &a, List &b) noexcept
+{
+    List temp = a; // вызовется констркутор копирования
+
+    a.clear();
+    a = std::move(b);
+
+    b.clear();
+    b = std::move(temp);
+}
+//----------------------------------------------------------------------
+std::ostream &operator<<(std::ostream &os, List &items)
+{
+    int i = 0;
+    for (auto item : items)
+    {
+        os << "#" << ++i << '\n';
+        os << "Catalog ID: " << item.data_.Get_cypher() << "\n";
+        os << "Year of publishing: " << item.data_.Get_year_of_pub() << "\n";
+        os << "Publisher: " << item.data_.Get_publisher() << "\n";
+        os << "Price: " << item.data_.Get_price_() << "\n\n";
+    }
+
+    return os;
 }
 //----------------------------------------------------------------------

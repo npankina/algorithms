@@ -1,6 +1,7 @@
 #ifndef LAB_4_LIST_H
 #define LAB_4_LIST_H
 
+#pragma once
 #include <iostream>
 #include <iterator>
 #include "Record.h"
@@ -22,8 +23,8 @@ public:
 private:
     struct Node
     { // вложенный т.к. не имеет смысла без класса контейнера, более того - ни один из методов класса-контейнера не возвращает тип Node
-        Node *prev_ = nullptr;
-        Node *next_ = nullptr;
+        Node *prev_;
+        Node *next_;
         Record data_;
 
         Node(Record item) noexcept;
@@ -81,7 +82,6 @@ public:
     using iterator = Iterator;
     using const_iterator = Const_Iterator;
 
-
     /* Конструкторы/деструктор/присваивания */
     List();
     List(const std::initializer_list<value_type> &items);
@@ -102,32 +102,37 @@ public:
     reference front();
     reference back();
     // Размеры ------------------
-    bool empty () const noexcept;
+    bool empty() const noexcept;
     size_type size() const noexcept;
     // Модификаторы контейнера --
-    void push_front (const_reference obj);        // добавить в начало
-    void push_front (value_type &&robj);          // добавить в начало - временный объект --
-    void pop_front () noexcept;               // удалить первый
-    void push_back (const_reference);         // добавить в конец
-    void push_back (value_type &&);           // добавить в начало - временный объект --
-    void pop_back () noexcept;                         // удалить последний
-    void insert (Const_Iterator, const_reference);  // вставить в позицию итератора
-    iterator insert (Iterator, value_type&&);     // вставить временный объект --
-    iterator erase (const_iterator place) noexcept;                    // удалить указанный (в позиции)
-    void swap (List &t) noexcept;        // обменять с заданным списком
+    void push_front(const_reference obj);        // добавить в начало
+    void push_front(value_type &&robj);          // добавить в начало - временный объект --
+    void pop_front() noexcept;               // удалить первый
+    void push_back(const_reference);         // добавить в конец
+    void push_back(value_type &&);           // добавить в начало - временный объект --
+    void pop_back() noexcept;                         // удалить последний
+    void insert(Const_Iterator, const_reference);  // вставить в позицию итератора
+    void insert(Iterator, value_type&&);     // вставить временный объект --
+    void erase(const_iterator place) noexcept;                    // удалить указанный (в позиции)
+    void swap(List &t) noexcept;        // обменять с заданным списком
+    void clear() noexcept;                                // удалить все
+    void clear(const_iterator it) noexcept;
 
+    friend std::ostream &operator<<(std::ostream &os, List &items);
 
 private:
     void copy(const List &obj);
-    void clear () noexcept;                                // удалить все
     iterator find(const_reference item) noexcept;
     const_iterator find(const Node &item) const noexcept;
-
 
     // -- структура элемента списка – определить самостоятельно --
     size_type size_;
     pointer head_;
     pointer tail_;
 };
+//--------------------------------------------------------------------------------
+void swap(List &a, List &b) noexcept;
+//--------------------------------------------------------------------------------
+void print();
 //--------------------------------------------------------------------------------
 #endif //LAB_4_LIST_H
