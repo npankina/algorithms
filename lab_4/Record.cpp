@@ -3,7 +3,7 @@
 //class Record
 //----------------------------------------------------------------------
 Record::Record(std::tuple<int, std::string, double> &&item)
-: cypher_(tool::cypher++), year_of_pub(std::get<0>(item)), publisher(std::get<1>(item)), price_(std::get<2>(item))
+: cypher_(tool::cypher++), year_of_pub(std::get<int>(item)), publisher(std::get<std::string>(item)), price_(std::get<double>(item))
 {}
 //----------------------------------------------------------------------
 Record::Record(const Record &lvalue) // copy ctor

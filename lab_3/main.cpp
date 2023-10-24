@@ -13,7 +13,7 @@ bool interp_search(std::vector<int> &obj, int target);
 
 int main()
 {
-    const size_t ARRAY_SIZE = 1000000;//
+    const size_t ARRAY_SIZE = 1000000;
     std::cout << "Размер контейнера = " << ARRAY_SIZE << '\n' << std::endl;
 
     // 0. Заполнить контейнер случайными данными.

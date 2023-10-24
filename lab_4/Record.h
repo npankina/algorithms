@@ -32,10 +32,4 @@ private:
     std::string publisher;
     double price_;
 };
-//--------------------------------------------------------------------------------
-//Record Make_Tuple_for_Record(int year, std::string pub, double price)
-//{
-//    return Record(std::make_tuple(year, pub, price) );
-//}
-//--------------------------------------------------------------------------------
 #endif //LAB_4_RECORD_H

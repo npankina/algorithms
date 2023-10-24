@@ -3,7 +3,7 @@
 // class Node
 //----------------------------------------------------------------------
 List::Node::Node(Record item) noexcept
-: prev_(nullptr), next_(nullptr), data_{ std::move(item) }
+: prev_(nullptr), next_(nullptr), data_{ Record(item) }
 {}
 //----------------------------------------------------------------------
 bool List::Node::operator==(const_reference item) const noexcept
@@ -113,8 +113,8 @@ List::Iterator List::Iterator::operator--(int) noexcept
 
 // class List
 //----------------------------------------------------------------------
-List::List()
-: size_(0), head_(nullptr), tail_(nullptr)
+List::List(int size)
+: size_(size), head_(nullptr), tail_(nullptr)
 {}
 //----------------------------------------------------------------------
 List::List(const std::initializer_list<value_type> &items)
@@ -400,7 +400,21 @@ List::iterator List::find(const_reference item) noexcept
     return iterator { const_cast<pointer>(it.Get() ) };
 }
 //----------------------------------------------------------------------
+std::ostream &operator<<(std::ostream &os, List &list)
+{
+    int i = 0;
+    for (auto &item : list)
+    {
+        os << "#" << ++i << '\n';
+        os << "Catalog ID: " << item.data_.Get_cypher() << "\n";
+        os << "Year of publishing: " << item.data_.Get_year_of_pub() << "\n";
+        os << "Publisher: " << item.data_.Get_publisher() << "\n";
+        os << "Price: " << item.data_.Get_price_() << "\n\n";
+    }
 
+    return os;
+}
+//----------------------------------------------------------------------
 
 
 
@@ -414,20 +428,5 @@ void swap(List &a, List &b) noexcept
 
     b.clear();
     b = std::move(temp);
-}
-//----------------------------------------------------------------------
-std::ostream &operator<<(std::ostream &os, List &items)
-{
-    int i = 0;
-    for (auto item : items)
-    {
-        os << "#" << ++i << '\n';
-        os << "Catalog ID: " << item.data_.Get_cypher() << "\n";
-        os << "Year of publishing: " << item.data_.Get_year_of_pub() << "\n";
-        os << "Publisher: " << item.data_.Get_publisher() << "\n";
-        os << "Price: " << item.data_.Get_price_() << "\n\n";
-    }
-
-    return os;
 }
 //----------------------------------------------------------------------

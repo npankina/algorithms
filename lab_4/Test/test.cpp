@@ -49,7 +49,7 @@ TEST_CASE( "push_front() + pop_front()", "[push_front() && pop_front()]" )
     REQUIRE( A.size() == 1);
 }
 //--------------------------------------------------------------------------------
-TEST_CASE( "push_back() + pop_back() + erase(it)", "[push_fback() && pop_back() && erase(it)]" )
+TEST_CASE( "push_back() + pop_back()", "[push_fback() && pop_back()]" )
 {
     List A;
     REQUIRE( A.empty() == true);
@@ -97,5 +97,7 @@ TEST_CASE( "swap()", "[swap()]" )
     A.swap(B);
     REQUIRE( A.size() == 4 );
     REQUIRE( B.size() == 2);
+
+//    std::cout << A << std::endl;
 }
 //--------------------------------------------------------------------------------
