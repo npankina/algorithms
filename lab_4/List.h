@@ -117,7 +117,9 @@ public:
     void clear() noexcept;                                // удалить все
     void clear(const_iterator it) noexcept; // удалить все начиная c позиции итератора
 
-    friend std::ostream &operator<<(std::ostream &os, List &items);
+//    friend std::ostream &operator<<(std::ostream &os, List &items);
+    void print() const;
+
 private:
     void copy(const List &obj);
     iterator find(const_reference item) noexcept;

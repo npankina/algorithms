@@ -7,18 +7,18 @@ Record::Record(std::tuple<int, std::string, double> &&item)
 {}
 //----------------------------------------------------------------------
 Record::Record(const Record &lvalue) // copy ctor
-: cypher_(tool::cypher++), year_of_pub(lvalue.year_of_pub), publisher(lvalue.publisher), price_(lvalue.price_)
+: cypher_(lvalue.cypher_), year_of_pub(lvalue.year_of_pub), publisher(lvalue.publisher), price_(lvalue.price_)
 {}
 //----------------------------------------------------------------------
 Record::Record(Record &&rvalue) // move ctor
-: cypher_(tool::cypher++), year_of_pub(rvalue.year_of_pub), publisher(rvalue.publisher), price_(rvalue.price_)
+: cypher_(rvalue.cypher_), year_of_pub(rvalue.year_of_pub), publisher(rvalue.publisher), price_(rvalue.price_)
 {}
 //----------------------------------------------------------------------
 Record &Record::operator=(const Record &lvalue) // copy assign
 {
     if (this != &lvalue)
     {
-        cypher_ = tool::cypher++;
+        cypher_ = lvalue.cypher_;
         year_of_pub = lvalue.year_of_pub;
         publisher = lvalue.publisher;
         price_ = lvalue.price_;
@@ -31,7 +31,7 @@ Record &Record::operator=(Record &&rvalue) // move assign
 {
     if (this != &rvalue)
     {
-        cypher_ = tool::cypher++;
+        std::swap(cypher_, rvalue.cypher_);
         std::swap(year_of_pub, rvalue.year_of_pub);
         std::swap(publisher, rvalue.publisher);
         std::swap(price_, rvalue.price_);

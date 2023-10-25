@@ -3,7 +3,7 @@
 // class Node
 //----------------------------------------------------------------------
 List::Node::Node(Record item) noexcept
-: prev_(nullptr), next_(nullptr), data_{ Record(item) }
+: prev_(nullptr), next_(nullptr), data_{ std::move(item) }
 {}
 //----------------------------------------------------------------------
 bool List::Node::operator==(const_reference item) const noexcept
@@ -400,6 +400,20 @@ List::iterator List::find(const_reference item) noexcept
     return iterator { const_cast<pointer>(it.Get() ) };
 }
 //----------------------------------------------------------------------
+void List::print() const
+{
+    int i = 0;
+    for (auto &item : *this)
+    {
+        std::cout << "#" << ++i << '\n';
+        std::cout << "Catalog ID: " << item.data_.Get_cypher() << "\n";
+        std::cout << "Year of publishing: " << item.data_.Get_year_of_pub() << "\n";
+        std::cout << "Publisher: " << item.data_.Get_publisher() << "\n";
+        std::cout << "Price: " << item.data_.Get_price_() << "\n\n";
+    }
+}
+//----------------------------------------------------------------------
+#if friend_print
 std::ostream &operator<<(std::ostream &os, List &list)
 {
     int i = 0;
@@ -414,6 +428,7 @@ std::ostream &operator<<(std::ostream &os, List &list)
 
     return os;
 }
+#endif
 //----------------------------------------------------------------------
 
 

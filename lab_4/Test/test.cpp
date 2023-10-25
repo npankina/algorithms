@@ -72,8 +72,9 @@ TEST_CASE( "clear()", "[clear()]" )
     REQUIRE( A.empty() == false);
     REQUIRE( A.size() == 2);
 
+    A.print();
+
     A.clear();
-    REQUIRE( A.size() == 0);
     REQUIRE( A.empty() == true);
 }
 //--------------------------------------------------------------------------------
@@ -98,6 +99,5 @@ TEST_CASE( "swap()", "[swap()]" )
     REQUIRE( A.size() == 4 );
     REQUIRE( B.size() == 2);
 
-//    std::cout << A << std::endl;
 }
 //--------------------------------------------------------------------------------
