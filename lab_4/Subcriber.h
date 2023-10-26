@@ -13,18 +13,17 @@ namespace tool
 class Subscriber
 {
 public:
-    explicit Subscriber(std::string name = "", int t_books = 0, int s_cypher = tool::subscribers_cypher++);
+    Subscriber(std::pair<std::string, int> item);
+    Subscriber(const Subscriber &lvalue); // copy ctor
+    Subscriber(Subscriber &&rvalue); // move ctor
+    Subscriber &operator=(const Subscriber &lvalue); // copy assign
+    Subscriber &operator=(Subscriber &&rvalue); // move assign
 
-//    Subscriber(const Subscriber &lvalue); // copy ctor
-//    Subscriber(Subscriber &&rvalue); // move ctor
-//    Subscriber &operator=(const Subscriber &lvalue); // copy assign
-//    Subscriber &operator=(Subscriber &&rvalue); // move assign
-
-    void add_book();
-    void replace_book();
-    void delete_book();
-    void search_by_book_cypher();
-    void search_by_price();
+    void add_book(Record &&item);
+    void replace_book(Record &find, Record &&replace);
+    void delete_book(Record &item);
+    bool search_by_cypher(int fnd);
+    bool search_by_price(double fnd);
 
 private:
     static const int size = 10;

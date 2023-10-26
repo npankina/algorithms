@@ -2,6 +2,7 @@
 #include "catch_amalgamated.cpp"
 
 #include "../List.h"
+#include "../Subcriber.h"
 
 //--------------------------------------------------------------------------------
 TEST_CASE( "default ctor", "[default ctor]" )

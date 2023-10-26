@@ -98,6 +98,8 @@ public:
     const_iterator cend() const noexcept;
     iterator begin() noexcept;
     iterator end() noexcept;
+    iterator find(const_reference item) noexcept;
+    const_iterator find(const Node &item) const noexcept;
     // Доступ к элементам -------
     reference front();
     reference back();
@@ -122,8 +124,7 @@ public:
 
 private:
     void copy(const List &obj);
-    iterator find(const_reference item) noexcept;
-    const_iterator find(const Node &item) const noexcept;
+
 
     // -- структура элемента списка – определить самостоятельно --
     size_type size_;
@@ -132,5 +133,7 @@ private:
 };
 //--------------------------------------------------------------------------------
 void swap(List &a, List &b) noexcept;
+//--------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------
 #endif //LAB_4_LIST_H
