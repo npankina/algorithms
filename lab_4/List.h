@@ -2,7 +2,6 @@
 #define LAB_4_LIST_H
 
 #pragma once
-#include <iostream>
 #include <iterator>
 #include "Record.h"
 
@@ -42,6 +41,7 @@ public:
         using reference = List::const_reference;
         using iterator_category = std::bidirectional_iterator_tag;
 
+        Const_Iterator() : current_(nullptr) {};
         reference operator*() const noexcept;
         Const_Iterator &operator++() noexcept;
         Const_Iterator &operator--() noexcept;
@@ -69,6 +69,7 @@ public:
         using reference = List::reference;
         using iterator_category = std::bidirectional_iterator_tag;
 
+        Iterator() : Const_Iterator() {};
         reference operator*() const noexcept;
         Iterator &operator++() noexcept;
         Iterator &operator--() noexcept;
@@ -117,8 +118,7 @@ public:
     void clear() noexcept;                                // удалить все
     void clear(const_iterator it) noexcept; // удалить все начиная c позиции итератора
 
-//    friend std::ostream &operator<<(std::ostream &os, List &items);
-    void print() const;
+    friend std::ostream &operator<<(std::ostream &os, List &items);
 
 private:
     void copy(const List &obj);

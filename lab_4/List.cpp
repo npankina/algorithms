@@ -125,7 +125,7 @@ List::List(const std::initializer_list<value_type> &items)
 }
 //----------------------------------------------------------------------
 List::List(const List &other) noexcept // copy ctor
-: size_(other.size_), head_(nullptr), tail_(nullptr)
+: List(0)
 {
     copy(other);
 }
@@ -167,7 +167,7 @@ List::const_iterator List::begin() const noexcept
 //----------------------------------------------------------------------
 List::const_iterator List::end() const noexcept
 {
-    return const_iterator(tail_);
+    return const_iterator(nullptr);
 }
 List::const_iterator List::cbegin() const noexcept
 {
@@ -357,11 +357,8 @@ void List::clear() noexcept
 void List::clear(const_iterator it) noexcept
 {
     auto ptr = const_cast<pointer>(it.Get() );
-
     while (ptr) // не хвост списка
         delete std::exchange(ptr, ptr->next_);
-    head_ = tail_ = nullptr;
-    size_ = 0;
 }
 //----------------------------------------------------------------------
 void List::swap(List &t) noexcept
@@ -373,15 +370,38 @@ void List::swap(List &t) noexcept
 //----------------------------------------------------------------------
 void List::copy(const List &obj)
 {
-    // 1. очистить список (освободить память)
-    clear();
-
-    // 2. переписать все node в текущий список (this)
     Node *new_obj = obj.head_;
-    while (new_obj != nullptr)
+    iterator it = begin();
+
+    // если A < B копировать до A.size(); создать новые элементы в А после позиции A.size()
+    if (size() < obj.size() )
     {
-        push_back(new_obj->data_);
-        new_obj = new_obj->next_;
+        while (it != end())
+        {
+            *it = new_obj->data_;
+            new_obj = new_obj->next_;
+            ++it;
+        }
+        while (new_obj != nullptr)
+        {
+            push_back(new_obj->data_);
+            new_obj = new_obj->next_;
+        }
+    }
+    else
+    {
+        while (new_obj != nullptr)
+        {
+            *it = new_obj->data_;
+            new_obj = new_obj->next_;
+            ++it;
+        }
+
+        if (size() > obj.size() )
+        {
+            tail_ = &(*it);
+            clear(it); // удаляем элементы с новой позиции хвоста А
+        }
     }
 }
 //----------------------------------------------------------------------
@@ -400,35 +420,20 @@ List::iterator List::find(const_reference item) noexcept
     return iterator { const_cast<pointer>(it.Get() ) };
 }
 //----------------------------------------------------------------------
-void List::print() const
-{
-    int i = 0;
-    for (auto &item : *this)
-    {
-        std::cout << "#" << ++i << '\n';
-        std::cout << "Catalog ID: " << item.data_.Get_cypher() << "\n";
-        std::cout << "Year of publishing: " << item.data_.Get_year_of_pub() << "\n";
-        std::cout << "Publisher: " << item.data_.Get_publisher() << "\n";
-        std::cout << "Price: " << item.data_.Get_price_() << "\n\n";
-    }
-}
-//----------------------------------------------------------------------
-#if friend_print
 std::ostream &operator<<(std::ostream &os, List &list)
 {
     int i = 0;
-    for (auto &item : list)
+    for (auto it = list.begin(); it != list.end(); it++)
     {
         os << "#" << ++i << '\n';
-        os << "Catalog ID: " << item.data_.Get_cypher() << "\n";
-        os << "Year of publishing: " << item.data_.Get_year_of_pub() << "\n";
-        os << "Publisher: " << item.data_.Get_publisher() << "\n";
-        os << "Price: " << item.data_.Get_price_() << "\n\n";
+        os << "Catalog ID: " << (*it).data_.Get_cypher() << "\n";
+        os << "Year of publishing: " << (*it).data_.Get_year_of_pub() << "\n";
+        os << "Publisher: " << (*it).data_.Get_publisher() << "\n";
+        os << "Price: " << (*it).data_.Get_price_() << "\n\n";
     }
 
     return os;
 }
-#endif
 //----------------------------------------------------------------------
 
 

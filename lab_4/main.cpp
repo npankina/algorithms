@@ -36,6 +36,8 @@ std::ostream& operator<<(std::ostream &s, const std::chrono::duration<V,R> &d)
 
 
 int main() {
+    setlocale(LC_ALL, "UTF-8");
+
     std::cout << "Лабораторная работа #4. Двусвязный список" << std::endl;
 
     const size_t LIST_SIZE = 5;
@@ -43,19 +45,33 @@ int main() {
 
     // 0. Заполнить контейнер случайными данными.
     //--------------------------------------------------
-    List A(LIST_SIZE);
-    auto start = std::chrono::steady_clock::now();
-    std::generate(A.begin(), A.end(), fill_list_cont);
-    auto finish = std::chrono::steady_clock::now();
-    auto t = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+    List A;
+    A.push_back(Record{std::make_tuple(2020, "Berkly", 12.25)});
+    A.push_back(Record{std::make_tuple(2021, "AAA", 1.99)});
+    A.push_back(Record{std::make_tuple(2022, "FFF", 3.80)});
 
-    std::cout << "Алгоритм `Заполнения контейнера случайными данными` выполнен за ";
-    std::chrono::minutes min = duration_cast<std::chrono::minutes>(t % std::chrono::hours(1));
-    std::chrono::seconds ss = duration_cast<std::chrono::seconds>(t % std::chrono::minutes(1));
-    std::chrono::milliseconds ms = duration_cast<std::chrono::milliseconds>(t % std::chrono::seconds (1));
-    std::cout << min << " min " << ss << " sec " << ms << " ms" << std::endl;
+    std::cout << A << std::endl;
 
-    std::cout << A.size() << std::endl;
+//    auto start = std::chrono::steady_clock::now();
+//    std::generate(A.begin(), A.end(), fill_list_cont);
+//    auto finish = std::chrono::steady_clock::now();
+//    auto t = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+//
+//    std::cout << "Алгоритм `Заполнения контейнера случайными данными` выполнен за ";
+//    std::chrono::minutes min = duration_cast<std::chrono::minutes>(t % std::chrono::hours(1));
+//    std::chrono::seconds ss = duration_cast<std::chrono::seconds>(t % std::chrono::minutes(1));
+//    std::chrono::milliseconds ms = duration_cast<std::chrono::milliseconds>(t % std::chrono::seconds (1));
+//    std::cout << min << " min " << ss << " sec " << ms << " ms" << std::endl;
+
+//    std::cout << A.size() << std::endl;
+
+
+    std::string s = "Hello, world!!";
+    std::string s2 = "Привет, мир!!";
+
+    std::cout << s << std::endl;
+    std::cout << s2 << std::endl;
+
 
     return 0;
 }

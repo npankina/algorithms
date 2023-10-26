@@ -72,7 +72,7 @@ TEST_CASE( "clear()", "[clear()]" )
     REQUIRE( A.empty() == false);
     REQUIRE( A.size() == 2);
 
-    A.print();
+//    A.Print();
 
     A.clear();
     REQUIRE( A.empty() == true);
@@ -95,9 +95,23 @@ TEST_CASE( "swap()", "[swap()]" )
     REQUIRE( B.size() == 4);
     REQUIRE( (A.size() < B.size()) == true);
 
+#if print
+    std::cout << "Before SWAP \n";
+    std::cout << "List A\n";
+    std::cout << A << std::endl;
+    std::cout << "List B\n";
+    std::cout << B << std::endl;
+#endif
     A.swap(B);
     REQUIRE( A.size() == 4 );
     REQUIRE( B.size() == 2);
 
+#if print
+    std::cout << "\nAfter SWAP \n";
+    std::cout << "List A\n";
+    std::cout << A << std::endl;
+    std::cout << "List B\n";
+    std::cout << B << std::endl;
+#endif
 }
 //--------------------------------------------------------------------------------

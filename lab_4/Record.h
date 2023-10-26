@@ -2,6 +2,7 @@
 #define LAB_4_RECORD_H
 
 #pragma once
+#include <iostream>
 #include <string>
 #include <tuple>
 
