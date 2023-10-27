@@ -2,8 +2,8 @@
 
 // class Subscriber
 //--------------------------------------------------------------------------------
-Subscriber::Subscriber(std::pair<std::string, int> item)
-: last_name(item.first), taken_books(item.second), sub_cypher(tool::subscribers_cypher++), lib_data(0)
+Subscriber::Subscriber(std::string name)
+: last_name(name), taken_books(0), sub_cypher(tool::subscribers_cypher++), lib_data(0)
 {}
 //--------------------------------------------------------------------------------
 Subscriber::Subscriber(const Subscriber &lhs)
@@ -42,45 +42,68 @@ Subscriber &Subscriber::operator=(Subscriber &&rhs)
     return *this;
 }
 //--------------------------------------------------------------------------------
+void Subscriber::Get_Lib_Data()
+{
+    std::cout << lib_data << std::endl;
+}
+//--------------------------------------------------------------------------------
+void Subscriber::Set_Name(std::string name)
+{
+    last_name = name;
+}
+//--------------------------------------------------------------------------------
 void Subscriber::add_book(Record &&item)
 {
     lib_data.push_back(item);
+    ++taken_books;
 }
 //--------------------------------------------------------------------------------
-void Subscriber::replace_book(Record &fnd, Record &&replace)
+int Subscriber::Get_First_Element_ID()
 {
-    List::iterator it = lib_data.find(fnd);
-    lib_data.insert(it, replace); // вставить перед искомым элементом
-    lib_data.erase(++it); // передвинуть итератор и удалить старый элемент
+    return (*lib_data.begin() ).data_.Get_cypher();
 }
 //--------------------------------------------------------------------------------
-void Subscriber::delete_book(Record &item)
+bool Subscriber::replace_book(const Record fnd, Record &&replace)
 {
-    List::iterator it = lib_data.find(item);
-    lib_data.erase(it);
-}
-//--------------------------------------------------------------------------------
-bool Subscriber::search_by_cypher(int fnd)
-{
-    List::iterator it = lib_data.begin();
-    while (it != lib_data.end() )
+    for (auto it = lib_data.begin(); it != lib_data.end(); ++it)
     {
-        if ((*it).data_.Get_cypher() == fnd)
+        if ( (*it).data_.Get_publisher() == fnd.Get_publisher() )
+        {
+            lib_data.erase(it); // удалить старый элемент
+            lib_data.push_front(replace);
             return true;
-        it++;
+        }
     }
+    return false;
+}
+//--------------------------------------------------------------------------------
+bool Subscriber::delete_book(const Record item)
+{
+    for (auto it = lib_data.begin(); it != lib_data.end(); ++it)
+    {
+        if ( (*it).data_.Get_publisher() == item.Get_publisher() )
+        {
+            lib_data.erase(it);
+            --taken_books;
+            return true;
+        }
+    }
+    return false;
+}
+//--------------------------------------------------------------------------------
+bool Subscriber::search_by_cypher(int item)
+{
+    for (auto it = lib_data.begin(); it != lib_data.end(); ++it)
+        if ( (*it).data_.Get_cypher() == item)
+            return true;
     return false;
 }
 //--------------------------------------------------------------------------------
 bool Subscriber::search_by_price(double fnd)
 {
-    List::iterator it = lib_data.begin();
-    while (it != lib_data.end() )
-    {
-        if ((*it).data_.Get_price_() == fnd)
+    for (auto it = lib_data.begin(); it != lib_data.end(); ++it)
+        if ( (*it).data_.Get_price_() == fnd)
             return true;
-        it++;
-    }
     return false;
 }
 //--------------------------------------------------------------------------------

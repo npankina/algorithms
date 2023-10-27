@@ -13,15 +13,21 @@ namespace tool
 class Subscriber
 {
 public:
-    Subscriber(std::pair<std::string, int> item);
+    Subscriber(std::string name = "");
     Subscriber(const Subscriber &lvalue); // copy ctor
     Subscriber(Subscriber &&rvalue); // move ctor
     Subscriber &operator=(const Subscriber &lvalue); // copy assign
     Subscriber &operator=(Subscriber &&rvalue); // move assign
 
+    void Get_Lib_Data();
+    int Get_Taken_Books() { return taken_books; }
+    std::string Get_Name() { return last_name; }
+    int Get_First_Element_ID();
+    void Set_Name(std::string name);
+
     void add_book(Record &&item);
-    void replace_book(Record &find, Record &&replace);
-    void delete_book(Record &item);
+    bool replace_book(const Record find, Record &&replace);
+    bool delete_book(const Record item);
     bool search_by_cypher(int fnd);
     bool search_by_price(double fnd);
 
