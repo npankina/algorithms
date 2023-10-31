@@ -8,7 +8,7 @@
 //--------------------------------------------------------------------------------
 class List
 {
-private:
+public:
     struct Node
     { // вложенный т.к. не имеет смысла без класса контейнера, более того - ни один из методов класса-контейнера не возвращает тип Node
         Node *prev_;
@@ -120,10 +120,18 @@ public:
     void clear() noexcept;                                // удалить все
     void clear(const_iterator it) noexcept; // удалить все начиная c позиции итератора
 
+
     friend std::ostream &operator<<(std::ostream &os, List &items);
+    friend void Merge_Sort(Node **head);
+
+    Node **Get_Head() { return &head_; }
+    void Shuffle_Elements();
 
 private:
     void copy(const List &obj);
+
+    friend void Split(Node *head, Node **a, Node **b);
+    friend Node *Merge(Node *a, Node *b);
 
 
     // -- структура элемента списка – определить самостоятельно --

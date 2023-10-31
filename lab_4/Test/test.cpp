@@ -115,6 +115,49 @@ TEST_CASE( "class List: swap()", "[swap()]" )
 #endif
 }
 //--------------------------------------------------------------------------------
+TEST_CASE( "Merge Sort", "[merge Sort]" )
+{
+    List A;
+    A.push_front(Record{std::make_tuple(2021, "A", 1.25)});
+    A.push_front(Record{std::make_tuple(2022, "B", 2.25)});
+    A.push_front(Record{std::make_tuple(2023, "C", 2.50)});
+    A.push_front(Record{std::make_tuple(2019, "D", 1.12)});
+    A.push_front(Record{std::make_tuple(2018, "E", 1.99)});
+    A.push_front(Record{std::make_tuple(2017, "F", 1.85)});
+    A.push_front(Record{std::make_tuple(2016, "G", 3.25)});
+    A.push_front(Record{std::make_tuple(2015, "H", 4.25)});
+    A.push_front(Record{std::make_tuple(2014, "T", 3.99)});
+    A.push_front(Record{std::make_tuple(2020, "Y", 1.33)});
+    A.push_front(Record{std::make_tuple(2020, "W", 1.34)});
+    A.push_front(Record{std::make_tuple(2020, "X", 1.35)});
+    A.push_front(Record{std::make_tuple(2020, "S", 1.36)});
+    A.push_front(Record{std::make_tuple(2020, "Z", 1.37)});
+    A.push_front(Record{std::make_tuple(2020, "Q", 1.39)});
+    A.push_front(Record{std::make_tuple(2020, "P", 1.38)});
+
+//    std::cout << "Before SORT" << std::endl;
+//    std::cout << A << std::endl;
+    Merge_Sort( A.Get_Head() );
+//    std::cout << "\nAfter SORT" << std::endl;
+//    std::cout << A << std::endl;
+}
+//--------------------------------------------------------------------------------
+TEST_CASE( "Shuffle", "[shuffle]" )
+{
+    List A;
+    A.push_back(Record{std::make_tuple(2021, "A", 1.25)});
+    A.push_back(Record{std::make_tuple(2020, "Bekly", 2.39)});
+    A.push_back(Record{std::make_tuple(2022, "B", 2.25)});
+
+
+    std::cout << "List A BEFORE shuffle" << std::endl;
+    std::cout << A << std::endl;
+    A.Shuffle_Elements();
+
+    std::cout << "List A AFTER shuffle" << std::endl;
+    std::cout << A << std::endl;
+}
+//--------------------------------------------------------------------------------
 
 
 
