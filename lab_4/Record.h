@@ -15,7 +15,9 @@ namespace tool
 class Record
 {
 public:
-    explicit Record(std::tuple<int, std::string, double> &&item);
+    Record(std::tuple<int, std::string, double> &&item);
+    Record(std::tuple<int, int, std::string, double> &&item);
+    Record(int c, int i, std::string s, double d);
     Record(const Record &lvalue); // copy ctor
     Record(Record &&rvalue); // move ctor
     Record &operator=(const Record &lvalue); // copy assign

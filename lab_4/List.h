@@ -16,6 +16,10 @@ public:
         Record data_;
 
         Node(Record item) noexcept;
+        Node(const Node &lhs); // copy ctor
+        Node(Node &&rhs); // move ctor
+        Node &operator=(const Node &lhs); // copy assign
+        Node &operator=(Node &&rhs); // move assign
         bool operator==(const Node &item) const noexcept;
     };
 
@@ -98,6 +102,8 @@ public:
     const_iterator cend() const noexcept;
     iterator begin() noexcept;
     iterator end() noexcept;
+    iterator rbegin() noexcept;
+    iterator rend() noexcept;
     iterator find(const_reference item) noexcept;
     const_iterator find(const Node &item) const noexcept;
     // Доступ к элементам -------
@@ -123,15 +129,17 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, List &items);
     friend void Merge_Sort(Node **head);
+    friend void split(List &a, List &b, List &th);
 
     Node **Get_Head() { return &head_; }
     void Shuffle_Elements();
+    void append(List &item);
 
 private:
     void copy(const List &obj);
 
     friend void Split(Node *head, Node **a, Node **b);
-    friend Node *Merge(Node *a, Node *b);
+    friend Node *Merge(Node *a, Node *b, bool flag);
 
 
     // -- структура элемента списка – определить самостоятельно --

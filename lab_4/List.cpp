@@ -6,6 +6,37 @@ List::Node::Node(Record item) noexcept
 : prev_(nullptr), next_(nullptr), data_{ std::move(item) }
 {}
 //----------------------------------------------------------------------
+List::Node::Node(const Node &lhs)
+: prev_(lhs.prev_), next_(lhs.next_), data_{ lhs.data_.Get_cypher(),lhs.data_.Get_year_of_pub(),
+                                             lhs.data_.Get_publisher(), lhs.data_.Get_price_() }
+{}
+//----------------------------------------------------------------------
+List::Node::Node(Node &&rhs) // move ctor
+: prev_(std::move(rhs.prev_) ), next_(std::move(rhs.next_) ), data_(std::move(std::make_tuple(rhs.data_.Get_cypher(), rhs.data_.Get_year_of_pub(),
+                                                                    rhs.data_.Get_publisher(), rhs.data_.Get_price_())) )
+{}
+//----------------------------------------------------------------------
+List::Node &List::Node::operator=(const Node &lhs)
+{
+    if (this != &lhs)
+    {
+        prev_ = lhs.prev_;
+        next_ = lhs.next_;
+        data_ = { lhs.data_.Get_cypher(), lhs.data_.Get_year_of_pub(), lhs.data_.Get_publisher(), lhs.data_.Get_price_() };
+    }
+    return *this;
+}
+List::Node &List::Node::operator=(Node &&rhs) // move assign
+{
+    if (this != &rhs)
+    {
+        std::swap(prev_, rhs.prev_);
+        std::swap(next_, rhs.next_);
+        std::swap(data_, rhs.data_);
+    }
+    return *this;
+}
+//----------------------------------------------------------------------
 bool List::Node::operator==(const_reference item) const noexcept
 {
     return data_ == item.data_;
@@ -23,7 +54,7 @@ List::Const_Iterator::Const_Iterator(const value_type *ptr) noexcept
 //----------------------------------------------------------------------
 List::Const_Iterator::reference List::Const_Iterator::operator*() const noexcept
 {
-    return current_->data_;
+    return *current_;
 }
 //----------------------------------------------------------------------
 List::Const_Iterator &List::Const_Iterator::operator++() noexcept
@@ -79,7 +110,7 @@ List::Iterator::Iterator(value_type *ptr) noexcept
 //----------------------------------------------------------------------
 List::reference List::Iterator::operator*() const noexcept
 {
-    auto &&res = Const_Iterator::operator*();
+    auto &&res = std::move(Const_Iterator::operator*());
     return const_cast<reference>(res);
 }
 //----------------------------------------------------------------------
@@ -189,6 +220,16 @@ List::iterator List::end() noexcept
     return iterator(nullptr);
 }
 //----------------------------------------------------------------------
+List::iterator List::rbegin() noexcept
+{
+    return iterator(tail_);
+}
+//----------------------------------------------------------------------
+List::iterator List::rend() noexcept
+{
+    return iterator(nullptr);
+}
+//----------------------------------------------------------------------
 List::reference List::front()
 {
     return *head_;
@@ -211,7 +252,7 @@ List::size_type List::size() const noexcept
 //----------------------------------------------------------------------
 void List::push_front(const_reference rhs)
 { // добавить в начало; Time Complexity: O(1)
-    auto new_node = new Node(rhs);
+    Node *new_node = new Node(rhs);
     if (head_)
     {
         head_->prev_ = new_node;
@@ -226,7 +267,7 @@ void List::push_front(const_reference rhs)
 //----------------------------------------------------------------------
 void List::push_front(value_type &&tmp)
 { // добавить в начало - временный объект --
-    auto new_node = new Node(std::move(tmp) ); // создаю новую Node и перемещаю данные rvalue
+    Node *new_node = new Node(std::move(tmp) ); // создаю новую Node и перемещаю данные rvalue
     if (head_)
     {
         head_->prev_ = new_node;
@@ -246,7 +287,7 @@ void List::pop_front() noexcept
 //----------------------------------------------------------------------
 void List::push_back(const_reference obj)
 { // добавить в конец
-    auto new_node = new Node(obj); // создан новый объект Node<T> в куче
+    Node *new_node = new Node(obj); // создан новый объект Node<T> в куче
 
    if (tail_)
    {
@@ -262,7 +303,7 @@ void List::push_back(const_reference obj)
 //----------------------------------------------------------------------
 void List::push_back(value_type &&tmp)
 { // добавить в начало - временный объект --
-    auto new_node = new Node(std::move(tmp) );
+    Node *new_node = new Node(std::move(tmp) );
     if (tail_)
     {
         tail_->next_ = new_node;
@@ -288,7 +329,7 @@ void List::pop_back() noexcept
 //----------------------------------------------------------------------
 void List::insert(const_iterator fnd, const_reference obj)
 { // вставить в позицию итератора
-    auto ptr = const_cast<pointer>(fnd.Get() ); // Node *
+    Node *ptr = const_cast<pointer>(fnd.Get() );
     if (!ptr) // вставка в конец
     {
         push_back(obj);
@@ -525,7 +566,7 @@ void Split(List::Node *head, List::Node **a, List::Node **b)
     slow->next_ = nullptr;
 }
 //--------------------------------------------------------------------------------
-List::Node *Merge(List::Node *a, List::Node *b)
+List::Node *Merge(List::Node *a, List::Node *b, bool flag = false)
 { // Рекурсивная функция для объединения узлов двух отсортированных списков в единый отсортированный список
 
     // базовые случаи
@@ -538,18 +579,37 @@ List::Node *Merge(List::Node *a, List::Node *b)
     }
 
     // выбираем `a` или `b` и повторяем
-    if (a->data_.Get_cypher() <= b->data_.Get_cypher() )
+    if(flag)
     {
-        a->next_ = Merge(a->next_, b);
-        a->next_->prev_ = a;
-        a->prev_ = nullptr;
-        return a;
+        if (a->data_.Get_cypher() <= b->data_.Get_cypher() )
+        {
+            a->next_ = Merge(a->next_, b);
+            a->next_->prev_ = a;
+            a->prev_ = nullptr;
+            return a;
+        }
+        else {
+            b->next_ = Merge(a, b->next_);
+            b->next_->prev_ = b;
+            b->prev_ = nullptr;
+            return b;
+        }
     }
-    else {
-        b->next_ = Merge(a, b->next_);
-        b->next_->prev_ = b;
-        b->prev_ = nullptr;
-        return b;
+    else
+    {
+        if (a->data_.Get_price_() >= b->data_.Get_price_() )
+        {
+            a->next_ = Merge(a->next_, b);
+            a->next_->prev_ = a;
+            a->prev_ = nullptr;
+            return a;
+        }
+        else {
+            b->next_ = Merge(a, b->next_);
+            b->next_->prev_ = b;
+            b->prev_ = nullptr;
+            return b;
+        }
     }
 }
 //--------------------------------------------------------------------------------
@@ -558,9 +618,7 @@ void Merge_Sort(List::Node **head)
 
     // базовый вариант: 0 или 1 узел
     if (*head == nullptr || (*head)->next_ == nullptr)
-    {
         return;
-    }
 
     // разделить заголовок на подсписки `a` и `b`
     List::Node *a = *head, *b = nullptr;
@@ -576,112 +634,48 @@ void Merge_Sort(List::Node **head)
 //--------------------------------------------------------------------------------
 void List::Shuffle_Elements()
 {
-//    Node *current, *next;
-//    bool flag = true;
+    List a, b;
+    split(a, b, *this);
+
+//    std::cout << a << std::endl;
+//    std::cout << std::endl;
 //
-//    current = head_;
-//    next = head_->next_;
-//
-//    while (current != nullptr or next != nullptr)
-//    {
-//        std::swap(current->data_, next->data_);
-//
-//        current = current->next_->next_;
-//        next = next->next_->next_;
-//    }
+//    std::cout << b << std::endl;
+//    std::cout << std::endl;
 
-    // Function to swap the k'th node from the beginning with the
-    // k'th node from the end in a linked list
+    a.append(b);
+    head_ = std::move(a.head_);
 
-    Record k = Record { std::make_tuple(2020, "Berkly", 2.39) };
-
-    bool flag_int, flag_str, flag_double;
-    flag_int = flag_str = flag_double = false;
-
-    Node *x, *y, *prev_x = nullptr, *prev_y = head_;
-
-    // Find the k'th node from the beginning and store it in `x`.
-    // Also, calculate the previous node of `x` and store it in `prev_x`.
-    Node *curr = head_;
-
-    for (auto it = begin(); it != end(); it++)
-    {
-        if ((*it).data_.Get_year_of_pub() == k.Get_year_of_pub() )
-            flag_int = true;
-        if ((*it).data_.Get_publisher() == k.Get_publisher() )
-            flag_str = true;
-        if ((*it).data_.Get_price_() == k.Get_price_() )
-            flag_double = true;
-
-
-
-        if (flag_int == true and flag_str == true and flag_double == true)
-            break;
-
-        prev_x = curr;
-        curr = curr->next_;
-    }
-
-    x = curr;
-
-    // If `k` is more than the total number of nodes, X and Y doesn't exist
-    if (curr == nullptr)
-        return;
-
-    // Find the k'th node from the end and store it in `y`.
-    // Also, calculate the previous node of `y` and store it in `prev_y`.
-    Node *ptr = head_;
-    while (curr->next_)
-    {
-        prev_y = ptr;
-        ptr = ptr->next_;
-        curr = curr->next_;
-    }
-    y = ptr;
-
-
-    if (x->next_ == y)
-    { // Y is next to X (X —> Y)
-        x->next_ = y->next_;
-        y->next_ = x;
-
-        if (prev_x != nullptr && prev_x != x)
-            prev_x->next_ = y;
-        else
-            head_ = y;
-    }
-    else if (y->next_ == x)
-    { // X is next to Y (Y —> X)
-        y->next_ = x->next_;
-        x->next_ = y;
-
-        if (prev_y != nullptr && prev_y != y)
-            prev_y->next_ = x;
-        else
-            head_ = x;
-    }
-    else if (x == head_)
-    { // X is the head node
-        head_ = y;
-        y->next_ = x->next_;
-        prev_y->next_ = x;
-        x->next_ = nullptr;
-    }
-    else if (y == head_)
-    { // Y is the head node
-        head_ = x;
-        x->next_ = y->next_;
-        prev_x->next_ = y;
-        y->next_ = nullptr;
-    }
-    else
-    { // Otherwise
-        ptr = y->next_;
-        y->next_ = x->next_;
-        x->next_ = ptr;
-
-        prev_x->next_ = y;
-        prev_y->next_ = x;
-    }
+    a.head_ = a.tail_ = nullptr;
+    a.size_ = 0;
 }
 //--------------------------------------------------------------------------------
+void List::append(List &b)
+{
+    tail_->next_ = b.head_;
+    tail_->next_->prev_ = tail_;
+    tail_ = b.tail_;
+
+    b.head_ = b.tail_ = nullptr;
+    b.size_ = 0;
+}
+//--------------------------------------------------------------------------------
+void split(List &a, List &b, List &th)
+{
+    bool flag = true;
+
+    for (List::iterator it = th.begin(); it != th.end(); it++)
+    {
+        auto &&temp = (*it).data_;
+        if (flag)
+        {
+            a.push_front(temp);
+            flag = false;
+        }
+        else
+        {
+            b.push_front(temp);
+            flag = true;
+        }
+    }
+}

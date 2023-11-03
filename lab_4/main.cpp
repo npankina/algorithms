@@ -6,6 +6,7 @@
 
 int main() {
     setlocale(LC_ALL, "UTF-8");
+#if wrong
     srand(time(NULL));
 
     std::cout << "Лабораторная работа #4. Двусвязный список" << std::endl;
@@ -60,5 +61,19 @@ int main() {
 
     std::cout << "**************************************************" << std::endl;
 #endif
+#endif
+
+    List A;
+    A.push_back(Record{std::make_tuple(2021, "A", 1.25)});
+    A.push_back(Record{std::make_tuple(2020, "Bekly", 2.39)});
+    A.push_back(Record{std::make_tuple(2022, "B", 2.25)});
+
+    std::cout << "List A Before shuffle" << std::endl;
+    std::cout << A << std::endl;
+    A.Shuffle_Elements();
+
+    std::cout << "List A AFTER shuffle" << std::endl;
+    std::cout << A << std::endl;
+
     return 0;
 }
