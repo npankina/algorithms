@@ -10,7 +10,7 @@ class List
 {
 public:
     struct Node
-    { // вложенный т.к. не имеет смысла без класса контейнера, более того - ни один из методов класса-контейнера не возвращает тип Node
+    { // вложенный т.к. не имеет смысла без класса контейнера
         Node *prev_;
         Node *next_;
         Record data_;
@@ -19,7 +19,7 @@ public:
         Node(const Node &lhs); // copy ctor
         Node(Node &&rhs); // move ctor
         Node &operator=(const Node &lhs); // copy assign
-        Node &operator=(Node &&rhs); // move assign
+        Node &operator=(Node &&rhs) noexcept; // move assign
         bool operator==(const Node &item) const noexcept;
     };
 
@@ -102,8 +102,6 @@ public:
     const_iterator cend() const noexcept;
     iterator begin() noexcept;
     iterator end() noexcept;
-    iterator rbegin() noexcept;
-    iterator rend() noexcept;
     iterator find(const_reference item) noexcept;
     const_iterator find(const Node &item) const noexcept;
     // Доступ к элементам -------
@@ -125,18 +123,18 @@ public:
     void swap(List &t) noexcept;        // обменять с заданным списком
     void clear() noexcept;                                // удалить все
     void clear(const_iterator it) noexcept; // удалить все начиная c позиции итератора
+    void Shuffle_Elements();
+    Node **Get_Head() { return &head_; }
 
 
     friend std::ostream &operator<<(std::ostream &os, List &items);
     friend void Merge_Sort(Node **head);
-    friend void split(List &a, List &b, List &th);
-
-    Node **Get_Head() { return &head_; }
-    void Shuffle_Elements();
-    void append(List &item);
 
 private:
     void copy(const List &obj);
+    void append(List &item);
+
+    friend void split(List &a, List &b, List &th);
 
     friend void Split(Node *head, Node **a, Node **b);
     friend Node *Merge(Node *a, Node *b, bool flag);

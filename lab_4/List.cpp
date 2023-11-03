@@ -26,7 +26,7 @@ List::Node &List::Node::operator=(const Node &lhs)
     }
     return *this;
 }
-List::Node &List::Node::operator=(Node &&rhs) // move assign
+List::Node &List::Node::operator=(Node &&rhs) noexcept // move assign
 {
     if (this != &rhs)
     {
@@ -216,16 +216,6 @@ List::iterator List::begin() noexcept
 }
 //----------------------------------------------------------------------
 List::iterator List::end() noexcept
-{
-    return iterator(nullptr);
-}
-//----------------------------------------------------------------------
-List::iterator List::rbegin() noexcept
-{
-    return iterator(tail_);
-}
-//----------------------------------------------------------------------
-List::iterator List::rend() noexcept
 {
     return iterator(nullptr);
 }
@@ -461,6 +451,28 @@ List::iterator List::find(const_reference item) noexcept
     return iterator { const_cast<pointer>(it.Get() ) };
 }
 //----------------------------------------------------------------------
+void List::Shuffle_Elements()
+{
+    List a, b;
+    split(a, b, *this);
+
+    a.append(b);
+    head_ = std::move(a.head_);
+
+    a.head_ = a.tail_ = nullptr;
+    a.size_ = 0;
+}
+//--------------------------------------------------------------------------------
+void List::append(List &b)
+{
+    tail_->next_ = b.head_;
+    tail_->next_->prev_ = tail_;
+    tail_ = b.tail_;
+
+    b.head_ = b.tail_ = nullptr;
+    b.size_ = 0;
+}
+//--------------------------------------------------------------------------------
 std::ostream &operator<<(std::ostream &os, List &list)
 {
     int i = 0;
@@ -476,76 +488,6 @@ std::ostream &operator<<(std::ostream &os, List &list)
     return os;
 }
 //----------------------------------------------------------------------
-#if slow_sort
-void Split(List::Node *head, List::Node **a, List::Node **b)
-{ // Функция для разделения узлов заданного двусвязного списка на две половины, используя стратегию быстрого/медленного указателя
-    List::Node *slow = head;
-    List::Node *fast = head->next_;
-
-    // продвигаемся вперед `fast` на два узла и продвигаемся `slow` на один узел
-    while (fast != nullptr)
-    {
-        fast = fast->next_;
-        if (fast != nullptr)
-        {
-            slow = slow->next_;
-            fast = fast->next_;
-        }
-    }
-
-    *b = slow->next_;
-    slow->next_ = nullptr;
-}
-//--------------------------------------------------------------------------------
-List::Node *Merge(List::Node *a, List::Node *b)
-{ // Рекурсивная функция для объединения узлов двух отсортированных списков в единый отсортированный список
-
-    // базовые случаи
-    if (a == nullptr) {
-        return b;
-    }
-
-    if (b == nullptr) {
-        return a;
-    }
-
-    // выбираем `a` или `b` и повторяем
-    if (a->data_.Get_cypher() <= b->data_.Get_cypher() )
-    {
-        a->next_ = Merge(a->next_, b);
-        a->next_->prev_ = a;
-        a->prev_ = nullptr;
-        return a;
-    }
-    else {
-        b->next_ = Merge(a, b->next_);
-        b->next_->prev_ = b;
-        b->prev_ = nullptr;
-        return b;
-    }
-}
-//--------------------------------------------------------------------------------
-void Merge_Sort(List::Node **head)
-{ // Функция для сортировки двусвязного списка с использованием алгоритма сортировки слиянием
-
-    // базовый вариант: 0 или 1 узел
-    if (*head == nullptr || (*head)->next_ == nullptr) {
-        return;
-    }
-
-    // разделить заголовок на подсписки `a` и `b`
-    List::Node* a = *head, *b = nullptr;
-    Split(*head, &a, &b);
-
-    // рекурсивно сортируем подсписки
-    Merge_Sort(&a);
-    Merge_Sort(&b);
-
-    // объединяем два отсортированных списка
-    *head = Merge(a, b);
-}
-#endif
-
 void Split(List::Node *head, List::Node **a, List::Node **b)
 { // Функция для разделения узлов заданного двусвязного списка на две половины, используя стратегию быстрого/медленного указателя
     List::Node *slow = head;
@@ -630,34 +572,6 @@ void Merge_Sort(List::Node **head)
 
     // объединяем два отсортированных списка
     *head = Merge(a, b);
-}
-//--------------------------------------------------------------------------------
-void List::Shuffle_Elements()
-{
-    List a, b;
-    split(a, b, *this);
-
-//    std::cout << a << std::endl;
-//    std::cout << std::endl;
-//
-//    std::cout << b << std::endl;
-//    std::cout << std::endl;
-
-    a.append(b);
-    head_ = std::move(a.head_);
-
-    a.head_ = a.tail_ = nullptr;
-    a.size_ = 0;
-}
-//--------------------------------------------------------------------------------
-void List::append(List &b)
-{
-    tail_->next_ = b.head_;
-    tail_->next_->prev_ = tail_;
-    tail_ = b.tail_;
-
-    b.head_ = b.tail_ = nullptr;
-    b.size_ = 0;
 }
 //--------------------------------------------------------------------------------
 void split(List &a, List &b, List &th)
