@@ -119,8 +119,8 @@ TEST_CASE( "Merge Sort", "[merge Sort]" )
 {
     List A;
     A.push_front(Record{std::make_tuple(2021, "A", 1.25)});
+    A.push_front(Record{std::make_tuple(2020, "Bekly", 2.39)});
     A.push_front(Record{std::make_tuple(2022, "B", 2.25)});
-    A.push_front(Record{std::make_tuple(2023, "C", 2.50)});
     A.push_front(Record{std::make_tuple(2019, "D", 1.12)});
     A.push_front(Record{std::make_tuple(2018, "E", 1.99)});
     A.push_front(Record{std::make_tuple(2017, "F", 1.85)});
@@ -135,11 +135,11 @@ TEST_CASE( "Merge Sort", "[merge Sort]" )
     A.push_front(Record{std::make_tuple(2020, "Q", 1.39)});
     A.push_front(Record{std::make_tuple(2020, "P", 1.38)});
 
-//    std::cout << "Before SORT" << std::endl;
-//    std::cout << A << std::endl;
-    Merge_Sort( A.Get_Head() );
-//    std::cout << "\nAfter SORT" << std::endl;
-//    std::cout << A << std::endl;
+    std::cout << A << std::endl;
+
+    A = sort(A.begin(), A.end() );
+
+    std::cout << A << std::endl;
 }
 //--------------------------------------------------------------------------------
 TEST_CASE( "Shuffle", "[shuffle]" )
@@ -163,7 +163,7 @@ TEST_CASE( "Shuffle", "[shuffle]" )
     A.push_front(Record{std::make_tuple(2020, "P", 1.38)});
 
     REQUIRE( A.size() == 16);
-    A.Shuffle_Elements();
+    A.shuffle_elements();
     REQUIRE( A.size() == 16);
 
 //    std::cout << "List A AFTER shuffle" << std::endl;

@@ -59,7 +59,7 @@ int main() {
     std::cout << "Вывод результатов работы контейнера List: случайно переставить элементы\n";
     start = std::chrono::steady_clock::now();
 
-    A.Shuffle_Elements();
+    A.shuffle_elements();
 
     finish = std::chrono::steady_clock::now();
     t = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);

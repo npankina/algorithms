@@ -7,13 +7,16 @@ List::Node::Node(Record item) noexcept
 {}
 //----------------------------------------------------------------------
 List::Node::Node(const Node &lhs)
-: prev_(lhs.prev_), next_(lhs.next_), data_{ lhs.data_.Get_cypher(),lhs.data_.Get_year_of_pub(),
-                                             lhs.data_.Get_publisher(), lhs.data_.Get_price_() }
+: prev_(lhs.prev_), next_(lhs.next_),
+  data_{ lhs.data_.Get_cypher(),lhs.data_.Get_year_of_pub(),
+         lhs.data_.Get_publisher(), lhs.data_.Get_price_() }
 {}
 //----------------------------------------------------------------------
 List::Node::Node(Node &&rhs) // move ctor
-: prev_(std::move(rhs.prev_) ), next_(std::move(rhs.next_) ), data_(std::move(std::make_tuple(rhs.data_.Get_cypher(), rhs.data_.Get_year_of_pub(),
-                                                                    rhs.data_.Get_publisher(), rhs.data_.Get_price_())) )
+: prev_(std::move(rhs.prev_) ), next_(std::move(rhs.next_) ),
+  data_(std::move(std::make_tuple(
+          rhs.data_.Get_cypher(), rhs.data_.Get_year_of_pub(),
+          rhs.data_.Get_publisher(),rhs.data_.Get_price_())) )
 {}
 //----------------------------------------------------------------------
 List::Node &List::Node::operator=(const Node &lhs)
@@ -22,7 +25,8 @@ List::Node &List::Node::operator=(const Node &lhs)
     {
         prev_ = lhs.prev_;
         next_ = lhs.next_;
-        data_ = { lhs.data_.Get_cypher(), lhs.data_.Get_year_of_pub(), lhs.data_.Get_publisher(), lhs.data_.Get_price_() };
+        data_ = { lhs.data_.Get_cypher(), lhs.data_.Get_year_of_pub(),
+                  lhs.data_.Get_publisher(), lhs.data_.Get_price_() };
     }
     return *this;
 }
@@ -175,6 +179,11 @@ List &List::operator=(const List &other) // copy assign
     return *this;
 }
 //----------------------------------------------------------------------
+List &List::operator=(Node &&other)
+{
+    push_front(other);
+}
+//----------------------------------------------------------------------
 List &List::operator=(List &&other) noexcept // move assign
 {
     if (this != &other)
@@ -197,15 +206,6 @@ List::const_iterator List::begin() const noexcept
 }
 //----------------------------------------------------------------------
 List::const_iterator List::end() const noexcept
-{
-    return const_iterator(nullptr);
-}
-List::const_iterator List::cbegin() const noexcept
-{
-    return const_iterator(head_);
-}
-//----------------------------------------------------------------------
-List::const_iterator List::cend() const noexcept
 {
     return const_iterator(nullptr);
 }
@@ -451,10 +451,10 @@ List::iterator List::find(const_reference item) noexcept
     return iterator { const_cast<pointer>(it.Get() ) };
 }
 //----------------------------------------------------------------------
-void List::Shuffle_Elements()
+void List::shuffle_elements()
 {
     List a, b;
-    split(a, b, *this);
+    split(a, b);
 
     a.append(b);
     head_ = std::move(a.head_);
@@ -473,6 +473,26 @@ void List::append(List &b)
     b.size_ = 0;
 }
 //--------------------------------------------------------------------------------
+void List::split(List &a, List &b)
+{
+    bool flag = true;
+
+    for (List::iterator it = begin(); it != end(); it++)
+    {
+        auto &&temp = (*it).data_;
+        if (flag)
+        {
+            a.push_front(temp);
+            flag = false;
+        }
+        else
+        {
+            b.push_front(temp);
+            flag = true;
+        }
+    }
+}
+//--------------------------------------------------------------------------------
 std::ostream &operator<<(std::ostream &os, List &list)
 {
     int i = 0;
@@ -487,109 +507,32 @@ std::ostream &operator<<(std::ostream &os, List &list)
 
     return os;
 }
-//----------------------------------------------------------------------
-void Split(List::Node *head, List::Node **a, List::Node **b)
-{ // Функция для разделения узлов заданного двусвязного списка на две половины, используя стратегию быстрого/медленного указателя
-    List::Node *slow = head;
-    List::Node *fast = head->next_;
-
-    // продвигаемся вперед `fast` на два узла и продвигаемся `slow` на один узел
-    while (fast != nullptr)
-    {
-        fast = fast->next_;
-        if (fast != nullptr)
-        {
-            slow = slow->next_;
-            fast = fast->next_;
-        }
-    }
-
-    *b = slow->next_;
-    slow->next_ = nullptr;
+//--------------------------------------------------------------------------------
+void List::merge_sort()
+{   /* Реализовать алгоритм сортировки слиянием
+     * разделить список на 2 части
+     * рекурсивно сортировать обе части
+     */
+    
+    // 1. функция - разделяющая список на 2 части
+    List a, b;
+    split(a, b);
+    
+    // 2. рекурсивный вызов сортировки
+    sort(a, b);
+    
+    // 3. слить 2 списка в один (заменив текущий)
+    a.append(b);
+    head_ = a.head_;
 }
 //--------------------------------------------------------------------------------
-List::Node *Merge(List::Node *a, List::Node *b, bool flag = false)
-{ // Рекурсивная функция для объединения узлов двух отсортированных списков в единый отсортированный список
-
-    // базовые случаи
-    if (a == nullptr) {
-        return b;
-    }
-
-    if (b == nullptr) {
-        return a;
-    }
-
-    // выбираем `a` или `b` и повторяем
-    if(flag)
-    {
-        if (a->data_.Get_cypher() <= b->data_.Get_cypher() )
-        {
-            a->next_ = Merge(a->next_, b);
-            a->next_->prev_ = a;
-            a->prev_ = nullptr;
-            return a;
-        }
-        else {
-            b->next_ = Merge(a, b->next_);
-            b->next_->prev_ = b;
-            b->prev_ = nullptr;
-            return b;
-        }
-    }
-    else
-    {
-        if (a->data_.Get_price_() >= b->data_.Get_price_() )
-        {
-            a->next_ = Merge(a->next_, b);
-            a->next_->prev_ = a;
-            a->prev_ = nullptr;
-            return a;
-        }
-        else {
-            b->next_ = Merge(a, b->next_);
-            b->next_->prev_ = b;
-            b->prev_ = nullptr;
-            return b;
-        }
-    }
-}
-//--------------------------------------------------------------------------------
-void Merge_Sort(List::Node **head)
-{ // Функция для сортировки двусвязного списка с использованием алгоритма сортировки слиянием
-
-    // базовый вариант: 0 или 1 узел
-    if (*head == nullptr || (*head)->next_ == nullptr)
-        return;
-
-    // разделить заголовок на подсписки `a` и `b`
-    List::Node *a = *head, *b = nullptr;
-    Split(*head, &a, &b);
-
-    // рекурсивно сортируем подсписки
-    Merge_Sort(&a);
-    Merge_Sort(&b);
-
-    // объединяем два отсортированных списка
-    *head = Merge(a, b);
-}
-//--------------------------------------------------------------------------------
-void split(List &a, List &b, List &th)
+void List::sort(List &a, List &b)
 {
-    bool flag = true;
-
-    for (List::iterator it = th.begin(); it != th.end(); it++)
+    iterator a_it = a.begin();
+    iterator b_it = b.begin();
+    
+    while ((*a_it).next_ != nullptr)
     {
-        auto &&temp = (*it).data_;
-        if (flag)
-        {
-            a.push_front(temp);
-            flag = false;
-        }
-        else
-        {
-            b.push_front(temp);
-            flag = true;
-        }
+        
     }
 }

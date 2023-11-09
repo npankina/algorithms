@@ -93,13 +93,12 @@ public:
     List(List &&other) noexcept;              // move ctor
     List &operator=(List && other) noexcept;  // move assign
     List &operator=(const List &other);     // copy assign
+    List &operator=(Node && other);
     ~List();
 
     // Итераторы ----------------
     const_iterator begin() const noexcept;
     const_iterator end() const noexcept;
-    const_iterator cbegin() const noexcept;
-    const_iterator cend() const noexcept;
     iterator begin() noexcept;
     iterator end() noexcept;
     iterator find(const_reference item) noexcept;
@@ -123,27 +122,24 @@ public:
     void swap(List &t) noexcept;        // обменять с заданным списком
     void clear() noexcept;                                // удалить все
     void clear(const_iterator it) noexcept; // удалить все начиная c позиции итератора
-    void Shuffle_Elements();
-    Node **Get_Head() { return &head_; }
-
+    void shuffle_elements();
+    void merge_sort();
 
     friend std::ostream &operator<<(std::ostream &os, List &items);
-    friend void Merge_Sort(Node **head);
 
 private:
     void copy(const List &obj);
     void append(List &item);
+    void split(List &a, List &b);
+    void sort(List &a, List &b);
 
-    friend void split(List &a, List &b, List &th);
-
-    friend void Split(Node *head, Node **a, Node **b);
-    friend Node *Merge(Node *a, Node *b, bool flag);
-
-
-    // -- структура элемента списка – определить самостоятельно --
+    // -- структура элемента списка
     size_type size_;
     pointer head_;
     pointer tail_;
 };
+//--------------------------------------------------------------------------------
+// Реализовать алгоритм сортировки слиянием
+
 //--------------------------------------------------------------------------------
 #endif //LAB_4_LIST_H
