@@ -93,7 +93,6 @@ public:
     List(List &&other) noexcept;              // move ctor
     List &operator=(List && other) noexcept;  // move assign
     List &operator=(const List &other);     // copy assign
-    List &operator=(Node && other);
     ~List();
 
     // Итераторы ----------------
@@ -123,7 +122,8 @@ public:
     void clear() noexcept;                                // удалить все
     void clear(const_iterator it) noexcept; // удалить все начиная c позиции итератора
     void shuffle_elements();
-    void merge_sort();
+    void merge_sort(Node **head);
+    Node **Get_Head() { return &head_; }
 
     friend std::ostream &operator<<(std::ostream &os, List &items);
 
@@ -131,7 +131,8 @@ private:
     void copy(const List &obj);
     void append(List &item);
     void split(List &a, List &b);
-    void sort(List &a, List &b);
+    void split(Node **head, Node **a, Node **b);
+    Node *merge(Node *a, Node *b);
 
     // -- структура элемента списка
     size_type size_;

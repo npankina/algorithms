@@ -137,7 +137,7 @@ TEST_CASE( "Merge Sort", "[merge Sort]" )
 
     std::cout << A << std::endl;
 
-    A = sort(A.begin(), A.end() );
+    A.merge_sort(A.Get_Head() );
 
     std::cout << A << std::endl;
 }

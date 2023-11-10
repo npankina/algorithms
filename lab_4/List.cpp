@@ -179,11 +179,6 @@ List &List::operator=(const List &other) // copy assign
     return *this;
 }
 //----------------------------------------------------------------------
-List &List::operator=(Node &&other)
-{
-    push_front(other);
-}
-//----------------------------------------------------------------------
 List &List::operator=(List &&other) noexcept // move assign
 {
     if (this != &other)
@@ -508,31 +503,66 @@ std::ostream &operator<<(std::ostream &os, List &list)
     return os;
 }
 //--------------------------------------------------------------------------------
-void List::merge_sort()
+void List::merge_sort(Node **head)
 {   /* Реализовать алгоритм сортировки слиянием
      * разделить список на 2 части
      * рекурсивно сортировать обе части
      */
+
+    if ((*head)->next_ == nullptr  or *head == tail_) // если список пуст или в нем содерждится 1 элемент он отсортирован
+        return;
     
     // 1. функция - разделяющая список на 2 части
-    List a, b;
-    split(a, b);
+    Node *a = *head, *b = nullptr;
+    split(head, &a, &b);
     
     // 2. рекурсивный вызов сортировки
-    sort(a, b);
+    merge_sort(&a);
+    merge_sort(&b);
     
     // 3. слить 2 списка в один (заменив текущий)
-    a.append(b);
-    head_ = a.head_;
+    *head = merge(a, b);
 }
 //--------------------------------------------------------------------------------
-void List::sort(List &a, List &b)
-{
-    iterator a_it = a.begin();
-    iterator b_it = b.begin();
-    
-    while ((*a_it).next_ != nullptr)
+List::Node *List::merge(Node *a, Node *b)
+{ // рекурсивное объединение узлов отсортированных списков
+    if (a == nullptr)
+        return b;
+    if (b == nullptr)
+        return a;
+
+    if (a->data_.Get_cypher() <= b->data_.Get_cypher() )
     {
-        
+        a->next_ = merge(a->next_, b);
+        a->next_->prev_ = a;
+        a->prev_ = nullptr;
+        return a;
     }
+    else
+    {
+        b->next_ = merge(a, b->next_);
+        b->next_->prev_ = b;
+        b->prev_ = nullptr;
+        return b;
+    }
+}
+//--------------------------------------------------------------------------------
+void List::split(Node **head, Node **a, Node **b)
+{
+    Node *slow = *head;
+    Node *fast = (*head)->next_;
+
+    // продвигаемся по 'fast' на 2 узла вперед, по 'slow' на один
+    while (fast != nullptr)
+    {
+        fast = fast->next_;
+        if (fast != nullptr)
+        {
+            slow = slow->next_;
+            fast = fast->next_;
+        }
+    }
+
+    *b = slow->next_;
+    slow->next_ = nullptr;
 }
