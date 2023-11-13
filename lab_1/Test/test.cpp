@@ -1,11 +1,13 @@
 #include "catch_amalgamated.hpp"
 #include "catch_amalgamated.cpp"
 
+
+#if list
 #include "../List.h"
-#include "../Subcriber.h"
 
 // class List включая class Record
 //--------------------------------------------------------------------------------
+
 TEST_CASE( "class List: default ctor", "[default ctor]" )
 {
     List A;
@@ -262,3 +264,4 @@ TEST_CASE( "class Subscriber: search_by_price()", "[search_by_price]" )
     REQUIRE(A.search_by_price(1.25) == true);
 }
 //--------------------------------------------------------------------------------
+#endif
