@@ -64,7 +64,6 @@ public:
     {
     private:
         friend class List;
-        explicit Iterator(Node *ptr) noexcept;
 
     public:
         using difference_type = List::difference_type;
@@ -74,6 +73,7 @@ public:
         using iterator_category = std::bidirectional_iterator_tag;
 
         Iterator() : Const_Iterator() {};
+        explicit Iterator(Node *ptr) noexcept;
         reference operator*() const noexcept;
         Iterator &operator++() noexcept;
         Iterator &operator--() noexcept;
@@ -105,6 +105,8 @@ public:
     // Доступ к элементам -------
     reference front();
     reference back();
+    pointer pfront() const;
+    pointer pback() const;
     // Размеры ------------------
     bool empty() const noexcept;
     size_type size() const noexcept;
@@ -122,17 +124,19 @@ public:
     void clear() noexcept;                                // удалить все
     void clear(const_iterator it) noexcept; // удалить все начиная c позиции итератора
     void shuffle_elements();
-    void merge_sort(Node **head);
-    Node **Get_Head() { return &head_; }
+//    void merge_sort(Node **head);
+//    Node **Get_Head() { return &head_; }
 
     friend std::ostream &operator<<(std::ostream &os, List &items);
+    friend void quick_sort(iterator begin, iterator end);
 
 private:
     void copy(const List &obj);
     void append(List &item);
     void split(List &a, List &b);
-    void split(Node **head, Node **a, Node **b);
-    Node *merge(Node *a, Node *b);
+    friend iterator partition(iterator begin, iterator end);
+//    void split(Node **head, Node **a, Node **b);
+//    Node *merge(Node *a, Node *b);
 
     // -- структура элемента списка
     size_type size_;
