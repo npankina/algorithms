@@ -10,7 +10,7 @@ class List
 {
 public:
     struct Node
-    { // вложенный т.к. не имеет смысла без класса контейнера
+    {
         Node *prev_;
         Node *next_;
         Record data_;
@@ -91,7 +91,7 @@ public:
     List(const std::initializer_list<value_type> &items);
     List(const List &other) noexcept;          // copy ctor
     List(List &&other) noexcept;              // move ctor
-    List &operator=(List && other) noexcept;  // move assign
+    List &operator=(List && other) noexcept; // move assign
     List &operator=(const List &other);     // copy assign
     ~List();
 
@@ -124,8 +124,8 @@ public:
     void clear() noexcept;                                // удалить все
     void clear(const_iterator it) noexcept; // удалить все начиная c позиции итератора
     void shuffle_elements();
-//    void merge_sort(Node **head);
-//    Node **Get_Head() { return &head_; }
+    void merge_sort(Node **head);
+    Node **Get_Head() { return &head_; }
 
     friend std::ostream &operator<<(std::ostream &os, List &items);
     friend void quick_sort(iterator begin, iterator end);
@@ -135,16 +135,13 @@ private:
     void append(List &item);
     void split(List &a, List &b);
     friend iterator partition(iterator begin, iterator end);
-//    void split(Node **head, Node **a, Node **b);
-//    Node *merge(Node *a, Node *b);
+    void split(Node **head, Node **a, Node **b);
+    Node *merge(Node *a, Node *b);
 
     // -- структура элемента списка
     size_type size_;
     pointer head_;
     pointer tail_;
 };
-//--------------------------------------------------------------------------------
-// Реализовать алгоритм сортировки слиянием
-
 //--------------------------------------------------------------------------------
 #endif //LAB_4_LIST_H

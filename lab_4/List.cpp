@@ -498,23 +498,6 @@ void List::split(List &a, List &b)
     }
 }
 //--------------------------------------------------------------------------------
-List::iterator partition(List::iterator begin, List::iterator end)
-{
-    List::iterator it = --begin;
-    List::iterator pivot = end;
-    int counter_i = 0, counter_j = 0;
-
-    for (auto j = begin; j != end; j++, counter_j++)
-    {
-        if(  (*j).data_.Get_cypher() <= (*pivot).data_.Get_cypher() )
-        {
-            ++it; ++counter_i;
-            if (counter_j > counter_i)
-                std::swap((*it).data_, (*j).data_);
-        }
-    }
-}
-//--------------------------------------------------------------------------------
 std::ostream &operator<<(std::ostream &os, List &list)
 {
     int i = 0;
@@ -530,13 +513,8 @@ std::ostream &operator<<(std::ostream &os, List &list)
     return os;
 }
 //--------------------------------------------------------------------------------
-#if mergesort
 void List::merge_sort(Node **head)
-{   /* Реализовать алгоритм сортировки слиянием
-     * разделить список на 2 части
-     * рекурсивно сортировать обе части
-     */
-
+{
     if ((*head)->next_ == nullptr  or *head == tail_) // если список пуст или в нем содерждится 1 элемент он отсортирован
         return;
     
@@ -594,14 +572,4 @@ void List::split(Node **head, Node **a, Node **b)
     *b = slow->next_;
     slow->next_ = nullptr;
 }
-#endif
-//
-void quick_sort(List::iterator begin, List::iterator end)
-{
-    if (begin == end)
-        return; // список пуст или в нем 1 элемент
-
-    List::iterator it = partition(begin, end);
-    quick_sort(begin, --it);
-    quick_sort(++it, end);
-}
+//--------------------------------------------------------------------------------
