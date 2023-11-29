@@ -4,6 +4,10 @@
 #include <iostream>
 #include <iterator>
 
+/* OOP
+ * lab #12
+*/
+
 template <typename T>
 class List
 {
