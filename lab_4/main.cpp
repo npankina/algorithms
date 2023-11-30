@@ -1,5 +1,4 @@
 #include "List.h"
-#include "Functions.h"
 #include <algorithm>
 #include <list>
 
