@@ -4,15 +4,25 @@
 //----------------------------------------------------------------------
 template <typename T>
 Array<T>::Array()
+: size_(0), allocated_(10)
 {}
 //----------------------------------------------------------------------
 template <typename T>
 Array<T>::Array(const size_type &n, value_type t)
-{}
+: size_(n), allocated_(n * 2), data_(new value_type[allocated_])
+{
+    for (auto i = 0; i < n; ++i) // TODO ?? уместнее использовать std::fill
+        data_[i] = t;
+}
 //----------------------------------------------------------------------
 template <typename T>
 Array<T>::Array(const std::initializer_list<value_type> &t)
-{}
+: size_(t.size() ), allocated_(size_ * 2), data_(new value_type[allocated_])
+// TODO ?? потенциальная ошибка при выделении памяти. Как поведет себя программа, если память выделиться не сможет?
+{
+    for (auto i : t)
+        push_back(i);
+}
 //----------------------------------------------------------------------
 template <typename T>
 Array<T>::Array(const Array &lhs)
