@@ -4,8 +4,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <initializer_list>
-#include <algorithm>
-
 
 template <typename T>
 class Array
@@ -55,11 +53,6 @@ public:
 
     void clear() noexcept;    	     		         // очистить массив
     void swap(Array &rhs);                           // -- обмен массивов - типа перемещения --
-
-private:
-    size_type size_;
-    size_type allocated_;
-    value_type data_;
 };
 
 #endif //LAB_2_ARRAY_H

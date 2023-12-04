@@ -4,48 +4,30 @@
 //----------------------------------------------------------------------
 template <typename T>
 Array<T>::Array()
-: size_(0), allocated_(10)
 {}
 //----------------------------------------------------------------------
 template <typename T>
 Array<T>::Array(const size_type &n, value_type t)
-: size_(n), allocated_(n * 2), data_(new value_type[allocated_])
-{
-    for (auto i = 0; i < n; ++i) // TODO ?? уместнее использовать std::fill
-        data_[i] = t;
-}
-//----------------------------------------------------------------------
-template <typename T>
-Array<T>::Array(const std::initializer_list<value_type> &t)
-: size_(t.size() ), allocated_(size_ * 2), data_(new value_type[allocated_])
-// TODO ?? потенциальная ошибка при выделении памяти. Как поведет себя программа, если память выделиться не сможет?
-{
-    for (auto i : t)
-        push_back(i);
-}
-//----------------------------------------------------------------------
-template <typename T>
-Array<T>::Array(const Array &lhs) // copy ctor
-: size_(lhs.size_), allocated_(lhs.allocated_), data_(new value_type[allocated_])
-{
-    std::copy(lhs.data_, lhs.data_ + size_, data_);
-}
-//----------------------------------------------------------------------
-template <typename T>
-Array<T>::Array(Array &&rhs) noexcept // move ctor
 {}
 //----------------------------------------------------------------------
 template <typename T>
-Array<T>& Array<T>::operator=(const Array &lhs) // copy assign
-{
-    if (this != &lhs)
-    {
-
-    }
-}
+Array<T>::Array(const std::initializer_list<value_type> &t)
+{}
 //----------------------------------------------------------------------
 template <typename T>
-Array<T>& Array<T>::operator=(Array &&rhs) noexcept // move assign
+Array<T>::Array(const Array &lhs)
+{}
+//----------------------------------------------------------------------
+template <typename T>
+Array<T>::Array(Array &&rhs) noexcept
+{}
+//----------------------------------------------------------------------
+template <typename T>
+Array<T>& Array<T>::operator=(const Array &lhs)
+{}
+//----------------------------------------------------------------------
+template <typename T>
+Array<T>& Array<T>::operator=(Array &&rhs) noexcept
 {}
 //----------------------------------------------------------------------
 template <typename T>
