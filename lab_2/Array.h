@@ -21,10 +21,10 @@ public:
     Array();
     explicit Array(const size_type &n, value_type t = 0);
     Array(const std::initializer_list<value_type> &t);
-    Array(const Array &other);
-    Array(Array &&other) noexcept;
-    Array& operator=(const Array &other);
-    Array& operator=(Array &&other) noexcept;
+    Array(const Array &other); // copy ctor
+    Array(Array &&other) noexcept; // move ctor
+    Array& operator=(const Array &other); // copy assign
+    Array& operator=(Array &&other) noexcept; // move assign
     virtual ~Array() noexcept;
 
     // -- размеры --
@@ -53,6 +53,13 @@ public:
 
     void clear() noexcept;    	     		         // очистить массив
     void swap(Array &rhs);                           // -- обмен массивов - типа перемещения --
+
+    void realloc(size_type new_capacity);
+
+private:
+    size_type size_;
+    size_type allocated_;
+    value_type data_;
 };
 
 #endif //LAB_2_ARRAY_H
