@@ -46,7 +46,7 @@ public:
     void pop_back() noexcept;                        // удалить последний элемент
     void push_front(const value_type &v);            // -- добавить элемент в начало --
     void pop_front() noexcept;                       // удалить первый элемент
-    void Insert(size_type idx);			             // -- вставить елемент перед элементом idx
+    void Insert(size_type index, value_type &&value); // -- вставить елемент перед элементом idx
     void insert(iterator it);			 	         // -- вставить елемент перед элементом it
     void erase(size_type idx); 			             // -- удалить элемент idx
     void erase(iterator it);	 			         // -- удалить элемент it

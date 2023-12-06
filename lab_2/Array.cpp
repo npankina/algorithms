@@ -190,15 +190,55 @@ void Array<T>::pop_back() noexcept
 //----------------------------------------------------------------------
 template <typename T>
 void Array<T>::push_front(const value_type &lhs)
-{}
+{
+    if (size_ == 0)
+        push_back(lhs);
+    else
+    {
+        if (size_ == allocated_)
+            realloc(allocated_ * 2);
+
+        for (size_t i = size_; i > 0; i--)
+            data_[i] = data_[i - 1];
+
+        data_[0] = lhs;
+        ++size_;
+    }
+}
 //----------------------------------------------------------------------
 template <typename T>
 void Array<T>::pop_front() noexcept
-{}
+{
+    if (size_ == 0)
+    {
+        std::cout << "Error => the array is empty --- [pop_front method]" << std::endl;
+        return;
+    }
+
+    for (int i = 0; i < size_-1; i++)
+        data_[i] = data_[i + 1];
+
+    --size_;
+}
 //----------------------------------------------------------------------
 template <typename T>
-void Array<T>::Insert(size_type idx)
-{}
+void Array<T>::Insert(size_type index, value_type &&value)
+{
+    if ( (index < 0) or (index > size_) )
+    {
+        std::cout << "Error => Index out of range --- [insert method]" << std::endl;
+        return;
+    }
+
+    if (size_ == allocated_)
+        realloc(size_ * 2);
+
+    for (int i = size_; i >= index; --i)
+        data_[i + 1] = data_[i];
+
+    data_[index] = value;
+    ++size_;
+}
 //----------------------------------------------------------------------
 template <typename T>
 void Array<T>::insert(iterator it)
