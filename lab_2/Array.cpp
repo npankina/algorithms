@@ -241,22 +241,44 @@ void Array<T>::Insert(size_type index, value_type &&value)
 }
 //----------------------------------------------------------------------
 template <typename T>
-void Array<T>::insert(iterator it)
-{}
+void Array<T>::insert(iterator it, value_type &&value)
+{
+    // TODO сделать
+}
 //----------------------------------------------------------------------
 template <typename T>
-void Array<T>::erase(size_type idx)
-{}
+void Array<T>::erase(size_type index)
+{
+    if (index < 0 || index >= size_)
+    {
+//        throw std::out_of_range("index out of range");
+        std::cout << "Error => Index out of range --- [erase method]" << std::endl;
+        return;
+    }
+
+    for (int i = index; i < size_-1; ++i)
+        data_[i] = data_[i + 1];
+
+    --size_;
+}
 //----------------------------------------------------------------------
 template <typename T>
 void Array<T>::erase(iterator it)
-{}
+{
+
+}
 //----------------------------------------------------------------------
 template <typename T>
 void Array<T>::clear() noexcept
-{}
+{
+
+}
 //----------------------------------------------------------------------
 template <typename T>
 void Array<T>::swap(Array &lhs)
-{}
+{
+    std::swap(data_, lhs.data_);
+    std::swap(size_, lhs.size_);
+    std::swap(allocated_, lhs.allocated_);
+}
 //----------------------------------------------------------------------
