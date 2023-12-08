@@ -11,10 +11,11 @@ class Array
 public:
     using size_type = size_t;
     using value_type = T;
-    using iterator = value_type*;
-    using const_iterator = const value_type*;
-    using reference = value_type& ;
-    using const_reference = const value_type& ;
+    using reference = value_type & ;
+    using const_reference = const value_type & ;
+    using difference_type = ptrdiff_t;
+    using pointer = T *;
+    using const_pointer = const T *;
 
 public:
     // -- конструкторы и присваивания --
@@ -26,6 +27,59 @@ public:
     Array& operator=(const Array &other); // copy assign
     Array& operator=(Array &&other) noexcept; // move assign
     virtual ~Array() noexcept;
+
+    class Const_Iterator
+    {
+    private:
+        friend class List;
+        explicit Const_Iterator(const T *ptr) noexcept;
+
+    public:
+        using difference_type = Array::difference_type;
+        using value_type = Array::value_type;
+        using pointer = Array::const_pointer;
+        using reference = Array::const_reference;
+        using iterator_category = std::random_access_iterator_tag;
+
+        Const_Iterator() : current_(nullptr) {};
+        reference operator*() const noexcept;
+        Const_Iterator &operator++() noexcept;
+        Const_Iterator &operator--() noexcept;
+        Const_Iterator operator++(int) noexcept;
+        Const_Iterator operator--(int) noexcept;
+        bool operator==(Const_Iterator rhs) const noexcept;
+        bool operator!=(Const_Iterator rhs) const noexcept;
+
+    protected:
+        const Array *Get() const noexcept;
+
+        const Array *current_;
+    };  // -- конец const-итератора --
+
+    class Iterator : public Const_Iterator
+    {
+    private:
+        friend class List;
+
+    public:
+        using difference_type = Array::difference_type;
+        using value_type = Array::value_type;
+        using pointer = Array::pointer;
+        using reference = Array::reference;
+        using iterator_category = std::random_access_iterator_tag;
+
+        Iterator() : Const_Iterator() {};
+        explicit Iterator(T *ptr) noexcept;
+        reference operator*() const noexcept;
+        Iterator &operator++() noexcept;
+        Iterator &operator--() noexcept;
+        Iterator operator++(int) noexcept;
+        Iterator operator--(int) noexcept;
+    };  // -- конец итератора --
+
+
+    using iterator = Iterator;
+    using const_iterator = Const_Iterator;
 
     // -- размеры --
     size_type size() const noexcept;             // текущее количество элементов

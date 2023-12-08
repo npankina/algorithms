@@ -47,7 +47,7 @@ Array<T>& Array<T>::operator=(const Array &lhs) // copy assign
     {
         size_ = lhs.size_;
         allocated_ = lhs.allocated_;
-        delete [] data_;
+        data_.~T();
         data_ = new value_type[allocated_];
         std::copy(lhs.data_, lhs.data_ + size_, data_);
     }
@@ -62,7 +62,7 @@ Array<T>& Array<T>::operator=(Array &&rhs) noexcept // move assign
     {
         std::swap(size_, rhs.size_);
         std::swap(allocated_, rhs.allocated_);
-        delete [] data_;
+        data_.~T();
         data_ = std::move(rhs.data_);
     }
 
@@ -72,7 +72,6 @@ Array<T>& Array<T>::operator=(Array &&rhs) noexcept // move assign
 template <typename T>
 Array<T>::~Array() noexcept
 {
-    // TODO написать деструктор
     delete [] data_;
 }
 //----------------------------------------------------------------------
@@ -97,7 +96,7 @@ Array<T>::size_type Array<T>::capacity() const noexcept
 template <typename T>
 Array<T>::iterator begin() noexcept
 {
-    return data_;
+    return data_[0];
 }
 //----------------------------------------------------------------------
 template <typename T>
@@ -244,17 +243,14 @@ template <typename T>
 void Array<T>::insert(iterator it, value_type &&value)
 {
     // TODO сделать
+
 }
 //----------------------------------------------------------------------
 template <typename T>
 void Array<T>::erase(size_type index)
 {
     if (index < 0 || index >= size_)
-    {
-//        throw std::out_of_range("index out of range");
-        std::cout << "Error => Index out of range --- [erase method]" << std::endl;
-        return;
-    }
+        throw std::out_of_range("index out of range");
 
     for (int i = index; i < size_-1; ++i)
         data_[i] = data_[i + 1];
