@@ -4,8 +4,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <initializer_list>
+#include <memory>
 
-template <typename T>
+template <typename T, typename Alloc = std::allocator<T>>
 class Array
 {
 public:
@@ -13,73 +14,21 @@ public:
     using value_type = T;
     using reference = value_type & ;
     using const_reference = const value_type & ;
-    using difference_type = ptrdiff_t;
-    using pointer = T *;
-    using const_pointer = const T *;
+    using pointer = value_type *;
+    using const_pointer = const value_type *;
+    using iterator = value_type *;
+    using const_iterator = const value_type *;
 
 public:
     // -- конструкторы и присваивания --
     Array();
-    explicit Array(const size_type &n, value_type t = 0);
+    explicit Array(const size_type &n, const T& value = T(), const Alloc &alloc = Alloc() );
     Array(const std::initializer_list<value_type> &t);
     Array(const Array &other); // copy ctor
     Array(Array &&other) noexcept; // move ctor
     Array& operator=(const Array &other); // copy assign
     Array& operator=(Array &&other) noexcept; // move assign
     virtual ~Array() noexcept;
-
-    class Const_Iterator
-    {
-    private:
-        friend class List;
-        explicit Const_Iterator(const T *ptr) noexcept;
-
-    public:
-        using difference_type = Array::difference_type;
-        using value_type = Array::value_type;
-        using pointer = Array::const_pointer;
-        using reference = Array::const_reference;
-        using iterator_category = std::random_access_iterator_tag;
-
-        Const_Iterator() : current_(nullptr) {};
-        reference operator*() const noexcept;
-        Const_Iterator &operator++() noexcept;
-        Const_Iterator &operator--() noexcept;
-        Const_Iterator operator++(int) noexcept;
-        Const_Iterator operator--(int) noexcept;
-        bool operator==(Const_Iterator rhs) const noexcept;
-        bool operator!=(Const_Iterator rhs) const noexcept;
-
-    protected:
-        const Array *Get() const noexcept;
-
-        const Array *current_;
-    };  // -- конец const-итератора --
-
-    class Iterator : public Const_Iterator
-    {
-    private:
-        friend class List;
-
-    public:
-        using difference_type = Array::difference_type;
-        using value_type = Array::value_type;
-        using pointer = Array::pointer;
-        using reference = Array::reference;
-        using iterator_category = std::random_access_iterator_tag;
-
-        Iterator() : Const_Iterator() {};
-        explicit Iterator(T *ptr) noexcept;
-        reference operator*() const noexcept;
-        Iterator &operator++() noexcept;
-        Iterator &operator--() noexcept;
-        Iterator operator++(int) noexcept;
-        Iterator operator--(int) noexcept;
-    };  // -- конец итератора --
-
-
-    using iterator = Iterator;
-    using const_iterator = Const_Iterator;
 
     // -- размеры --
     size_type size() const noexcept;             // текущее количество элементов
@@ -98,11 +47,11 @@ public:
     // -- методы-модификаторы
     void push_back(const value_type &v);              // -- добавить элемент в конец --
     void pop_back() noexcept;                         // удалить последний элемент
-    void push_front(const value_type &v);             // -- добавить элемент в начало --
+    void push_front(const value_type &rhs);             // -- добавить элемент в начало --
     void pop_front() noexcept;                        // удалить первый элемент
     void Insert(size_type index, value_type &&value); // -- вставить елемент перед элементом idx
     void insert(iterator it, value_type &&value);     // -- вставить елемент перед элементом it
-    void erase(size_type index); 			              // -- удалить элемент idx
+    void erase(size_type index); 			          // -- удалить элемент idx
     void erase(iterator it);	 			          // -- удалить элемент it
 
     void clear() noexcept;    	     		         // очистить массив
@@ -111,9 +60,11 @@ public:
     void realloc(size_type new_capacity);
 
 private:
-    size_type size_;
-    size_type allocated_;
-    value_type data_;
-};
+    using AllocTraits = std::allocator_traits<Alloc>;
 
+    size_type size_;
+    size_type capacity_;
+    value_type *data_;
+    Alloc alloc_;
+};
 #endif //LAB_2_ARRAY_H

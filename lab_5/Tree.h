@@ -9,9 +9,14 @@ public:
     using key_t   = uint64_t;
     using value_t = std::tuple</* something */>;
     using data_t  = std::tuple<key_t, value_t>;
+
 private:
     struct node_t
     {
+        struct node_t *parent_;
+        struct node_t *left_;
+        struct node_t *right_;
+        void *data_; // TODO T? какой тип данных будет в data_
     };
 
 public:
