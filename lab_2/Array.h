@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <initializer_list>
 #include <memory>
+#include <cassert>
 
 template <typename T, typename Alloc = std::allocator<T>>
 class Array
@@ -23,8 +24,8 @@ public:
     // -- конструкторы и присваивания --
     Array();
     explicit Array(const size_type &n, const T& value = T(), const Alloc &alloc = Alloc() );
-    Array(const std::initializer_list<value_type> &t);
-    Array(const Array &other); // copy ctor
+    Array(const std::initializer_list<value_type> &t, const Alloc &alloc = Alloc() );
+    Array(const Array &rhs); // copy ctor
     Array(Array &&other) noexcept; // move ctor
     Array& operator=(const Array &other); // copy assign
     Array& operator=(Array &&other) noexcept; // move assign
@@ -45,7 +46,7 @@ public:
     reference back() noexcept;
     const_reference back() const noexcept;
     // -- методы-модификаторы
-    void push_back(const value_type &v);              // -- добавить элемент в конец --
+    void push_back(const value_type &rhs);              // -- добавить элемент в конец --
     void pop_back() noexcept;                         // удалить последний элемент
     void push_front(const value_type &rhs);             // -- добавить элемент в начало --
     void pop_front() noexcept;                        // удалить первый элемент
