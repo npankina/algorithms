@@ -75,7 +75,11 @@ Array<T, Alloc>& Array<T, Alloc>::operator=(Array &&rhs) noexcept // move assign
 template <typename T, typename Alloc>
 Array<T, Alloc>::~Array() noexcept
 {
-    delete [] data_;
+    // 1. clear all array
+    // 2. deallocate memory
+
+   clear();
+   AllocTraits::deallocate(alloc_, capacity_);
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
@@ -174,7 +178,7 @@ void Array<T, Alloc>::pop_back() noexcept
         return; /* По хорошему здесь должно быть выброшено исключение, но метод аннотирован как noexcept
      * throw std::invalid_argument("Error => Attempt to pop empty vector --- [pop_back method]"); */
 
-    AllocTraits::destroy(alloc_, data_[size_ - 1]);
+    AllocTraits::destroy(alloc_, data_ + (size_ - 1) );
     --size_;
 }
 //----------------------------------------------------------------------
@@ -213,7 +217,7 @@ void Array<T, Alloc>::pop_front() noexcept
     if (size_ == 0) /* throw std::invalid_argument("Error => the array is empty --- [pop_front method]"); */
         return; // метод аннотирован noexcept
 
-    AllocTraits::destroy(alloc_, data_[0]);
+    AllocTraits::destroy(alloc_, data_); // data[0]
     for (int i = 0; i < size_-1; i++)
         data_[i] = std::move(data_[i + 1]);
     --size_;
@@ -260,7 +264,7 @@ void Array<T, Alloc>::erase(size_type index)
     if (index < 0 or index >= size_)
         throw std::out_of_range("Index out of range --- [erase method]");
 
-    AllocTraits::destroy(alloc_, data_[index]); //
+    AllocTraits::destroy(alloc_, data_ + index);
     for (int i = index; i < (size_ - 1); ++i)
         data_[i] = std::move(data_[i + 1]);
     --size_;
@@ -275,7 +279,8 @@ void Array<T, Alloc>::erase(iterator it)
 template <typename T, typename Alloc>
 void Array<T, Alloc>::clear() noexcept
 {
-
+    for (size_t i = 0; i < size_; ++i)
+        AllocTraits::destroy(alloc_, data_ + i); // TODO data + i ??
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>

@@ -17,10 +17,92 @@ public:
     using const_reference = const value_type & ;
     using pointer = value_type *;
     using const_pointer = const value_type *;
-    using iterator = value_type *;
-    using const_iterator = const value_type *;
+    using difference_type = ptrdiff_t;
 
 public:
+    class Const_Iterator
+    {
+    private:
+        friend class Array;
+        explicit Const_Iterator(const value_type *ptr) noexcept : current_(ptr) {};
+
+    public:
+        using difference_type = Array::difference_type;
+        using value_type = Array::value_type;
+        using pointer = Array::const_pointer;
+        using reference = Array::const_reference;
+        using iterator_category = std::random_access_iterator_tag;
+
+        Const_Iterator() : current_(nullptr) {};
+        reference operator*() const noexcept
+        {
+            return *current_;
+        }
+        Const_Iterator &operator++() noexcept
+        {
+            current_ = current_ + 1;
+            return *this;
+        }
+        Const_Iterator &operator--() noexcept
+        {
+            current_ = current_ - 1;
+            return *this;
+        }
+        Const_Iterator operator++(int) noexcept
+        {
+            Const_Iterator copy = *this;
+            current_ = current_ + 1;
+            return copy;
+        }
+        Const_Iterator operator--(int) noexcept
+        {
+            Const_Iterator copy = *this;
+            current_ = current_ - 1;
+            return copy;
+        }
+        bool operator==(Const_Iterator rhs) const noexcept
+        {
+            return current_ == rhs.current_;
+        }
+        bool operator!=(Const_Iterator rhs) const noexcept
+        {
+            return !(*this == rhs);
+        }
+
+    protected:
+        const value_type *Get() const noexcept
+        {
+            return current_;
+        }
+
+        const value_type *current_;
+    };  // -- конец const-итератора --
+
+    class Iterator : public Const_Iterator
+    {
+    private:
+        friend class Array;
+
+    public:
+        using difference_type = Array::difference_type;
+        using value_type = Array::value_type;
+        using pointer = Array::pointer;
+        using reference = Array::reference;
+        using iterator_category = std::random_access_iterator_tag;
+
+        Iterator() : Const_Iterator() {};
+        explicit Iterator(value_type *ptr) noexcept;
+        reference operator*() const noexcept;
+        Iterator &operator++() noexcept;
+        Iterator &operator--() noexcept;
+        Iterator operator++(int) noexcept;
+        Iterator operator--(int) noexcept;
+    };  // -- конец итератора --
+
+
+    using iterator = Iterator;
+    using const_iterator = Const_Iterator;
+
     // -- конструкторы и присваивания --
     Array();
     explicit Array(const size_type &n, const T& value = T(), const Alloc &alloc = Alloc() );
