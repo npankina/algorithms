@@ -1,8 +1,14 @@
-#include "List.h"
-#include <algorithm>
 #include <list>
+#include <algorithm>
+#include <chrono>
+#include "List.h"
 
-
+template<typename V, typename R>
+std::ostream& operator<<(std::ostream &s, const std::chrono::duration<V,R> &d)
+{
+    s << d.count();
+    return s;
+}
 
 int main() {
     setlocale(LC_ALL, "UTF-8");
@@ -23,7 +29,7 @@ int main() {
     auto start = std::chrono::steady_clock::now();
 
     for (int i = 0; i < LIST_SIZE; ++i)
-        A.push_back(fill_list_cont());
+        A.push_back(Record(std::make_tuple(2021, "A", 1.25) ) );
 
     auto finish = std::chrono::steady_clock::now();
     auto t = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
@@ -40,7 +46,7 @@ int main() {
         start = std::chrono::steady_clock::now();
 
         for (int i = 0; i < LIST_SIZE; ++i)
-            B.push_back(fill_list_cont());
+            B.push_back(Record(std::make_tuple(2021, "A", 1.25) ) );
 
         finish = std::chrono::steady_clock::now();
         t = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);

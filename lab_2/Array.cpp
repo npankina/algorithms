@@ -11,27 +11,30 @@ template <typename T, typename Alloc>
 Array<T, Alloc>::Array(const size_t &n, const T& value, const Alloc &alloc)
 : size_(n), capacity_(n + 10), alloc_(alloc)
 {
-    AllocTraits::allocate(alloc_, capacity_); // reserved raw memory
-    for (auto i = 0; i < size_; ++i)
-        AllocTraits::construct(alloc_, data_ + i, value); // create some objects
+    data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory and attach it to pointer
+    if (size_ > 0)
+        for (auto i = 0; i < size_; ++i)
+            AllocTraits::construct(alloc_, data_ + i, value); // create some objects
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
-Array<T, Alloc>::Array(const std::initializer_list<value_type> &t, const Alloc &alloc)
+Array<T, Alloc>::Array(const std::initializer_list<value_type> &t, const T& value, const Alloc &alloc)
 : size_(t.size() ), capacity_(size_ * 2), alloc_(alloc)
 {
-    AllocTraits::allocate(alloc_, capacity_); // reserved raw memory
+    data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory and attach it to pointer
+    for (auto i = 0; i < size_; ++i)
+        AllocTraits::construct(alloc_, data_ + i, value); // create some objects
     for (const auto &item : t)
-        push_back(AllocTraits::construct(alloc_, item) ); // TODO is it ok?
+        push_back(item);
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
 Array<T, Alloc>::Array(const Array &rhs) // copy ctor
 : size_(rhs.size_), capacity_(rhs.capacity_)
 {
-    AllocTraits::allocate(alloc_, capacity_); // reserved raw memory
-//    std::copy(rhs.data_, rhs.data_ + size_, data_);
-    data_ = std::uninitialized_copy(rhs.data_, rhs.data_ + size_, alloc_);
+    data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory
+    for (auto i = 0; i < size_; ++i)
+        AllocTraits::construct(alloc_, data_ + i, rhs.data_ + i); // create some objects
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
@@ -50,9 +53,12 @@ Array<T, Alloc>& Array<T, Alloc>::operator=(const Array &lhs) // copy assign
     {
         size_ = lhs.size_;
         capacity_ = lhs.capacity_;
-        data_.~T();
-        data_ = new value_type[capacity_];
-        std::copy(lhs.data_, lhs.data_ + size_, data_);
+        data_.~T(); // TODO is it right?? Shall we call an allocator.destroy method?
+        data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory
+//        std::copy(lhs.data_, lhs.data_ + size_, data_);
+
+        for (auto i = 0; i < size_; ++i)
+            AllocTraits::construct(alloc_, data_ + i, lhs.data_ + i); // create some objects
     }
 
     return *this;
@@ -78,8 +84,8 @@ Array<T, Alloc>::~Array() noexcept
     // 1. clear all array
     // 2. deallocate memory
 
-   clear();
-   AllocTraits::deallocate(alloc_, capacity_);
+    clear();
+    AllocTraits::deallocate(alloc_, data_, capacity_);
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
@@ -101,6 +107,94 @@ Array<T, Alloc>::size_type Array<T, Alloc>::capacity() const noexcept
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
+void Array<T, Alloc>::clear() noexcept
+{
+    for (size_t i = 0; i < size_; ++i)
+        AllocTraits::destroy(alloc_, data_ + i);
+}
+//----------------------------------------------------------------------
+template <typename T, typename Alloc>
+void Array<T, Alloc>::push_back(const value_type &rhs)
+{
+    // 1. check is capacity equal to size
+    // 1.2 realloc if TRUE
+    // 2. put in last [] new element -> copy ctor
+    // 3. increase size
+
+    if (capacity_ == size_)
+        realloc(capacity_ * 2);
+
+    data_[size_ - 1] = rhs;
+    ++size_;
+}
+//----------------------------------------------------------------------
+template <typename T, typename Alloc>
+Array<T, Alloc>::reference Array<T, Alloc>::operator[](size_type index)
+{
+    if (index >= size_ or index < 0)
+        throw std::out_of_range("Error => index out of range");
+    return data_[index];
+}
+//----------------------------------------------------------------------
+template <typename T, typename Alloc>
+Array<T, Alloc>::const_reference Array<T, Alloc>::operator[](size_type index) const
+{ // TODO нужно ли бросать исключение, если метод не пытается изменить данные, но объявлен как const?
+    if (index >= size_ or index < 0)
+        throw std::out_of_range("Error => index out of range");
+    return data_[index];
+}
+//----------------------------------------------------------------------
+template <typename T, typename Alloc>
+void Array<T, Alloc>::pop_back()
+{
+    // 1. check is array empty -> nothing to pop => do nothing (noexcept) or throw exception
+    // 2. destroy object
+    // 3. decrease size
+
+    if (size_ == 0)
+        throw std::invalid_argument("Error => Attempt to pop empty vector --- [pop_back method]");
+
+    AllocTraits::destroy(alloc_, data_ + (size_ - 1) );
+    --size_;
+}
+//----------------------------------------------------------------------
+template <typename T, typename Alloc>
+void Array<T, Alloc>::realloc(size_type new_capacity)
+{
+    // 1. Allocate a new block of memory
+    // 2. copy / move old elements into new block
+    // 3. delete old block
+
+    if (new_capacity < size_)
+        return;
+
+    auto *new_block = AllocTraits::allocate(alloc_, new_capacity);
+
+    size_t i = 0;
+    try
+    {
+        for (; i < size_; ++i)
+            AllocTraits::construct(alloc_, new_block + i, std::move(data_[i]) ); // перемещение существующих объектов в новый блок памяти
+    } catch (...) // предполагаем поймать bad_alloc
+    {
+        for (size_t j = 0; j < i; ++j)
+            AllocTraits::destroy(alloc_, new_block + i); // уничтожение объектов
+
+        AllocTraits::deallocate(alloc_, new_block, new_capacity); // возврат выделенной памяти
+        throw; // выбросить исключение дальше лететь по стеку
+    }
+
+    for (i = 0; i < size_; ++i) // уничтожение созданных объектов
+        AllocTraits::destroy(alloc_, new_block + i);
+
+    AllocTraits::deallocate(alloc_, data_, capacity_); // возврат памяти
+
+    data_ = new_block;
+    capacity_ = new_capacity;
+}
+#if other
+//----------------------------------------------------------------------
+template <typename T, typename Alloc>
 Array<T, Alloc>::iterator Array<T, Alloc>::begin() noexcept
 {
     return data_;
@@ -110,22 +204,6 @@ template <typename T, typename Alloc>
 Array<T, Alloc>::iterator Array<T, Alloc>::end() noexcept
 {
     return data_ + size_;
-}
-//----------------------------------------------------------------------
-template <typename T, typename Alloc>
-Array<T, Alloc>::reference Array<T, Alloc>::operator[](size_type index)
-{ // TODO как можно улучшить?? Дублирование кода происходит в < operator[](size_type index) const >
-    if (index >= size_ or index < 0)
-        throw std::out_of_range("Error => index out of range");
-    return data_[index];
-}
-//----------------------------------------------------------------------
-template <typename T, typename Alloc>
-Array<T, Alloc>::const_reference Array<T, Alloc>::operator[](size_type index) const
-{
-    if (index >= size_ or index < 0)
-        throw std::out_of_range("Error => index out of range");
-    return data_[index];
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
@@ -150,36 +228,6 @@ template <typename T, typename Alloc>
 Array<T, Alloc>::const_reference Array<T, Alloc>::back() const noexcept
 {
     return data_[size_ - 1];
-}
-//----------------------------------------------------------------------
-template <typename T, typename Alloc>
-void Array<T, Alloc>::push_back(const value_type &rhs)
-{
-    // 1. check is capacity equal to size
-    // 1.2 realloc if TRUE
-    // 2. put in last [] new element -> copy ctor
-    // 3. increase size
-
-    if (capacity_ == size_)
-        realloc(capacity_ * 2);
-
-    data_[size_ - 1] = rhs;
-    ++size_;
-}
-//----------------------------------------------------------------------
-template <typename T, typename Alloc>
-void Array<T, Alloc>::pop_back() noexcept
-{
-    // 1. check is array empty -> nothing to pop => do nothing (noexcept) or throw exception
-    // 2. destroy object
-    // 3. decrease size
-
-    if (size_ == 0)
-        return; /* По хорошему здесь должно быть выброшено исключение, но метод аннотирован как noexcept
-     * throw std::invalid_argument("Error => Attempt to pop empty vector --- [pop_back method]"); */
-
-    AllocTraits::destroy(alloc_, data_ + (size_ - 1) );
-    --size_;
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
@@ -277,13 +325,6 @@ void Array<T, Alloc>::erase(iterator it)
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
-void Array<T, Alloc>::clear() noexcept
-{
-    for (size_t i = 0; i < size_; ++i)
-        AllocTraits::destroy(alloc_, data_ + i); // TODO data + i ??
-}
-//----------------------------------------------------------------------
-template <typename T, typename Alloc>
 void Array<T, Alloc>::swap(Array &rhs)
 {
     std::swap(data_, rhs.data_);
@@ -291,38 +332,4 @@ void Array<T, Alloc>::swap(Array &rhs)
     std::swap(capacity_, rhs.capacity_);
 }
 //----------------------------------------------------------------------
-template <typename T, typename Alloc>
-void Array<T, Alloc>::realloc(size_type new_capacity)
-{
-    // 1. Allocate a new block of memory
-    // 2. copy / move old elements into new block
-    // 3. delete old block
-
-    if (new_capacity < size_)
-        return;
-
-    auto *new_block = AllocTraits::allocate(alloc_, new_capacity);
-
-    size_t i = 0;
-    try
-    {
-        for (; i < size_; ++i)
-            AllocTraits::construct(alloc_, new_block + i, std::move(data_[i]) ); // перемещение существующих объектов в новый блок памяти
-    } catch (...) // предполагаем поймать bad_alloc
-    {
-        for (size_t j = 0; j < i; ++j)
-            AllocTraits::destroy(alloc_, new_block + i); // уничтожение объектов
-
-        AllocTraits::deallocate(alloc_, new_block, new_capacity); // возврат выделенной памяти
-        throw; // выбросить исключение дальше лететь по стеку
-    }
-
-    for (size_t i = 0; i < size_; ++i) // уничтожение созданных объектов
-        AllocTraits::destroy(alloc_, new_block + i);
-
-    AllocTraits::deallocate(alloc_, data_, capacity_); // возврат памяти
-
-    data_ = new_block;
-    capacity_ = new_capacity;
-}
-//----------------------------------------------------------------------
+#endif
