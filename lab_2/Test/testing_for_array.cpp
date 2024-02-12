@@ -1,7 +1,7 @@
 #include "catch_amalgamated.hpp"
 #include "catch_amalgamated.cpp"
 
-#include "../Array.cpp"
+#include "../Array/Array.cpp"
 #include <iostream>
 
 // class Array

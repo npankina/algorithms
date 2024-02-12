@@ -15,12 +15,20 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-add_executable(tests Test/test.cpp
-        Array.cpp)
+add_executable(tests_array
+        Test/testing_for_array.cpp
+        Array/Array.cpp)
 
-target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
+add_executable(tests_list
+        Test/testing_for_list.cpp
+        List/List.cpp)
+
+target_link_libraries(tests_array PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(tests_list PRIVATE Catch2::Catch2WithMain)
+
 
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(Catch)
-catch_discover_tests(tests)
+catch_discover_tests(tests_array)
+catch_discover_tests(tests_list)
 enable_testing()
