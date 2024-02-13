@@ -1,7 +1,7 @@
-#include "catch_amalgamated.hpp"
-#include "catch_amalgamated.cpp"
+#include "../Test/catch_amalgamated.hpp"
+#include "../Test/catch_amalgamated.cpp"
 
-#include "../List/List.cpp"
+#include "List.cpp"
 #include <iostream>
 
 

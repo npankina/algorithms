@@ -22,7 +22,7 @@ Record::Record(const Record &lvalue) // copy ctor
 Record::Record(Record &&rvalue) // move ctor
 {
     cypher_ = std::move(rvalue.cypher_);
-    year_of_pub  = std::move(rvalue.year_of_pub);
+    year_of_pub = std::move(rvalue.year_of_pub);
     publisher  = std::move(rvalue.publisher);
     price_  = std::move(rvalue.price_);
 }

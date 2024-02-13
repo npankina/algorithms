@@ -1,5 +1,4 @@
-#ifndef LAB_2_ARRAY_H
-#define LAB_2_ARRAY_H
+#pragma once
 
 #include <iostream>
 #include <cstdlib>
@@ -137,6 +136,8 @@ public:
 
     void swap(Array &rhs);                           // -- обмен массивов - типа перемещения --
 
+    friend std::ostream &operator<<(std::ostream &os, Array<T> &cont);
+
 private:
     void clear() noexcept;    	     		         // очистить массив
     void realloc(size_type new_capacity);
@@ -148,4 +149,3 @@ private:
     value_type *data_;
     Alloc alloc_;
 };
-#endif //LAB_2_ARRAY_H

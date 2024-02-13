@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.26)
-project(lab_2)
+project(array)
+project(list)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(lab_2 main.cpp)
+add_executable(array Array/main.cpp
+        Array/Data/Subcriber.h)
+add_executable(list List/main.cpp)
+
 
 Include(FetchContent)
 
@@ -16,11 +20,13 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 add_executable(tests_array
-        Test/testing_for_array.cpp
-        Array/Array.cpp)
+        Array/testing_for_array.cpp
+        Array/Array.cpp
+        Array/Data/Subcriber.cpp
+        Array/Data/Record.cpp)
 
 add_executable(tests_list
-        Test/testing_for_list.cpp
+        List/testing_for_list.cpp
         List/List.cpp)
 
 target_link_libraries(tests_array PRIVATE Catch2::Catch2WithMain)

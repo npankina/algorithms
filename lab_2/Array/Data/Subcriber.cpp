@@ -1,15 +1,17 @@
 #include "Subcriber.h"
 
+
 // class Subscriber
 //--------------------------------------------------------------------------------
 Subscriber::Subscriber(std::string name)
-: last_name(name), taken_books(0), sub_cypher(tool::subscribers_cypher++), lib_data(0)
+: last_name(name), taken_books(0), sub_cypher(tool::subscribers_cypher++)
 {}
 //--------------------------------------------------------------------------------
 Subscriber::Subscriber(const Subscriber &lhs)
 : last_name(lhs.last_name), taken_books(lhs.taken_books), sub_cypher(lhs.sub_cypher)
 {
-     lib_data = lhs.lib_data; // вызовется copy ctor для List
+//     lib_data = lhs.lib_data; // вызовется copy ctor
+// TODO
 }
 //--------------------------------------------------------------------------------
 Subscriber::Subscriber(Subscriber &&rhs)
@@ -58,6 +60,7 @@ void Subscriber::add_book(Record &&item)
     ++taken_books;
 }
 //--------------------------------------------------------------------------------
+#if todo_methods
 int Subscriber::Get_First_Element_ID()
 {
     return (*lib_data.begin() ).data_.Get_cypher();
@@ -107,3 +110,4 @@ bool Subscriber::search_by_price(double fnd)
     return false;
 }
 //--------------------------------------------------------------------------------
+#endif

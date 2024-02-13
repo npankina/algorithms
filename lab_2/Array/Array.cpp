@@ -1,5 +1,26 @@
 #include "Array.h"
 
+//--------------------------------------------------------------------------------
+template <typename T>
+std::ostream &operator<<(std::ostream &os, Array<T> &cont)
+{
+    int i = 0;
+    for (auto it = cont.begin(); it != cont.end(); it++)
+    {
+        os << "#" << ++i << '\n';
+        os << "Catalog ID: " << (*it).data_.Get_cypher() << "\n";
+        os << "Year of publishing: " << (*it).data_.Get_year_of_pub() << "\n";
+        os << "Publisher: " << (*it).data_.Get_publisher() << "\n";
+        os << "Price: " << (*it).data_.Get_price_() << "\n\n";
+    }
+
+    return os;
+}
+//--------------------------------------------------------------------------------
+
+
+
+
 // class Array
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
@@ -53,7 +74,7 @@ Array<T, Alloc>& Array<T, Alloc>::operator=(const Array &lhs) // copy assign
     {
         size_ = lhs.size_;
         capacity_ = lhs.capacity_;
-        data_.~T(); // TODO is it right?? Shall we call an allocator.destroy method?
+        data_->~T(); // TODO is it right?? Shall we call an allocator.destroy method?
         data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory
 //        std::copy(lhs.data_, lhs.data_ + size_, data_);
 
@@ -71,7 +92,7 @@ Array<T, Alloc>& Array<T, Alloc>::operator=(Array &&rhs) noexcept // move assign
     {
         std::swap(size_, rhs.size_);
         std::swap(capacity_, rhs.capacity_);
-        data_.~T();
+        data_->~T();
         data_ = std::move(rhs.data_);
     }
 

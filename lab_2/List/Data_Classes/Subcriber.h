@@ -1,18 +1,7 @@
 #pragma once
-#include <string>
 #include "Record.h"
+#include "../Array/Array.h"
 
-//--------------------------------------------------------------------------------
-namespace tool
-{
-    static int subscribers_cypher = 10000;
-
-//    enum class Lib_Data_Storage
-//    {
-//        LDS_Array,
-//        LDS_List
-//    };
-}
 //--------------------------------------------------------------------------------
 class Subscriber
 {
@@ -38,7 +27,7 @@ public:
 private:
     static const int size = 10;
 
-//    tool::Lib_Data_Storage lib_data;
+    Array<Record> lib_data;
     std::string last_name;
     int taken_books; // количество полученных книг
     int sub_cypher; // шифр пользователя

@@ -1,7 +1,8 @@
-#include "catch_amalgamated.hpp"
-#include "catch_amalgamated.cpp"
+#include "../Test/catch_amalgamated.hpp"
+#include "../Test/catch_amalgamated.cpp"
 
-#include "../Array/Array.cpp"
+#include "Array.cpp"
+#include "Data/Subcriber.cpp"
 #include <iostream>
 
 // class Array
