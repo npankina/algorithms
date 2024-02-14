@@ -4,18 +4,18 @@
 // class Subscriber
 //--------------------------------------------------------------------------------
 Subscriber::Subscriber(std::string name)
-: last_name(name), taken_books(0), sub_cypher(tool::subscribers_cypher++)
+: Last_Name(name), Taken_Books(0), Subsciber_Cypher(tool::subscribers_cypher++)
 {}
 //--------------------------------------------------------------------------------
 Subscriber::Subscriber(const Subscriber &lhs)
-: last_name(lhs.last_name), taken_books(lhs.taken_books), sub_cypher(lhs.sub_cypher)
+: Last_Name(lhs.Last_Name), Taken_Books(lhs.Taken_Books), Subsciber_Cypher(lhs.Subsciber_Cypher)
 {
 //     lib_data = lhs.lib_data; // вызовется copy ctor
 // TODO
 }
 //--------------------------------------------------------------------------------
 Subscriber::Subscriber(Subscriber &&rhs)
-: last_name(std::move(rhs.last_name)), taken_books(std::move(rhs.taken_books)), sub_cypher(std::move(rhs.sub_cypher))
+: Last_Name(std::move(rhs.Last_Name)), Taken_Books(std::move(rhs.Taken_Books)), Subsciber_Cypher(std::move(rhs.Subsciber_Cypher))
 {
     lib_data = std::move(rhs.lib_data);
 }
@@ -24,9 +24,9 @@ Subscriber &Subscriber::operator=(const Subscriber &lhs)
 {
     if (&lhs != this)
     {
-        last_name = lhs.last_name;
-        taken_books = lhs.taken_books;
-        sub_cypher = lhs.sub_cypher;
+        Last_Name = lhs.Last_Name;
+        Taken_Books = lhs.Taken_Books;
+        Subsciber_Cypher = lhs.Subsciber_Cypher;
         lib_data = lhs.lib_data;
     }
     return *this;
@@ -36,9 +36,9 @@ Subscriber &Subscriber::operator=(Subscriber &&rhs)
 {
     if (&rhs != this)
     {
-        std::swap(last_name, rhs.last_name);
-        std::swap(taken_books, rhs.taken_books);
-        std::swap(sub_cypher, rhs.sub_cypher);
+        std::swap(Last_Name, rhs.Last_Name);
+        std::swap(Taken_Books, rhs.Taken_Books);
+        std::swap(Subsciber_Cypher, rhs.Subsciber_Cypher);
         lib_data.swap(rhs.lib_data);
     }
     return *this;
@@ -51,13 +51,13 @@ void Subscriber::Get_Lib_Data()
 //--------------------------------------------------------------------------------
 void Subscriber::Set_Name(std::string name)
 {
-    last_name = name;
+    Last_Name = name;
 }
 //--------------------------------------------------------------------------------
-void Subscriber::add_book(Record &&item)
+void Subscriber::Add_Book(Record &&item)
 {
     lib_data.push_back(item);
-    ++taken_books;
+    ++Taken_Books;
 }
 //--------------------------------------------------------------------------------
 #if todo_methods
@@ -87,7 +87,7 @@ bool Subscriber::delete_book(const Record item)
         if ( (*it).data_.Get_publisher() == item.Get_publisher() )
         {
             lib_data.erase(it);
-            --taken_books;
+            --Taken_Books;
             return true;
         }
     }
