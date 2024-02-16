@@ -27,16 +27,10 @@ public:
 private:
     static const int size = 10;
 
-    struct Node
-    {
-        Record lib_data;
-        std::tuple<unsigned char, unsigned char, unsigned char, unsigned char> date;
-        std::pair<unsigned char, unsigned char> time;
-    };
-
-    Array<Node> Library_Data;
+    Array<Record> Library_Data;
     std::string Last_Name;
+    std::string First_Name;
     int Taken_Books; // количество полученных книг
-    int Subsciber_Cypher; // шифр пользователя
+    int Cypher; // шифр пользователя
 };
 //--------------------------------------------------------------------------------

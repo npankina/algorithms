@@ -14,7 +14,7 @@ namespace tool
 class Record
 {
 public:
-    Record() = delete;
+    Record();
     Record(std::tuple<int, int, std::string, double> &&item);
 
     Record(const Record &lvalue); // copy ctor

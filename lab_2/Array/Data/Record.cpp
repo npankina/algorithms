@@ -2,6 +2,10 @@
 
 //class Record
 //----------------------------------------------------------------------
+Record::Record()
+: cypher_(tool::cypher++), year_of_pub(2024), publisher(""), price_(0.0)
+{}
+//----------------------------------------------------------------------
 Record::Record(std::tuple<int, int, std::string, double> &&item)
 : cypher_(std::get<0>(item)), year_of_pub(std::get<1>(item)), publisher(std::get<2>(item)), price_(std::get<3>(item))
 {}

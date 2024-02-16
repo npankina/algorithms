@@ -128,13 +128,13 @@ public:
     void push_back(const value_type &rhs);              // -- добавить элемент в конец --
     void pop_back(); //noexcept;                         // удалить последний элемент
     void push_front(const value_type &rhs);             // -- добавить элемент в начало --
-    void pop_front() noexcept;                        // удалить первый элемент
+    void pop_front();                        // удалить первый элемент
     void Insert(size_type index, value_type &&value); // -- вставить елемент перед элементом idx
     void insert(iterator it, value_type &&value);     // -- вставить елемент перед элементом it
     void erase(size_type index); 			          // -- удалить элемент idx
     void erase(iterator it);	 			          // -- удалить элемент it
 
-    void swap(Array &rhs);                           // -- обмен массивов - типа перемещения --
+//    void swap(Array &rhs);                           // -- обмен массивов - типа перемещения --
 
     friend std::ostream &operator<<(std::ostream &os, Array<T> &cont);
 
