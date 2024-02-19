@@ -4,34 +4,39 @@
 #include <iostream>
 #include <iterator>
 #include <utility>
-#include "../Data_Classes/Record.h"
+#include <list>
+
 
 template <typename T, typename Alloc = std::allocator<T> >
 class List
 {
 public:
-    struct Node
+    class Node
     {
-        Node *prev_; // TODO заменить на smart pointer STL
-        Node *next_; // TODO заменить на smart pointer STL
-        T data_;
-
+    public:
+        Node() = delete;
         Node(T item) noexcept;
         Node(const Node &lhs); // copy ctor
         Node(Node &&rhs); // move ctor
         Node &operator=(const Node &lhs); // copy assign
         Node &operator=(Node &&rhs) noexcept; // move assign
         bool operator==(const Node &item) const noexcept;
+
+    private:
+        Node *prev_; // TODO заменить на smart pointer STL
+        Node *next_; // TODO заменить на smart pointer STL
+        T data_;
     }; // end of Node class
 
     // Usings
-    using value_type = Node;
+    using value_type = T;
+    using allocator_type = Alloc;
+    using reference = allocator_type::reference;
+    using const_reference = allocator_type::const_reference;
+    using pointer = allocator_type::pointer;
+    using const_pointer = allocator_type::const_pointer;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
-    using pointer = Node *; // TODO заменить на smart pointer STL
-    using const_pointer = const Node *; // TODO заменить на smart pointer STL
-    using reference = Node &;
-    using const_reference = const Node &;
 
     class Const_Iterator
     {
@@ -88,8 +93,8 @@ public:
 
 
     /* Конструкторы/деструктор/присваивания */
-    List(int size = 0);
-    List(const std::initializer_list<value_type> &items);
+    List();
+    List(const std::initializer_list<value_type> &items, const T &value = T(), const Alloc &alloc = Alloc() );
     List(const List &other) noexcept;          // copy ctor
     List(List &&other) noexcept;              // move ctor
     List &operator=(List &&other) noexcept; // move assign
@@ -128,10 +133,12 @@ public:
 private:
     void copy(const List &obj);
 
+    using AllocTraits = std::allocator_traits<Alloc>;
     // -- структура элемента списка
     size_type size_;
-    pointer head_;
-    pointer tail_;
+    List<T>::Node *head_;
+    List<T>::Node *tail_;
+    Alloc alloc_;
 };
 //--------------------------------------------------------------------------------
 #endif //LAB_2_LIST_H

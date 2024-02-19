@@ -14,9 +14,8 @@ namespace tool
 class Record
 {
 public:
-    Record(std::tuple<int, std::string, double> &&item);
-    Record(std::tuple<int, int, std::string, double> &&item);
-    Record(int c, int i, std::string s, double d);
+    Record() = delete;
+    explicit Record(std::tuple<int, int, std::string, double> &&item);
 
     Record(const Record &lvalue); // copy ctor
     Record(Record &&rvalue); // move ctor
@@ -24,6 +23,9 @@ public:
     Record &operator=(Record &&rvalue); // move assign
 
     bool operator==(const Record &item) const noexcept;
+    bool operator!=(const Record &item) const noexcept;
+    bool operator>(const Record &item) const noexcept;
+    bool operator<(const Record &item) const noexcept;
 
     int Get_cypher() const { return cypher_; }
     int Get_year_of_pub() const { return year_of_pub; }
@@ -36,3 +38,4 @@ private:
     std::string publisher;
     double price_;
 };
+//--------------------------------------------------------------------------------

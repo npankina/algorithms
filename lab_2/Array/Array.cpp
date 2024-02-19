@@ -32,9 +32,15 @@ template <typename T, typename Alloc>
 Array<T, Alloc>::Array(const size_t &n, const T& value, const Alloc &alloc)
 : size_(n), capacity_(n + 10), alloc_(alloc)
 {
-    data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory and attach it to pointer
-    /* allocate может выбросить исключение bad_alloc, если выделить память не удалось
-     * TODO понять как обработать это исключение, везде где используется этот паттерн */
+    try
+    { // allocate может выбросить исключение bad_alloc, если выделить память не удалось
+        data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory and attach it to pointer
+    }
+    catch (std::bad_alloc &ba)
+    {
+        std::cout << "Fail to allocate memory for container." << std::endl;
+        throw std::bad_alloc();
+    }
 
     if (size_ > 0)
         for (auto i = 0; i < size_; ++i)
@@ -43,26 +49,39 @@ Array<T, Alloc>::Array(const size_t &n, const T& value, const Alloc &alloc)
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
 Array<T, Alloc>::Array(const std::initializer_list<value_type> &t, const T& value, const Alloc &alloc)
-: size_(0), capacity_(size_ * 2), alloc_(alloc)
+: size_(t.size() ), capacity_(size_ + 10), alloc_(alloc)
 {
-    data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory and attach it to pointer
-    /* allocate может выбросить исключение bad_alloc, если выделить память не удалось
-    * TODO понять как обработать это исключение, везде где используется этот паттерн */
+    try
+    { // allocate может выбросить исключение bad_alloc, если выделить память не удалось
+        data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory and attach it to pointer
+    }
+    catch (std::bad_alloc &ba)
+    {
+        std::cout << "Fail to allocate memory for container." << std::endl;
+        throw std::bad_alloc();
+    }
 
-    for (auto i = 0; i < size_ - 1; ++i)
-        AllocTraits::construct(alloc_, data_ + i, value); // create some objects
-
+    int i = 0;
     for (const auto &item : t)
-        push_back(item);
+    {
+        AllocTraits::construct(alloc_, data_ + i, item);
+        ++i;
+    }
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
 Array<T, Alloc>::Array(const Array &rhs) // copy ctor
 : size_(rhs.size_), capacity_(rhs.capacity_)
 {
-    data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory
-    /* allocate может выбросить исключение bad_alloc, если выделить память не удалось
-    * TODO понять как обработать это исключение, везде где используется этот паттерн */
+    try
+    { // allocate может выбросить исключение bad_alloc, если выделить память не удалось
+        data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory and attach it to pointer
+    }
+    catch (std::bad_alloc &ba)
+    {
+        std::cout << "Fail to allocate memory for container." << std::endl;
+        throw std::bad_alloc();
+    }
 
     for (auto i = 0; i < size_; ++i)
         AllocTraits::construct(alloc_, data_ + i, rhs.data_ + i); // create some objects
@@ -156,7 +175,7 @@ void Array<T, Alloc>::push_back(const value_type &rhs)
     if (capacity_ == size_)
         realloc(capacity_ * 2);
 
-    data_[size_ - 1] = rhs;
+    AllocTraits::construct(alloc_, data_ + (size_ - 1), rhs);
     ++size_;
 }
 //----------------------------------------------------------------------
@@ -201,14 +220,14 @@ void Array<T, Alloc>::realloc(size_type new_capacity)
         return;
 
     auto *new_block = AllocTraits::allocate(alloc_, new_capacity);
-    // TODO обработать ошибку bad_alloc, если не удастся выделить память
 
     size_t i = 0;
     try
     {
         for (; i < size_; ++i)
             AllocTraits::construct(alloc_, new_block + i, std::move(data_[i]) ); // перемещение существующих объектов в новый блок памяти
-    } catch (std::bad_alloc &ba) // предполагаем поймать bad_alloc
+    }
+    catch (std::bad_alloc &ba) // предполагаем поймать bad_alloc
     {
         for (size_t j = 0; j < i; ++j)
             AllocTraits::destroy(alloc_, new_block + i); // уничтожение объектов
@@ -240,13 +259,7 @@ Array<T, Alloc>::iterator Array<T, Alloc>::end() noexcept
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
-Array<T, Alloc>::reference Array<T, Alloc>::front() noexcept
-{ // TODO как можно улучшить?? Дублирование кода происходит < front() const noexcept >
-    return data_[0];
-}
-//----------------------------------------------------------------------
-template <typename T, typename Alloc>
-Array<T, Alloc>::const_reference Array<T, Alloc>::front() const noexcept
+Array<T, Alloc>::reference Array<T, Alloc>::front() const noexcept
 {
     return data_[0];
 }
@@ -330,7 +343,6 @@ template <typename T, typename Alloc>
 void Array<T, Alloc>::insert(iterator it, value_type &&value)
 {
     // TODO сделать
-
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
@@ -341,7 +353,6 @@ void Array<T, Alloc>::erase(size_type index)
     // 3. shift (std::move) to the left all elements
     // 4. decrease size
 
-    assert(index < 0 or index >= size_);
     if (index < 0 or index >= size_)
         throw std::out_of_range("Index out of range --- [erase method]");
 
@@ -351,11 +362,10 @@ void Array<T, Alloc>::erase(size_type index)
     --size_;
 }
 //----------------------------------------------------------------------
-#if other
 template <typename T, typename Alloc>
 void Array<T, Alloc>::erase(iterator it)
 {
-
+    // TODO сделать
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
@@ -366,4 +376,3 @@ void Array<T, Alloc>::swap(Array &rhs)
     std::swap(capacity_, rhs.capacity_);
 }
 //----------------------------------------------------------------------
-#endif
