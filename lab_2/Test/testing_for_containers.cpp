@@ -107,11 +107,6 @@ TEST_CASE( "class Array: swap(Array &rhs)" )
 //--------------------------------------------------------------------------------
 TEST_CASE( "class List: Exception std::bad_alloc is true (fail)", "[require]" )
 {
-//    List<int> A;
-//    REQUIRE( A.empty() == true);
-//
-//    List<int> B{4, 5, 6, 7, 8};
-//    REQUIRE( B.empty() == false);
 
 }
 //--------------------------------------------------------------------------------

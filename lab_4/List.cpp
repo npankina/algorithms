@@ -171,7 +171,7 @@ List::List(List &&other) noexcept // move ctor
 //----------------------------------------------------------------------
 List &List::operator=(const List &other) // copy assign
 {
-    if (this != &other)
+    if (this != &other and size_ > 0) // контейнер не пуст и не является собой
     {
         size_ = other.size_;
         copy(other);
@@ -181,7 +181,7 @@ List &List::operator=(const List &other) // copy assign
 //----------------------------------------------------------------------
 List &List::operator=(List &&other) noexcept // move assign
 {
-    if (this != &other)
+    if (this != &other and size_ > 0)
     {
         size_ = other.size_;
         head_ = std::move(other.head_);
@@ -277,6 +277,9 @@ void List::push_front(value_type &&tmp)
 //----------------------------------------------------------------------
 void List::pop_front() noexcept
 {
+    if (size_ == 0)
+        return;
+
     erase(begin() );
 }
 //----------------------------------------------------------------------

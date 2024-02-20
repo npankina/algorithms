@@ -71,8 +71,10 @@ Array<T, Alloc>::Array(const std::initializer_list<value_type> &t, const T& valu
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
 Array<T, Alloc>::Array(const Array &rhs) // copy ctor
-: size_(rhs.size_), capacity_(rhs.capacity_)
-{
+: size_(rhs.size_), capacity_(rhs.capacity_), alloc_(std::allocator_traits<Alloc>::select_on_container_copy_construction(rhs.alloc_))
+{ /* alloc_(std::allocator_traits<Alloc>::select_on_container_copy_construction(rhs.alloc_))
+ *   скопировали аллокатор контейнера
+ */
     try
     { // allocate может выбросить исключение bad_alloc, если выделить память не удалось
         data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory and attach it to pointer
@@ -90,10 +92,11 @@ Array<T, Alloc>::Array(const Array &rhs) // copy ctor
 template <typename T, typename Alloc>
 Array<T, Alloc>::Array(Array &&rhs) noexcept // move ctor
 : size_(0), capacity_(0), data_(nullptr)
-{ // обнуление старого объекта
-    std::swap(size_, rhs.size_);
-    std::swap(capacity_, rhs.capacity_);
-    std::swap(data_, rhs.data_);
+{
+    size_ = std::move(rhs.size_);
+    capacity_ = std::move(rhs.capacity_);
+    data_ = std::move(rhs.data_);
+    alloc_ = std::move(rhs.alloc_);
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>

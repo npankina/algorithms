@@ -1,5 +1,4 @@
-#ifndef LAB_2_LIST_H
-#define LAB_2_LIST_H
+#pragma once
 
 #include <iostream>
 #include <iterator>
@@ -7,10 +6,10 @@
 #include <list>
 
 
-template <typename T, typename Alloc = std::allocator<T> >
+template <typename T>
 class List
 {
-public:
+private:
     class Node
     {
     public:
@@ -28,13 +27,13 @@ public:
         T data_;
     }; // end of Node class
 
+public:
     // Usings
     using value_type = T;
-    using allocator_type = Alloc;
-    using reference = allocator_type::reference;
-    using const_reference = allocator_type::const_reference;
-    using pointer = allocator_type::pointer;
-    using const_pointer = allocator_type::const_pointer;
+    using reference = value_type &;
+    using const_reference = const value_type &;
+    using pointer = value_type *;
+    using const_pointer = const value_type *;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
 
@@ -94,7 +93,7 @@ public:
 
     /* Конструкторы/деструктор/присваивания */
     List();
-    List(const std::initializer_list<value_type> &items, const T &value = T(), const Alloc &alloc = Alloc() );
+    List(const std::initializer_list<value_type> &items);
     List(const List &other) noexcept;          // copy ctor
     List(List &&other) noexcept;              // move ctor
     List &operator=(List &&other) noexcept; // move assign
@@ -112,7 +111,7 @@ public:
     reference front();
     reference back();
     // Размеры ------------------
-    bool empty() const noexcept;
+    bool is_empty() const noexcept;
     size_type size() const noexcept;
     // Модификаторы контейнера --
     void push_front(const_reference rhs);        // добавить в начало
@@ -133,12 +132,9 @@ public:
 private:
     void copy(const List &obj);
 
-    using AllocTraits = std::allocator_traits<Alloc>;
     // -- структура элемента списка
     size_type size_;
-    List<T>::Node *head_;
-    List<T>::Node *tail_;
-    Alloc alloc_;
+    Node *head_;
+    Node *tail_;
 };
 //--------------------------------------------------------------------------------
-#endif //LAB_2_LIST_H
