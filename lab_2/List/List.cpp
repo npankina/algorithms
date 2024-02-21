@@ -24,50 +24,10 @@ std::ostream &operator<<(std::ostream &os, List<T> &list)
 
 // class Node
 //--------------------------------------------------------------------------------
-List::Node::Node(Record item) noexcept
-        : prev_(nullptr), next_(nullptr), data_{ std::move(item) }
+template <typename T>
+List<T>::Node::Node(T item) noexcept
+: prev_(nullptr), next_(nullptr), data_{ std::move(item) }
 {}
-//--------------------------------------------------------------------------------
-List::Node::Node(const Node &lhs)
-        : prev_(lhs.prev_), next_(lhs.next_),
-          data_{ lhs.data_.Get_cypher(),lhs.data_.Get_year_of_pub(),
-                 lhs.data_.Get_publisher(), lhs.data_.Get_price_() }
-{}
-//--------------------------------------------------------------------------------
-List::Node::Node(Node &&rhs) // move ctor
-        : prev_(std::move(rhs.prev_) ), next_(std::move(rhs.next_) ),
-          data_(std::move(std::make_tuple(
-                  rhs.data_.Get_cypher(), rhs.data_.Get_year_of_pub(),
-                  rhs.data_.Get_publisher(),rhs.data_.Get_price_())) )
-{}
-//--------------------------------------------------------------------------------
-List::Node &List::Node::operator=(const Node &lhs)
-{
-    if (this != &lhs)
-    {
-        prev_ = lhs.prev_;
-        next_ = lhs.next_;
-        data_ = { lhs.data_.Get_cypher(), lhs.data_.Get_year_of_pub(),
-                  lhs.data_.Get_publisher(), lhs.data_.Get_price_() };
-    }
-    return *this;
-}
-//--------------------------------------------------------------------------------
-List::Node &List::Node::operator=(Node &&rhs) noexcept // move assign
-{
-    if (this != &rhs)
-    {
-        std::swap(prev_, rhs.prev_);
-        std::swap(next_, rhs.next_);
-        std::swap(data_, rhs.data_);
-    }
-    return *this;
-}
-//--------------------------------------------------------------------------------
-bool List::Node::operator==(const_reference item) const noexcept
-{
-    return data_ == item.data_;
-}
 //--------------------------------------------------------------------------------
 
 
@@ -76,7 +36,7 @@ bool List::Node::operator==(const_reference item) const noexcept
 // class Const_Iterator
 //--------------------------------------------------------------------------------
 template <typename T>
-List<T>::Const_Iterator::Const_Iterator(const value_type *ptr) noexcept
+List<T>::Const_Iterator::Const_Iterator(const Node *ptr) noexcept
 : current_(ptr)
 {}
 //--------------------------------------------------------------------------------
@@ -141,7 +101,7 @@ const List<T>::Node *List<T>::Const_Iterator::Get() const noexcept
 // class Iterator
 //--------------------------------------------------------------------------------
 template <typename T>
-List<T>::Iterator::Iterator(value_type *ptr) noexcept
+List<T>::Iterator::Iterator(Node *ptr) noexcept
 : Const_Iterator(ptr)
 {}
 //--------------------------------------------------------------------------------
@@ -195,16 +155,16 @@ template <typename T>
 List<T>::List(const std::initializer_list<value_type> &items)
 : List()
 {
-    for (auto &item : t)
+    for (auto &item : items)
         push_back(item);
 }
 //--------------------------------------------------------------------------------
 template <typename T>
 List<T>::List(const List &other) noexcept          // copy ctor
-: size_(other.size() ), head_(nullptr), tail_(nullptr)
-{   // Задача - произвести правильное копирование (deep copy)
-
-    // TODO
+: size_(0), head_(nullptr), tail_(nullptr)
+{   // (deep copy)
+    for (auto &item: other)
+        push_back(item);
 }
 //--------------------------------------------------------------------------------
 template <typename T>
@@ -301,8 +261,8 @@ void List<T>::push_front(const_reference rhs)
     Node *new_item = new Node(rhs);
     if (head_) // если список > 0
     {
-        head_->prev = new_item;
-        new_item->next = head_;
+        head_->prev_ = new_item;
+        new_item->next_ = head_;
         head_ = new_item;
     }
     else
@@ -318,8 +278,42 @@ void List<T>::push_front(value_type &&tmp)
     Node *new_item = std::move(tmp);
     if (head_) // если список > 0
     {
-        head_->prev = new_item;
-        new_item->next = head_;
+        head_->prev_ = new_item;
+        new_item->next_ = head_;
+        head_ = new_item;
+    }
+    else
+        head_ = tail_ = new_item;
+
+    ++size_;
+}
+//--------------------------------------------------------------------------------
+template <typename T>
+void List<T>::push_front(const T &rhs)
+{ // добавить в начало; Time Complexity: O(1)
+
+    Node *new_item = new Node(rhs);
+    if (head_) // если список > 0
+    {
+        head_->prev_ = new_item;
+        new_item->next_ = head_;
+        head_ = new_item;
+    }
+    else
+        head_ = tail_ = new_item;
+
+    ++size_;
+}
+//--------------------------------------------------------------------------------
+template <typename T>
+void List<T>::push_front(T &&tmp)
+{ // добавить в начало; Time Complexity: O(1)
+
+    Node *new_item = new Node(std::move(tmp) );
+    if (head_) // если список > 0
+    {
+        head_->prev_ = new_item;
+        new_item->next_ = head_;
         head_ = new_item;
     }
     else
@@ -338,14 +332,15 @@ void List<T>::pop_front() noexcept
 }
 //--------------------------------------------------------------------------------
 template <typename T>
-void List<T>::push_back(const_reference obj)
-{ // добавить в конец
-    auto new_item = new Node(obj);
+void List<T>::push_back(value_type &&tmp)
+{ // добавить в начало - временный объект --
+
+    Node *new_item = std::move(tmp);
 
     if (tail_)
     {
-        tail_->next = new_item;
-        new_item->prev = tail_;
+        tail_->next_ = new_item;
+        new_item->prev_ = tail_;
         tail_ = new_item;
     }
     else
@@ -355,20 +350,56 @@ void List<T>::push_back(const_reference obj)
 }
 //--------------------------------------------------------------------------------
 template <typename T>
-void List<T>::push_back(value_type &&tmp)
-{ // добавить в начало - временный объект --
-    auto new_item = std::move(tmp);
+void List<T>::push_back(const_reference obj)
+{ // добавить в конец
+    Node *new_item = new Node(obj);
 
     if (tail_)
     {
-        tail_->next = new_item;
-        new_item->prev = tail_;
+        tail_->next_ = new_item;
+        new_item->prev_ = tail_;
         tail_ = new_item;
     }
     else
         head_ = tail_ = new_item;
 
     ++size_;
+}
+//--------------------------------------------------------------------------------
+template <typename T>
+void List<T>::push_back(const T &obj)
+{ // добавить в конец
+    Node *new_item = new Node(obj);
+
+    if (tail_)
+    {
+        tail_->next_ = new_item;
+        new_item->prev_ = tail_;
+        tail_ = new_item;
+    }
+    else
+        head_ = tail_ = new_item;
+
+    ++size_;
+}
+//--------------------------------------------------------------------------------
+template <typename T>
+void List<T>::push_back(T &&temp)
+{ // добавить в конец
+
+    Node *new_item = new Node(std::move(temp));
+
+    if (tail_)
+    {
+        tail_->next_ = new_item;
+        new_item->prev_ = tail_;
+        tail_ = new_item;
+    }
+    else
+        head_ = tail_ = new_item;
+
+    ++size_;
+
 }
 //--------------------------------------------------------------------------------
 template <typename T>
@@ -387,6 +418,7 @@ void List<T>::pop_back() noexcept
 template <typename T>
 void List<T>::insert(const_iterator fnd, const_reference obj)
 { // вставить в позицию итератора
+
     Node *ptr = const_cast<pointer>(fnd.Get() );
     if (!ptr) // вставка в конец
     {
@@ -394,7 +426,7 @@ void List<T>::insert(const_iterator fnd, const_reference obj)
         return;
     }
 
-    auto new_node = new value_type (obj);
+    Node *new_node = new Node(obj);
     new_node->next_ = ptr; // т.к. вставляем до итератора
     new_node->prev_ = ptr->prev_;
 
@@ -418,7 +450,7 @@ void List<T>::insert(iterator fnd, value_type &&tmp)
         return;
     }
 
-    auto new_node = new value_type (std::move(tmp) );
+    Node *new_node = std::move(tmp);
     new_node->next_ = ptr;
     new_node->prev_ = ptr->prev_;
 
@@ -465,9 +497,16 @@ void List<T>::clear() noexcept
 template <typename T>
 void List<T>::clear(const_iterator it) noexcept
 { // удалить все начиная c позиции итератора
+
     auto ptr = const_cast<pointer>(it.Get() );
     while (ptr) // не хвост списка
+    {
         delete std::exchange(ptr, ptr->next_); // std::exchange возвращает old_value объекта (ptr)
+        --size_;
+    }
+
+    if (size_ == 0)
+        head_ = tail_ = nullptr;
 }
 //--------------------------------------------------------------------------------
 template <typename T>
@@ -509,7 +548,7 @@ void List<T>::copy(const List &obj)
 }
 //--------------------------------------------------------------------------------
 template <typename T>
-List<T>::const_iterator List<T>::find(const Node &item) const noexcept
+List<T>::const_iterator List<T>::find(const_reference item) const noexcept
 {
     for (auto it = begin(); it != end(); ++it)
         if (*it == item)
@@ -523,5 +562,32 @@ List<T>::iterator List<T>::find(const_reference item) noexcept
 {
     auto it = static_cast<const List &>(*this).find(item);
     return iterator { const_cast<pointer>(it.Get() ) };
+}
+//--------------------------------------------------------------------------------
+template <typename T>
+List<T>::const_iterator List<T>::find(const T &item) const noexcept
+{
+    for (auto it = begin(); it != end(); it++)
+        if ( (*it).data_ == item)
+            return it;
+
+    return const_iterator {nullptr};
+}
+//----------------------------------------------------------------------
+template <typename T>
+List<T>::iterator List<T>::find(const T &item) noexcept
+{
+    auto it = static_cast<const T &>(*this).find(item);
+    return iterator { const_cast<pointer>(it.Get() ) };
+}
+//--------------------------------------------------------------------------------
+template <typename T>
+bool List<T>::is_element_exsist(const T &item)
+{
+    for (auto it = begin(); it != end(); it++)
+        if ( (*it).data_ == item)
+            return true;
+
+    return false;
 }
 //--------------------------------------------------------------------------------

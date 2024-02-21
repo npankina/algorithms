@@ -15,25 +15,19 @@ private:
     public:
         Node() = delete;
         Node(T item) noexcept;
-        Node(const Node &lhs); // copy ctor
-        Node(Node &&rhs); // move ctor
-        Node &operator=(const Node &lhs); // copy assign
-        Node &operator=(Node &&rhs) noexcept; // move assign
-        bool operator==(const Node &item) const noexcept;
 
-    private:
-        Node *prev_; // TODO заменить на smart pointer STL
-        Node *next_; // TODO заменить на smart pointer STL
+        Node *prev_;
+        Node *next_;
         T data_;
     }; // end of Node class
 
 public:
     // Usings
-    using value_type = T;
-    using reference = value_type &;
-    using const_reference = const value_type &;
-    using pointer = value_type *;
-    using const_pointer = const value_type *;
+    using value_type = Node;
+    using reference = Node &;
+    using const_reference = const Node &;
+    using pointer = Node *;
+    using const_pointer = const Node *;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
 
@@ -41,7 +35,7 @@ public:
     {
     private:
         friend class List;
-        explicit Const_Iterator(const Node *ptr) noexcept; // TODO заменить на smart pointer STL
+        explicit Const_Iterator(const Node *ptr) noexcept;
 
     public:
         using difference_type = List::difference_type;
@@ -60,10 +54,10 @@ public:
         bool operator!=(Const_Iterator rhs) const noexcept;
 
     protected:
-        const Node *Get() const noexcept; // TODO заменить на smart pointer STL
+        const Node *Get() const noexcept;
 
-        const Node *current_; // TODO заменить на smart pointer STL
-    };  // -- конец const-итератора --
+        const Node *current_;
+    };  // end of Const_Iterator class
 
     class Iterator : public Const_Iterator
     {
@@ -77,21 +71,18 @@ public:
         using reference = List::reference;
         using iterator_category = std::bidirectional_iterator_tag;
 
-        Iterator() : Const_Iterator() {};
-        explicit Iterator(Node *ptr) noexcept; // TODO заменить на smart pointer STL
+        Iterator() noexcept : Const_Iterator() {};
+        explicit Iterator(Node *ptr) noexcept;
         reference operator*() const noexcept;
         Iterator &operator++() noexcept;
         Iterator &operator--() noexcept;
         Iterator operator++(int) noexcept;
         Iterator operator--(int) noexcept;
-    };  // -- конец итератора --
-
+    };  // end of Iterator class
 
     using iterator = Iterator;
     using const_iterator = Const_Iterator;
 
-
-    /* Конструкторы/деструктор/присваивания */
     List();
     List(const std::initializer_list<value_type> &items);
     List(const List &other) noexcept;          // copy ctor
@@ -100,39 +91,41 @@ public:
     List &operator=(const List &other);     // copy assign
     ~List();
 
-    // Итераторы ----------------
     const_iterator begin() const noexcept;
     const_iterator end() const noexcept;
     iterator begin() noexcept;
     iterator end() noexcept;
-    iterator find(const_reference item) noexcept;
-    const_iterator find(const Node &item) const noexcept;
-    // Доступ к элементам -------
+    iterator find(const T &item) noexcept;
+    const_iterator find(const T &item) const noexcept;
+    bool is_element_exsist(const T &item);
     reference front();
     reference back();
-    // Размеры ------------------
     bool is_empty() const noexcept;
     size_type size() const noexcept;
-    // Модификаторы контейнера --
-    void push_front(const_reference rhs);        // добавить в начало
-    void push_front(value_type &&tmp);          // добавить в начало - временный объект --
-    void pop_front() noexcept;               // удалить первый
-    void push_back(const_reference obj);         // добавить в конец
-    void push_back(value_type &&tmp);           // добавить в начало - временный объект --
-    void pop_back() noexcept;                         // удалить последний
-    void insert(const_iterator fnd, const_reference obj);  // вставить в позицию итератора
-    void insert(iterator fnd, value_type &&tmp);     // вставить временный объект --
-    void erase(const_iterator place) noexcept;                    // удалить указанный (в позиции)
-    void swap(List &t) noexcept;        // обменять с заданным списком
-    void clear() noexcept;                                // удалить все
-    void clear(const_iterator it) noexcept; // удалить все начиная c позиции итератора
+    void push_front(const T &rhs);
+    void push_front(T &&tmp);
+    void pop_front() noexcept;
+    void push_back(const T &obj);
+    void push_back(T &&tmp);
+    void pop_back() noexcept;
+    void insert(const_iterator fnd, const_reference obj);
+    void insert(iterator fnd, value_type &&tmp);
+    void erase(const_iterator place) noexcept;
+    void swap(List &t) noexcept;
+    void clear() noexcept;
+    void clear(const_iterator it) noexcept;
 
     friend std::ostream &operator<<(std::ostream &os, List &items);
 
 private:
     void copy(const List &obj);
+    void push_front(const_reference obj);
+    void push_front(value_type &&tmp);
+    void push_back(const_reference obj);
+    void push_back(value_type &&tmp);
+    iterator find(const_reference item) noexcept;
+    const_iterator find(const_reference item) const noexcept;
 
-    // -- структура элемента списка
     size_type size_;
     Node *head_;
     Node *tail_;
