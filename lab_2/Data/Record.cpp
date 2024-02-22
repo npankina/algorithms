@@ -2,8 +2,8 @@
 
 //class Record
 //----------------------------------------------------------------------
-Record::Record(std::tuple<int, int, std::string, double> &&item)
-: cypher_(std::get<0>(item)), year_of_pub(std::get<1>(item)), publisher(std::get<2>(item)), price_(std::get<3>(item))
+Record::Record(std::tuple<int, std::string, double> &&item)
+: cypher_(tool::cypher++), year_of_pub(std::get<0>(item)), publisher(std::get<1>(item)), price_(std::get<2>(item))
 {}
 //----------------------------------------------------------------------
 Record::Record(const Record &lvalue) // copy ctor
@@ -44,23 +44,28 @@ Record &Record::operator=(Record &&rvalue) // move assign
     return *this;
 }
 //----------------------------------------------------------------------
-bool Record::operator==(const Record &item) const noexcept
+//bool Record::operator==(const Record &item) const noexcept
+//{
+//    return cypher_ == item.Get_cypher();
+//}
+////----------------------------------------------------------------------
+//bool Record::operator!=(const Record &item) const noexcept
+//{
+//    return cypher_ != item.Get_cypher();
+//}
+//----------------------------------------------------------------------
+bool Record::operator==(const double check) const noexcept
 {
-    return cypher_ == item.Get_cypher();
+    // сравнение double с точностью до машинной эпсилон
+    if (std::abs(price_ - check) < std::numeric_limits<double>::epsilon() )
+        return true;
+    return false;
 }
 //----------------------------------------------------------------------
-bool Record::operator!=(const Record &item) const noexcept
+bool Record::operator==(const int check) const noexcept
 {
-    return cypher_ != item.Get_cypher();
-}
-//----------------------------------------------------------------------
-bool Record::operator>(const Record &item) const noexcept
-{
-    return price_ == item.Get_price_();
-}
-//----------------------------------------------------------------------
-bool Record::operator<(const Record &item) const noexcept
-{
-    return price_ != item.Get_price_();
+    if (price_ == check)
+        return true;
+    return false;
 }
 //----------------------------------------------------------------------

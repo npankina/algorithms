@@ -14,7 +14,7 @@ private:
     {
     public:
         Node() = delete;
-        Node(T item) noexcept;
+        Node(T item) noexcept : prev_(nullptr), next_(nullptr), data_{ std::move(item) } {};
 
         Node *prev_;
         Node *next_;
@@ -91,11 +91,13 @@ public:
     List &operator=(const List &other);     // copy assign
     ~List();
 
+//    reference operator[](size_type);
+    T &operator[](size_type);
     const_iterator begin() const noexcept;
     const_iterator end() const noexcept;
     iterator begin() noexcept;
     iterator end() noexcept;
-    iterator find(const T &item) noexcept;
+    iterator find(T &item) noexcept;
     const_iterator find(const T &item) const noexcept;
     bool is_element_exsist(const T &item);
     reference front();
@@ -108,14 +110,10 @@ public:
     void push_back(const T &obj);
     void push_back(T &&tmp);
     void pop_back() noexcept;
-    void insert(const_iterator fnd, const_reference obj);
-    void insert(iterator fnd, value_type &&tmp);
-    void erase(const_iterator place) noexcept;
+    void insert(T &find, const T &replace);
+    bool erase(const T &item) noexcept;
     void swap(List &t) noexcept;
     void clear() noexcept;
-    void clear(const_iterator it) noexcept;
-
-    friend std::ostream &operator<<(std::ostream &os, List &items);
 
 private:
     void copy(const List &obj);
@@ -123,8 +121,14 @@ private:
     void push_front(value_type &&tmp);
     void push_back(const_reference obj);
     void push_back(value_type &&tmp);
-    iterator find(const_reference item) noexcept;
+    iterator find(reference item) noexcept;
     const_iterator find(const_reference item) const noexcept;
+    void erase(const_iterator place) noexcept;
+    void insert(const_iterator fnd, const_reference obj);
+    void insert(iterator fnd, value_type &&tmp);
+    void replace(iterator fnd, T &tmp);
+    void clear(const_iterator it) noexcept;
+
 
     size_type size_;
     Node *head_;

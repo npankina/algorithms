@@ -8,7 +8,6 @@
 #include <fstream>
 
 
-
 // class Array
 //--------------------------------------------------------------------------------
 TEST_CASE( "class Array: Exception std::out_of_range is true (fail)", "[require]" )
@@ -100,46 +99,15 @@ TEST_CASE( "class Array: swap(Array &rhs)" )
     REQUIRE( D.empty() == true);
 }
 //--------------------------------------------------------------------------------
-TEST_CASE( "class Array: std::initializer_list 2" )
-{
-    // открыть файл Record.txt
-    // прочитать построчно и сохранить в контейнер
-    // закрыть файл
-
-    std::string line;
-    Array<Record> D;
-
-    std::ifstream in("Record.txt"); // окрываем файл для чтения
-    if (in.is_open())
-    {
-        while (std::getline(in, line))
-        {
-            std::cout << line << std::endl;
-        }
-    }
-    in.close();     // закрываем файл
-
-    Array<Record> D {};
-    REQUIRE( D.empty() == false);
-    REQUIRE( D.size() == 6);
-
-    REQUIRE_THROWS_AS( D.erase(6), std::out_of_range);
-    REQUIRE( D.size() == 6);
-
-    int prev_size = D.size();
-    D.erase(5);
-    REQUIRE( D.size() == prev_size - 1 );
-}
-//--------------------------------------------------------------------------------
 
 
 
 
 // class List
-const int temp = 5;
 //--------------------------------------------------------------------------------
 TEST_CASE( "class List: default ctor", "[require]" )
 {
+    const int temp = 5;
     List<int> A;
     REQUIRE(A.is_empty() == true);
 
@@ -157,6 +125,7 @@ TEST_CASE( "class List: default ctor", "[require]" )
 //--------------------------------------------------------------------------------
 TEST_CASE( "class List: inializer_list ctor", "[require]" )
 {
+    const int temp = 5;
     List<int> A{3, 4, 5, 8, 10};
     REQUIRE(A.is_empty() == false);
     REQUIRE(A.size() == 5);
@@ -201,13 +170,54 @@ TEST_CASE( "class List: inializer_list ctor", "[require]" )
     REQUIRE(W.is_empty() == true);
 }
 //--------------------------------------------------------------------------------
-TEST_CASE( "class List: find methods", "[require]" )
+TEST_CASE( "class List: find, erase methods", "[require]" )
 {
     List<int> W = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     REQUIRE(W.is_element_exsist(5) == true);
-//    auto it = W.find(5);
-//    REQUIRE( == );
+    REQUIRE(W.erase(5) == true);
+    REQUIRE(W.size() == 9);
+}
+//--------------------------------------------------------------------------------
 
+
+
+
+// class Record
+//--------------------------------------------------------------------------------
+std::vector<Record> Z
+{
+        Record(std::make_tuple(2021, "Berkly", 1.25)),
+        Record(std::make_tuple(2022, "Mellon University", 2.25)),
+        Record(std::make_tuple(2023, "Berkly", 2.50)),
+        Record(std::make_tuple(2019, "Columbia University Press", 1.12)),
+        Record(std::make_tuple(2018, "Cisco Press", 1.99)),
+        Record(std::make_tuple(2017, "HarperCollins", 1.85)),
+        Record(std::make_tuple(2016, "Berkly", 3.25)),
+        Record(std::make_tuple(2015, "Columbia University Press", 4.25)),
+        Record(std::make_tuple(2014, "Remington & Co", 3.99)),
+        Record(std::make_tuple(2011, "Remington & Co", 1.34)),
+        Record(std::make_tuple(2010, "Remington & Co", 1.33)),
+        Record(std::make_tuple(2012, "Berkly", 1.35)),
+        Record(std::make_tuple(2013, "HarperCollins", 1.36)),
+        Record(std::make_tuple(2017, "O'relly", 1.37))
+};
+//--------------------------------------------------------------------------------
+TEST_CASE( "class Subscriber: Add_Book()", "[require]" )
+{
+    Subscriber<List<Record>> A("Alice Miller");
+    REQUIRE(A.Get_Taken_Books() == 0);
+    A.Add_Book(Z[0]);
+    REQUIRE(A.Get_Taken_Books() == 1);
+}
+//--------------------------------------------------------------------------------
+TEST_CASE( "class Subscriber: Replace_Book()", "[require]" )
+{
+    Subscriber<List<Record>> A("Alice Miller");
+    REQUIRE(A.Get_Taken_Books() == 0);
+    A.Add_Book(Z[0]);
+    REQUIRE(A.Get_Taken_Books() == 1);
+    A.Get_Lib_Data();
+//    A.Replace_Book(A.Get_Book_By_Index(0), Z[1]);
 }
 //--------------------------------------------------------------------------------
 

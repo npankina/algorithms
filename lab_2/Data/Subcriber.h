@@ -1,6 +1,8 @@
 #pragma once
+#include <iostream>
 #include "Record.h"
 #include "../Array/Array.h"
+
 
 //--------------------------------------------------------------------------------
 template <typename Cont = Array<Record> >
@@ -15,15 +17,18 @@ public:
 
     void Get_Lib_Data();
     int Get_Taken_Books() { return Taken_Books; }
+    Record& Get_Book_By_Index(int n) { return Cont_Lib_Data[n]; }
     std::string Get_Name() { return Name; }
-    int Get_First_Element_ID();
     void Set_Name(std::string name);
 
     void Add_Book(Record &&item);
-    bool Replace_Book(const Record find, Record &&replace);
-    bool Delete_Book(const Record item);
+    void Add_Book(const Record &item);
+    void Replace_Book(Record &find, const Record &replace);
+    void Delete_Book(const Record &item);
     bool Search_By_Cypher(int fnd);
     bool Search_By_Price(double fnd);
+
+    friend std::ostream &operator<<(std::ostream &os, Cont &cont);
 
 private:
     Cont Cont_Lib_Data;

@@ -1,6 +1,5 @@
 #include "List.h"
 
-
 //--------------------------------------------------------------------------------
 template <typename T>
 std::ostream &operator<<(std::ostream &os, List<T> &list)
@@ -17,17 +16,6 @@ std::ostream &operator<<(std::ostream &os, List<T> &list)
 
     return os;
 }
-//--------------------------------------------------------------------------------
-
-
-
-
-// class Node
-//--------------------------------------------------------------------------------
-template <typename T>
-List<T>::Node::Node(T item) noexcept
-: prev_(nullptr), next_(nullptr), data_{ std::move(item) }
-{}
 //--------------------------------------------------------------------------------
 
 
@@ -204,6 +192,24 @@ template <typename T>
 List<T>::~List()
 {
     clear();
+}
+//--------------------------------------------------------------------------------
+//template <typename T>
+//List<T>::reference List<T>::operator[](size_type index)
+//{
+//
+//}
+//--------------------------------------------------------------------------------
+template <typename T>
+T& List<T>::operator[](size_type index)
+{
+    if (index >= size_ or index < 0)
+        throw std::out_of_range("Error => index out of range");
+
+    int i = 1;
+    for (auto it = begin(); it != end(); it++, i++)
+        if (i == index)
+            return it;
 }
 //--------------------------------------------------------------------------------
 template <typename T>
@@ -416,6 +422,16 @@ void List<T>::pop_back() noexcept
 }
 //--------------------------------------------------------------------------------
 template <typename T>
+void List<T>::insert(T &f, const T &replace)
+{
+    iterator it = find(f);
+    if (*it != nullptr)
+        insert(it, replace);
+    else
+        std::cout << "Элемент отсутствует в списке!!" << std::endl;
+}
+//--------------------------------------------------------------------------------
+template <typename T>
 void List<T>::insert(const_iterator fnd, const_reference obj)
 { // вставить в позицию итератора
 
@@ -459,6 +475,37 @@ void List<T>::insert(iterator fnd, value_type &&tmp)
 
     ptr->prev_ = new_node;
     ++size_;
+}
+//--------------------------------------------------------------------------------
+template <typename T>
+void List<T>::replace(iterator fnd, T &tmp)
+{ // вставить временный объект --
+
+    auto ptr = const_cast<pointer>(fnd.Get() ); // снятие константности и разыменование указателя
+
+    Node *new_node = new Node(tmp);
+    new_node->next_ = ptr;
+    new_node->prev_ = ptr->prev_;
+
+    if (ptr->prev_)
+        ptr->prev_->next_ = new_node;
+
+    ptr->prev_ = new_node;
+}
+//--------------------------------------------------------------------------------
+template <typename T>
+bool List<T>::erase(const T &item) noexcept
+{
+    const_iterator ptr = find(item);
+    if (ptr != static_cast<Const_Iterator>(nullptr))
+    {
+        erase(ptr);
+        return true;
+    }
+    else
+        std::cout << "Элемент не найден" << std::endl;
+
+    return false;
 }
 //--------------------------------------------------------------------------------
 template <typename T>
@@ -558,7 +605,7 @@ List<T>::const_iterator List<T>::find(const_reference item) const noexcept
 }
 //----------------------------------------------------------------------
 template <typename T>
-List<T>::iterator List<T>::find(const_reference item) noexcept
+List<T>::iterator List<T>::find(reference item) noexcept
 {
     auto it = static_cast<const List &>(*this).find(item);
     return iterator { const_cast<pointer>(it.Get() ) };
@@ -575,7 +622,7 @@ List<T>::const_iterator List<T>::find(const T &item) const noexcept
 }
 //----------------------------------------------------------------------
 template <typename T>
-List<T>::iterator List<T>::find(const T &item) noexcept
+List<T>::iterator List<T>::find(T &item) noexcept
 {
     auto it = static_cast<const T &>(*this).find(item);
     return iterator { const_cast<pointer>(it.Get() ) };
