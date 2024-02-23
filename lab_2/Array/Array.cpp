@@ -374,6 +374,9 @@ void Array<T, Alloc>::erase(iterator it)
 template <typename T, typename Alloc>
 void Array<T, Alloc>::swap(Array &rhs)
 {
+    if (this == &rhs)
+        return;
+
     std::swap(data_, rhs.data_);
     std::swap(size_, rhs.size_);
     std::swap(capacity_, rhs.capacity_);

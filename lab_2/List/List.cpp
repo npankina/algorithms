@@ -530,6 +530,9 @@ void List<T>::erase(const_iterator place) noexcept
 template <typename T>
 void List<T>::swap(List &t) noexcept
 { // обменять с заданным списком
+    if (this == &t)
+        return;
+
     std::swap(size_, t.size_);
     std::swap(head_, t.head_);
     std::swap(tail_, t.tail_);
