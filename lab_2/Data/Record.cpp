@@ -25,7 +25,7 @@ Record &Record::operator=(const Record &lvalue) // copy assign
         cypher_ = lvalue.Get_cypher();
         year_of_pub = lvalue.Get_year_of_pub();
         publisher = lvalue.Get_publisher();
-        price_ = lvalue.Get_price_();
+        price_ = lvalue.Get_Price();
     }
 
     return *this;

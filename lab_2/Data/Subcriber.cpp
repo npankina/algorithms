@@ -50,18 +50,11 @@ void Subscriber<Cont>::Get_Lib_Data()
 {
     std::cout << Cont_Lib_Data << std::endl;
 }
-//--------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 template <typename Cont>
 void Subscriber<Cont>::Set_Name(std::string name)
 {
     Name = name;
-}
-//--------------------------------------------------------------------------------
-template <typename Cont>
-void Subscriber<Cont>::Add_Book(Record &&item)
-{
-    Cont_Lib_Data.push_back(item);
-    ++Taken_Books;
 }
 //--------------------------------------------------------------------------------
 template <typename Cont>
@@ -72,33 +65,36 @@ void Subscriber<Cont>::Add_Book(const Record &item)
 }
 //--------------------------------------------------------------------------------
 template <typename Cont>
-void Subscriber<Cont>::Replace_Book(Record &find, const Record &replace)
+void Subscriber<Cont>::Replace_Book(const int index, const Record &replace)
 {
-    Cont_Lib_Data.insert(find, replace);
+   Cont_Lib_Data.insert(index, replace);
 }
 //--------------------------------------------------------------------------------
 template <typename Cont>
-void Subscriber<Cont>::Delete_Book(const Record &item)
+void Subscriber<Cont>::Delete_Book(Record &item)
 {
     Cont_Lib_Data.erase(item);
     --Taken_Books;
 }
 //--------------------------------------------------------------------------------
 template <typename Cont>
-bool Subscriber<Cont>::Search_By_Cypher(int fnd)
+bool Subscriber<Cont>::Search_By_Cypher(const int fnd) const
 {
-    for (auto it = Cont_Lib_Data.begin(); it < Cont_Lib_Data.end(); it++)
-        if (*it == fnd)
+    if (fnd < 10000000)
+        return false;
+
+    for (auto it = Cont_Lib_Data.begin(); it != Cont_Lib_Data.end(); it++)
+        if ( (*it).data_.Get_cypher() == fnd)
             return true;
 
     return false;
 }
 //--------------------------------------------------------------------------------
 template <typename Cont>
-bool Subscriber<Cont>::Search_By_Price(double fnd)
+bool Subscriber<Cont>::Search_By_Price(const double fnd) const
 {
-    for (auto it = Cont_Lib_Data.begin(); it < Cont_Lib_Data.end(); it++)
-        if (*it == fnd)
+    for (auto it = Cont_Lib_Data.begin(); it != Cont_Lib_Data.end(); it++)
+        if ( (*it).data_.Get_Price() == fnd)
             return true;
 
     return false;

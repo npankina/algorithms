@@ -15,6 +15,8 @@ private:
     public:
         Node() = delete;
         Node(T item) noexcept : prev_(nullptr), next_(nullptr), data_{ std::move(item) } {};
+        Node(const Node &rhs) noexcept : prev_(rhs.prev_), next_(rhs.next_), data_(rhs.data_) {}; // copy ctor
+        Node(Node &&other) noexcept : prev_{ std::move(other.prev_)}, next_{ std::move(other.next_)}, data_{ std::move(other.data_)} {}; // move ctor
 
         Node *prev_;
         Node *next_;
@@ -91,8 +93,6 @@ public:
     List &operator=(const List &other);     // copy assign
     ~List();
 
-//    reference operator[](size_type);
-    T &operator[](size_type);
     const_iterator begin() const noexcept;
     const_iterator end() const noexcept;
     iterator begin() noexcept;
@@ -110,7 +110,7 @@ public:
     void push_back(const T &obj);
     void push_back(T &&tmp);
     void pop_back() noexcept;
-    void insert(T &find, const T &replace);
+    void insert(const size_type index, const T &replace);
     bool erase(const T &item) noexcept;
     void swap(List &t) noexcept;
     void clear() noexcept;
@@ -125,8 +125,7 @@ private:
     const_iterator find(const_reference item) const noexcept;
     void erase(const_iterator place) noexcept;
     void insert(const_iterator fnd, const_reference obj);
-    void insert(iterator fnd, value_type &&tmp);
-    void replace(iterator fnd, T &tmp);
+    void insert(iterator fnd, const value_type &tmp);
     void clear(const_iterator it) noexcept;
 
 

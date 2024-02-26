@@ -32,7 +32,7 @@ public:
     int Get_cypher() const { return cypher_; }
     int Get_year_of_pub() const { return year_of_pub; }
     std::string Get_publisher() const { return publisher; }
-    double Get_price_() const { return price_; }
+    double Get_Price() const { return price_; }
 
 private:
     int cypher_;

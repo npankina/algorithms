@@ -216,36 +216,37 @@ TEST_CASE( "class Subscriber: Replace_Book()", "[require]" )
     REQUIRE(A.Get_Taken_Books() == 0);
     A.Add_Book(Z[0]);
     REQUIRE(A.Get_Taken_Books() == 1);
-    A.Get_Lib_Data();
-//    A.Replace_Book(A.Get_Book_By_Index(0), Z[1]);
+//    A.Get_Lib_Data();
+
+    A.Replace_Book(0, Z[1]);
+    REQUIRE(A.Get_Taken_Books() == 1);
+//    A.Get_Lib_Data();
+
+    A.Add_Book(Z[2]);
+    REQUIRE(A.Get_Taken_Books() == 2);
 }
 //--------------------------------------------------------------------------------
-
-
-#if not_now
-SCENARIO()
+TEST_CASE( "class Subscriber: Search_By_Cypher", "[require]" )
 {
-    GIVEN( "A vector with some items" )
-    {
-        Array<int> A;
-        REQUIRE( A.empty() == true );
-        REQUIRE( A.capacity() == A.size() + 10 );
+    Subscriber<List<Record>> A("Alice Miller");
+    for (int i = 0; i < Z.size(); i++)
+        A.Add_Book(Z[i]);
+    REQUIRE(A.Get_Taken_Books() == Z.size() );
+//    A.Get_Lib_Data();
 
-        // проверить на выбрасывание исключений если индекс вне диапазона
-        REQUIRE_THROWS_AS(A[0], std::out_of_range);
-        REQUIRE_THROWS_AS(A[-1], std::out_of_range);
-
-
-        WHEN( "the size is increased" )
-        {
-            A.realloc( 10 );
-
-            THEN( "the size and capacity change" )
-            {
-                REQUIRE( v.size() == 10 );
-                REQUIRE( v.capacity() >= 10 );
-            }
-        }
-    }
+    REQUIRE( A.Search_By_Cypher(10000005) == true );
+    REQUIRE( A.Search_By_Cypher(10000013) == true );
 }
-#endif
+//--------------------------------------------------------------------------------
+TEST_CASE( "class Subscriber: Search_By_Price", "[require]" )
+{
+    Subscriber<List<Record>> A("Alice Miller");
+    for (int i = 0; i < Z.size(); i++)
+        A.Add_Book(Z[i]);
+    REQUIRE(A.Get_Taken_Books() == Z.size() );
+//    A.Get_Lib_Data();
+
+    REQUIRE( A.Search_By_Price(1.25) == true); // 3.99
+    REQUIRE( A.Search_By_Price(3.99) == true);
+}
+//--------------------------------------------------------------------------------
