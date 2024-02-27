@@ -3,7 +3,6 @@
 #include "Record.h"
 #include "../Array/Array.h"
 
-
 //--------------------------------------------------------------------------------
 template <typename Cont = Array<Record> >
 class Subscriber

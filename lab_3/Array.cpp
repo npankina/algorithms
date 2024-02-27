@@ -335,7 +335,7 @@ void Array::insert(size_type index, value_type &&value)
 
     for (int i = size_; i >= index; --i)
         data_[i + 1] = data_[i];
-    data_[index] = value;
+    data_[index] = std::move(value);
     ++size_;
 }
 //--------------------------------------------------

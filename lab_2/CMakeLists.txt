@@ -5,10 +5,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 # Установка пути к библиотеке Boost
 #set(BOOST_ROOT "/opt/local/include")
-find_package(Boost 1.76.0) #  REQUIRED algorithm
+#find_package(Boost 1.76.0) #  REQUIRED algorithm
 
 add_executable(app main.cpp Array/Array.cpp List/List.cpp)
-target_link_libraries(app PRIVATE Boost::headers ) # Boost::algorithm
+#target_link_libraries(app PRIVATE Boost::headers ) # Boost::algorithm
 
 Include(FetchContent)
 

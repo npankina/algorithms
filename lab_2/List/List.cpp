@@ -463,12 +463,12 @@ void List<T>::insert(const_iterator fnd, const_reference obj)
 }
 //--------------------------------------------------------------------------------
 template <typename T>
-void List<T>::insert(iterator fnd, const value_type &tmp)
+void List<T>::insert(iterator fnd, value_type &&tmp)
 { // вставить объект после итератора
 
     auto ptr = const_cast<pointer>(fnd.Get() ); // снятие константности и разыменование указателя
 
-    Node *new_node = new Node(tmp);
+    Node *new_node = new Node(std::move(tmp) );
     new_node->next_ = ptr->next_;
     new_node->prev_ = ptr;
     ptr->next_ = new_node;

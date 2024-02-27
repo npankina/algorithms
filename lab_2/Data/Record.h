@@ -1,5 +1,5 @@
 #pragma once
-#include <iostream>
+//#include <iostream>
 #include <string>
 #include <tuple>
 #include <limits>
@@ -22,9 +22,6 @@ public:
     Record(Record &&rvalue); // move ctor
     Record &operator=(const Record &lvalue); // copy assign
     Record &operator=(Record &&rvalue); // move assign
-
-//    bool operator==(const Record &item) const noexcept;
-//    bool operator!=(const Record &item) const noexcept;
 
     bool operator==(const double check) const noexcept;
     bool operator==(const int check) const noexcept;

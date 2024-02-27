@@ -108,8 +108,6 @@ Array<T, Alloc>& Array<T, Alloc>::operator=(const Array &lhs) // copy assign
         capacity_ = lhs.capacity_;
         data_->~T(); // Использовать здесь destroy нет смысла, нам же не нужно возвращать память еще
         data_ = AllocTraits::allocate(alloc_, capacity_); // reserved raw memory
-        /* allocate может выбросить исключение bad_alloc, если выделить память не удалось
-        * TODO понять как обработать это исключение, везде где используется этот паттерн */
 
         for (auto i = 0; i < size_; ++i)
             AllocTraits::construct(alloc_, data_ + i, lhs.data_ + i); // create some objects
@@ -344,8 +342,27 @@ void Array<T, Alloc>::Insert(size_type index, value_type &&value)
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
 void Array<T, Alloc>::insert(iterator it, value_type &&value)
-{
-    // TODO сделать
+{ // вставить элемент в позицию итератора
+
+    if (it == nullptr)
+        throw std::invalid_argument("Iterator is incorrect");
+
+    if (size_ == capacity_)
+        realloc(capacity_ * 2);
+
+    AllocTraits::construct(alloc_, data_ + size_); // , data_ + (size_ - 1)
+
+    auto it_ = it;
+    auto temp = *it;
+
+    for (; it_ != end(); ++it_)
+    {
+        auto temp2 = temp;
+        std::swap(temp, temp2);
+        *it = temp2;
+    }
+    *it = std::move(value);
+    ++size_;
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>
@@ -368,7 +385,14 @@ void Array<T, Alloc>::erase(size_type index)
 template <typename T, typename Alloc>
 void Array<T, Alloc>::erase(iterator it)
 {
-    // TODO сделать
+    if (it == nullptr)
+        throw std::invalid_argument("Iterator is incorrect");
+
+    for (auto it_ = it; it_ != end(); ++it_, it++)
+        std::swap(it, it_);
+
+    AllocTraits::destroy(alloc_, it);
+    --size_;
 }
 //----------------------------------------------------------------------
 template <typename T, typename Alloc>

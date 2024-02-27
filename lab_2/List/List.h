@@ -3,7 +3,6 @@
 #include <iostream>
 #include <iterator>
 #include <utility>
-#include <list>
 
 
 template <typename T>
@@ -125,7 +124,7 @@ private:
     const_iterator find(const_reference item) const noexcept;
     void erase(const_iterator place) noexcept;
     void insert(const_iterator fnd, const_reference obj);
-    void insert(iterator fnd, const value_type &tmp);
+    void insert(iterator fnd, value_type &&tmp);
     void clear(const_iterator it) noexcept;
 
 

@@ -44,16 +44,6 @@ Record &Record::operator=(Record &&rvalue) // move assign
     return *this;
 }
 //----------------------------------------------------------------------
-//bool Record::operator==(const Record &item) const noexcept
-//{
-//    return cypher_ == item.Get_cypher();
-//}
-////----------------------------------------------------------------------
-//bool Record::operator!=(const Record &item) const noexcept
-//{
-//    return cypher_ != item.Get_cypher();
-//}
-//----------------------------------------------------------------------
 bool Record::operator==(const double check) const noexcept
 {
     // сравнение double с точностью до машинной эпсилон
