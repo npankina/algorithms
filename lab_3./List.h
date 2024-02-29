@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iterator>
 #include <utility>
+#include <memory>
 
 /*
 *    Управление динамической памятью:
@@ -9,30 +10,31 @@
 *        – использовать стандартный аллокатор (распределитель памяти);
 */
 
-template <typename T>
+template <typename T, typename Alloc = std::allocator<T> >
 class List
 {
 private:
+    template <typename U>
     class Node
     {
     public:
         Node() = delete;
-        Node(T item) noexcept : prev_(nullptr), next_(nullptr), data_{ std::move(item) } {};
+        Node(U item) noexcept : prev_(nullptr), next_(nullptr), data_{ std::move(item) } {};
         Node(const Node &rhs) noexcept : prev_(rhs.prev_), next_(rhs.next_), data_(rhs.data_) {}; // copy ctor
         Node(Node &&other) noexcept : prev_{ std::move(other.prev_)}, next_{ std::move(other.next_)}, data_{ std::move(other.data_)} {}; // move ctor
 
         Node *prev_;
         Node *next_;
-        T data_;
+        U data_;
     }; // end of Node class
 
 public:
     // Usings
-    using value_type = Node;
-    using reference = Node &;
-    using const_reference = const Node &;
-    using pointer = Node *;
-    using const_pointer = const Node *;
+    using value_type = Node<T>;
+    using reference = Node<T> &;
+    using const_reference = const Node<T> &;
+    using pointer = Node<T> *;
+    using const_pointer = const Node<T> *;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
 
@@ -40,7 +42,7 @@ public:
     {
     private:
         friend class List;
-        explicit Const_Iterator(const Node *ptr) noexcept;
+        explicit Const_Iterator(const Node<T> *ptr) noexcept;
 
     public:
         using difference_type = List::difference_type;
@@ -59,9 +61,9 @@ public:
         bool operator!=(Const_Iterator rhs) const noexcept;
 
     protected:
-        const Node *Get() const noexcept;
+        const Node<T> *Get() const noexcept;
 
-        const Node *current_;
+        const Node<T> *current_;
     };  // end of Const_Iterator class
 
     class Iterator : public Const_Iterator
@@ -77,7 +79,7 @@ public:
         using iterator_category = std::bidirectional_iterator_tag;
 
         Iterator() noexcept : Const_Iterator() {};
-        explicit Iterator(Node *ptr) noexcept;
+        explicit Iterator(Node<T> *ptr) noexcept;
         reference operator*() const noexcept;
         Iterator &operator++() noexcept;
         Iterator &operator--() noexcept;
@@ -88,8 +90,8 @@ public:
     using iterator = Iterator;
     using const_iterator = Const_Iterator;
 
-    List();
-    List(const std::initializer_list<value_type> &items);
+    List(const T &value = T(), const Alloc &alloc = Alloc() );
+    List(const std::initializer_list<value_type> &items, const T &value = T(), const Alloc &alloc = Alloc());
     List(const List &other) noexcept;          // copy ctor
     List(List &&other) noexcept;              // move ctor
     List &operator=(List &&other) noexcept; // move assign
@@ -131,9 +133,13 @@ private:
     void insert(iterator fnd, value_type &&tmp);
     void clear(const_iterator it) noexcept;
 
+    using AllocTraits = std::allocator_traits<Alloc>;
+//    std::allocator_traits<Alloc>::rebind_alloc<Node<T> >;
 
+    Node<T> *head_;
+    Node<T> *tail_;
     size_type size_;
-    Node *head_;
-    Node *tail_;
+    AllocTraits  alloc_;
+
 };
 //--------------------------------------------------------------------------------
