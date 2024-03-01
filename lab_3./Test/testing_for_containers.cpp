@@ -28,6 +28,19 @@ std::vector<Record> Z
 
 
 //--------------------------------------------------------------------------------
+TEST_CASE( "class List: initializer_list ctor", "[require]" )
+{
+    List<Record> A{Record(std::make_tuple(2021, "Berkly", 1.25)),
+                   Record(std::make_tuple(2022, "Mellon University", 2.25)),
+                   Record(std::make_tuple(2023, "Berkly", 2.50)),
+                   Record(std::make_tuple(2019, "Columbia University Press", 1.12)),
+                   Record(std::make_tuple(2018, "Cisco Press", 1.99))};
+    REQUIRE(A.size() == 5);
+
+    std::cout << A << std::endl;
+
+}
+//--------------------------------------------------------------------------------
 TEST_CASE( "class Subscriber: Add_Book()", "[require]" )
 {
     Subscriber<List<Record>> A("Alice Miller");

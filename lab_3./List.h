@@ -3,6 +3,8 @@
 #include <iterator>
 #include <utility>
 #include <memory>
+#include <list>
+
 
 /*
 *    Управление динамической памятью:
@@ -30,13 +32,23 @@ private:
 
 public:
     // Usings
-    using value_type = Node<T>;
-    using reference = Node<T> &;
-    using const_reference = const Node<T> &;
-    using pointer = Node<T> *;
-    using const_pointer = const Node<T> *;
+//    using value_type = T;
+//    using reference = T &;
+//    using const_reference = const T &;
+//    using pointer = T *;
+//    using const_pointer = const T *;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
+
+    typedef T value_type;
+    typedef Alloc allocator_type;
+    static_assert((std::is_same<value_type, typename allocator_type::value_type>::value),
+                  "Invalid allocator::value_type");
+    typedef typename allocator_type::reference reference;
+    typedef typename allocator_type::const_reference const_reference;
+    typedef typename allocator_type::pointer pointer;
+    typedef typename allocator_type::const_pointer const_pointer;
+
 
     class Const_Iterator
     {
@@ -90,51 +102,66 @@ public:
     using iterator = Iterator;
     using const_iterator = Const_Iterator;
 
-    List(const T &value = T(), const Alloc &alloc = Alloc() );
-    List(const std::initializer_list<value_type> &items, const T &value = T(), const Alloc &alloc = Alloc());
+    List() noexcept(std::is_nothrow_default_constructible<allocator_type>::value);
+    explicit List(const allocator_type& a);
+    List(const std::initializer_list<value_type> &items, const Alloc &alloc = Alloc() );
     List(const List &other) noexcept;          // copy ctor
     List(List &&other) noexcept;              // move ctor
-    List &operator=(List &&other) noexcept; // move assign
+    List &operator=(List &&other) noexcept(allocator_type::propagate_on_container_move_assignment::value && std::is_nothrow_move_assignable<allocator_type>::value); // move assign
     List &operator=(const List &other);     // copy assign
+    List& operator=(std::initializer_list<value_type>);
     ~List();
+
+    allocator_type get_allocator() const noexcept;
 
     const_iterator begin() const noexcept;
     const_iterator end() const noexcept;
     iterator begin() noexcept;
     iterator end() noexcept;
-    iterator find(T &item) noexcept;
-    const_iterator find(const T &item) const noexcept;
-    bool is_element_exsist(const T &item);
+
     reference front();
     reference back();
+
+    bool is_element_exsist(const value_type &item);
     bool is_empty() const noexcept;
     size_type size() const noexcept;
-    void push_front(const T &rhs);
-    void push_front(T &&tmp);
-    void pop_front() noexcept;
+
+    iterator find(value_type &item) noexcept;
+    const_iterator find(const value_type &item) const noexcept;
+
+    void push_front(const value_type &rhs);
+    void push_front(value_type &&tmp);
     void push_back(const T &obj);
     void push_back(T &&tmp);
-    void pop_back() noexcept;
-    void insert(const size_type index, const T &replace);
-    bool erase(const T &item) noexcept;
-    void swap(List &t) noexcept;
+
+    iterator insert(const size_type index, const value_type &value);
+    iterator insert(const_iterator index, value_type&& value);
+
+    iterator erase(const_iterator position);
+    iterator erase(const_iterator position, const_iterator last);
     void clear() noexcept;
+
+    void pop_front() noexcept;
+    void pop_back() noexcept;
+
+    void swap(List &t)  noexcept(std::allocator_traits<allocator_type>::is_always_equal::value);
+
 
 private:
     void copy(const List &obj);
-    void push_front(const_reference obj);
-    void push_front(value_type &&tmp);
-    void push_back(const_reference obj);
-    void push_back(value_type &&tmp);
-    iterator find(reference item) noexcept;
-    const_iterator find(const_reference item) const noexcept;
+//    void push_front(const_reference obj);
+//    void push_front(value_type &&tmp);
+//    void push_back(const_reference obj);
+//    void push_back(value_type &&tmp);
+//    iterator find(reference item) noexcept;
+//    const_iterator find(const_reference item) const noexcept;
     void erase(const_iterator place) noexcept;
     void insert(const_iterator fnd, const_reference obj);
-    void insert(iterator fnd, value_type &&tmp);
+    void insert(const_iterator fnd, value_type &&tmp);
     void clear(const_iterator it) noexcept;
 
-    using AllocTraits = std::allocator_traits<Alloc>;
-//    std::allocator_traits<Alloc>::rebind_alloc<Node<T> >;
+    using AllocTraits = std::allocator_traits<Alloc>::template rebind_alloc<Node<T> >;
+    using rebind_alloc = AllocTraits::template rebind_alloc<Node<T> >;
 
     Node<T> *head_;
     Node<T> *tail_;
