@@ -138,9 +138,9 @@ template <typename T, typename Alloc>
 List<T, Alloc>::List() noexcept(std::is_nothrow_default_constructible<allocator_type>::value)
 : size_(0), head_(nullptr), tail_(nullptr)
 {}
-/--------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------
 template <typename T, typename Alloc>
-explicit List<T, Alloc>::List(const allocator_type& alloc)
+List<T, Alloc>::List(const allocator_type& alloc)
 : size_(0), head_(nullptr), tail_(nullptr), alloc_(alloc)
 {}
 //--------------------------------------------------------------------------------
@@ -149,7 +149,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 : size_(items.size() ), head_(nullptr), tail_(nullptr), alloc_(alloc)
 {
     try { // allocate может выбросить исключение bad_alloc, если выделить память не удалось
-//        head_ = AllocTraits::allocate(alloc_, size_); // reserved raw memory and attach it to pointer
+        head_ = AllocTraits::allocate(alloc_, size_); // reserved raw memory and attach it to pointer
     }
     catch (std::bad_alloc &ba) {
         std::cout << "Fail to allocate memory for container." << std::endl;

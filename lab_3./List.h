@@ -32,22 +32,17 @@ private:
 
 public:
     // Usings
-//    using value_type = T;
-//    using reference = T &;
-//    using const_reference = const T &;
-//    using pointer = T *;
-//    using const_pointer = const T *;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
 
-    typedef T value_type;
-    typedef Alloc allocator_type;
+    using value_type = T;
+    using allocator_type = Alloc;
     static_assert((std::is_same<value_type, typename allocator_type::value_type>::value),
                   "Invalid allocator::value_type");
-    typedef typename allocator_type::reference reference;
-    typedef typename allocator_type::const_reference const_reference;
-    typedef typename allocator_type::pointer pointer;
-    typedef typename allocator_type::const_pointer const_pointer;
+    using reference = typename allocator_type::reference;
+    using const_reference =  typename allocator_type::const_reference;
+    using pointer = typename allocator_type::pointer;
+    using const_pointer =  typename allocator_type::const_pointer;
 
 
     class Const_Iterator
@@ -103,7 +98,7 @@ public:
     using const_iterator = Const_Iterator;
 
     List() noexcept(std::is_nothrow_default_constructible<allocator_type>::value);
-    explicit List(const allocator_type& a);
+    explicit List(const allocator_type& alloc = Alloc() );
     List(const std::initializer_list<value_type> &items, const Alloc &alloc = Alloc() );
     List(const List &other) noexcept;          // copy ctor
     List(List &&other) noexcept;              // move ctor
@@ -155,13 +150,14 @@ private:
 //    void push_back(value_type &&tmp);
 //    iterator find(reference item) noexcept;
 //    const_iterator find(const_reference item) const noexcept;
-    void erase(const_iterator place) noexcept;
-    void insert(const_iterator fnd, const_reference obj);
-    void insert(const_iterator fnd, value_type &&tmp);
-    void clear(const_iterator it) noexcept;
+//    void erase(const_iterator place) noexcept;
+//    void insert(const_iterator fnd, const_reference obj);
+//    void insert(const_iterator fnd, value_type &&tmp);
+//    void clear(const_iterator it) noexcept;
 
     using AllocTraits = std::allocator_traits<Alloc>::template rebind_alloc<Node<T> >;
-    using rebind_alloc = AllocTraits::template rebind_alloc<Node<T> >;
+//    using AllocTraits = std::allocator_traits<Alloc>::template rebind_alloc<Node<T> >;
+//    using rebind_alloc = AllocTraits::template rebind_alloc<Node<T> >;
 
     Node<T> *head_;
     Node<T> *tail_;
