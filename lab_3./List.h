@@ -102,7 +102,7 @@ public:
     List(const std::initializer_list<value_type> &items, const Alloc &alloc = Alloc() );
     List(const List &other) noexcept;          // copy ctor
     List(List &&other) noexcept;              // move ctor
-    List &operator=(List &&other) noexcept(allocator_type::propagate_on_container_move_assignment::value && std::is_nothrow_move_assignable<allocator_type>::value); // move assign
+//    List &operator=(List &&other) noexcept(allocator_type::propagate_on_container_move_assignment::value && std::is_nothrow_move_assignable<allocator_type>::value); // move assign
     List &operator=(const List &other);     // copy assign
     List& operator=(std::initializer_list<value_type>);
     ~List();
