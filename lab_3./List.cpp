@@ -44,7 +44,7 @@ List<T, Alloc>::Const_Iterator &List<T, Alloc>::Const_Iterator::operator++() noe
 template <typename T, typename Alloc>
 List<T, Alloc>::Const_Iterator &List<T, Alloc>::Const_Iterator::operator--() noexcept
 {
-    current_ = current_->prev_;
+    current_ = current_->current_;
     return *this;
 }
 //--------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ template <typename T, typename Alloc>
 List<T, Alloc>::Const_Iterator List<T, Alloc>::Const_Iterator::operator--(int) noexcept
 {
     List::Const_Iterator copy = *this;
-    current_ = current_->prev_;
+    current_ = current_->current_;
     return copy;
 }
 //--------------------------------------------------------------------------------
@@ -135,21 +135,16 @@ List<T, Alloc>::Iterator List<T, Alloc>::Iterator::operator--(int) noexcept
 // class List
 //--------------------------------------------------------------------------------
 template <typename T, typename Alloc>
-List<T, Alloc>::List() noexcept(std::is_nothrow_default_constructible<allocator_type>::value)
-: size_(0), head_(nullptr), tail_(nullptr)
-{}
-//--------------------------------------------------------------------------------
-template <typename T, typename Alloc>
 List<T, Alloc>::List(const allocator_type& alloc)
 : size_(0), head_(nullptr), tail_(nullptr), alloc_(alloc)
 {}
 //--------------------------------------------------------------------------------
 template <typename T, typename Alloc>
-List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc &alloc)
+List<T, Alloc>::List(const std::initializer_list<value_type> &items, const T &value, const Alloc &alloc)
 : size_(items.size() ), head_(nullptr), tail_(nullptr), alloc_(alloc)
 {
     try { // allocate может выбросить исключение bad_alloc, если выделить память не удалось
-        head_ = AllocTraits::allocate(alloc_, size_); // reserved raw memory and attach it to pointer
+        head_ = Alloc_Traits::allocate(alloc_, size_); // reserved raw memory and attach it to pointer
     }
     catch (std::bad_alloc &ba) {
         std::cout << "Fail to allocate memory for container." << std::endl;
@@ -158,7 +153,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 
     if (size_ > 0)
         for (auto i = 0; i < size_; ++i)
-            AllocTraits::construct(alloc_, head_ + i, items); // create some objects
+            Alloc_Traits::construct(alloc_, head_ + i, items); // create some objects
 }
 //--------------------------------------------------------------------------------
 
@@ -283,7 +278,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 //    Node<T> *new_item = new Node<T>(rhs);
 //    if (head_) // если список > 0
 //    {
-//        head_->prev_ = new_item;
+//        head_->current_ = new_item;
 //        new_item->next_ = head_;
 //        head_ = new_item;
 //    }
@@ -300,7 +295,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 //    Node<T> *new_item = std::move(tmp);
 //    if (head_) // если список > 0
 //    {
-//        head_->prev_ = new_item;
+//        head_->current_ = new_item;
 //        new_item->next_ = head_;
 //        head_ = new_item;
 //    }
@@ -317,7 +312,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 ////    Node<T> *new_item = new Node<T>(rhs);
 ////    if (head_) // если список > 0
 ////    {
-////        head_->prev_ = new_item;
+////        head_->current_ = new_item;
 ////        new_item->next_ = head_;
 ////        head_ = new_item;
 ////    }
@@ -334,7 +329,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 ////    Node<T> *new_item = new Node<T>(std::move(tmp) );
 ////    if (head_) // если список > 0
 ////    {
-////        head_->prev_ = new_item;
+////        head_->current_ = new_item;
 ////        new_item->next_ = head_;
 ////        head_ = new_item;
 ////    }
@@ -362,7 +357,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 ////    if (tail_)
 ////    {
 ////        tail_->next_ = new_item;
-////        new_item->prev_ = tail_;
+////        new_item->current_ = tail_;
 ////        tail_ = new_item;
 ////    }
 ////    else
@@ -379,7 +374,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 ////    if (tail_)
 ////    {
 ////        tail_->next_ = new_item;
-////        new_item->prev_ = tail_;
+////        new_item->current_ = tail_;
 ////        tail_ = new_item;
 ////    }
 ////    else
@@ -396,7 +391,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 ////    if (tail_)
 ////    {
 ////        tail_->next_ = new_item;
-////        new_item->prev_ = tail_;
+////        new_item->current_ = tail_;
 ////        tail_ = new_item;
 ////    }
 ////    else
@@ -414,7 +409,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 //    if (tail_)
 //    {
 //        tail_->next_ = new_item;
-//        new_item->prev_ = tail_;
+//        new_item->current_ = tail_;
 //        tail_ = new_item;
 //    }
 //    else
@@ -431,8 +426,8 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 //    if (size_ == 0)
 //        return;
 //
-//    tail_->prev_ = nullptr;
-//    tail_ = tail_->prev_;
+//    tail_->current_ = nullptr;
+//    tail_ = tail_->current_;
 //
 //    --size_;
 //}
@@ -468,12 +463,12 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 //
 //    Node<T> *new_node = new Node<T>(obj);
 //    new_node->next_ = ptr; // т.к. вставляем до итератора
-//    new_node->prev_ = ptr->prev_;
+//    new_node->current_ = ptr->current_;
 //
-//    if (ptr->prev_) // вставка в голову списка
-//        ptr->prev_->next_ = new_node;
+//    if (ptr->current_) // вставка в голову списка
+//        ptr->current_->next_ = new_node;
 //
-//    ptr->prev_ = new_node;
+//    ptr->current_ = new_node;
 //
 //    ++size_;
 //}
@@ -486,7 +481,7 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 //
 //    Node<T> *new_node = new Node<T>(std::move(tmp) );
 //    new_node->next_ = ptr->next_;
-//    new_node->prev_ = ptr;
+//    new_node->current_ = ptr;
 //    ptr->next_ = new_node;
 //
 //    ++size_;
@@ -515,15 +510,15 @@ List<T, Alloc>::List(const std::initializer_list<value_type> &items, const Alloc
 //    if (ptr == nullptr)
 //        return;
 //
-//    if (ptr->prev_) // не голова списка
-//        ptr->prev_->next_ = ptr->next_;
+//    if (ptr->current_) // не голова списка
+//        ptr->current_->next_ = ptr->next_;
 //    else
 //        head_ = ptr->next_;
 //
 //    if (ptr->next_) // не хвост списка
-//        ptr->next_->prev_ = ptr->prev_;
+//        ptr->next_->current_ = ptr->current_;
 //    else
-//        tail_ = ptr->prev_;
+//        tail_ = ptr->current_;
 //
 //    delete ptr;
 //    --size_;
