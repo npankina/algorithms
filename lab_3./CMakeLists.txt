@@ -17,9 +17,9 @@ FetchContent_MakeAvailable(Catch2)
 
 add_executable(tests
         Test/testing_for_containers.cpp
-        List.cpp
         Data/Subcriber.cpp
-        Data/Record.cpp)
+        Data/Record.cpp
+        List.hpp)
 
 
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)

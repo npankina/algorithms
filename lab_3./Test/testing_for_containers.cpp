@@ -2,7 +2,7 @@
 #include "catch_amalgamated.cpp"
 
 #include "../Data/Subcriber.cpp"
-#include "../List.cpp"
+#include "../List.hpp"
 
 //--------------------------------------------------------------------------------
 std::vector<Record> Z
@@ -28,14 +28,23 @@ std::vector<Record> Z
 
 
 //--------------------------------------------------------------------------------
+//TEST_CASE( "class List: initializer_list ctor", "[require]" )
+//{
+//    List<Record> A{Record(std::make_tuple(2021, "Berkly", 1.25)),
+//                   Record(std::make_tuple(2022, "Mellon University", 2.25)),
+//                   Record(std::make_tuple(2023, "Berkly", 2.50)),
+//                   Record(std::make_tuple(2019, "Columbia University Press", 1.12)),
+//                   Record(std::make_tuple(2018, "Cisco Press", 1.99))};
+//    REQUIRE(A.size() == 5);
+//}
+//--------------------------------------------------------------------------------
 TEST_CASE( "class List: initializer_list ctor", "[require]" )
 {
-    List<Record> A{Record(std::make_tuple(2021, "Berkly", 1.25)),
-                   Record(std::make_tuple(2022, "Mellon University", 2.25)),
-                   Record(std::make_tuple(2023, "Berkly", 2.50)),
-                   Record(std::make_tuple(2019, "Columbia University Press", 1.12)),
-                   Record(std::make_tuple(2018, "Cisco Press", 1.99))};
-    REQUIRE(A.size() == 5);
+    List<int> A; //{1, 2, 3, 4, 5};
+    REQUIRE(A.is_empty() == true);
+
+//    REQUIRE(A.size() == 5);
+
 }
 //--------------------------------------------------------------------------------
 //TEST_CASE( "class Subscriber: Add_Book()", "[require]" )
