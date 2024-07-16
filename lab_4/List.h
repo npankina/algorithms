@@ -1,6 +1,3 @@
-#ifndef LAB_4_LIST_H
-#define LAB_4_LIST_H
-
 #pragma once
 #include <iterator>
 #include <utility>
@@ -145,4 +142,3 @@ private:
     pointer tail_;
 };
 //--------------------------------------------------------------------------------
-#endif //LAB_4_LIST_H
