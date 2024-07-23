@@ -1,5 +1,12 @@
-#ifndef LAB_1_LIST_H
-#define LAB_1_LIST_H
+
+/*
+* This file is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ *
+ * Copyright (c) [2024] [Natal'ya Pankina].
+ */
+#pragma once
 
 #include <iostream>
 #include <iterator>
@@ -122,4 +129,3 @@ public:
     void swap(List &t) noexcept;       // обменять с заданным списком
     void copy(const List &lhs);
 };
-#endif //LAB_1_LIST_H

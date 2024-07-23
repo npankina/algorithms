@@ -1,6 +1,12 @@
-#ifndef LAB_5_TREE_H
-#define LAB_5_TREE_H
+/*
+* This file is subject to the terms of the Mozilla Public License, v. 2.0.
+ * If a copy of the MPL was not distributed with this file, You can obtain one at
+ * http://mozilla.org/MPL/2.0/.
+ *
+ * Copyright (c) [2024] [Natal'ya Pankina].
+ */
 
+#pragma once
 #include <tuple>
 
 class Tree
@@ -46,5 +52,3 @@ public:
     // обмен --
     void swap(Tree &t) noexcept;        // обменять с заданным списком
 };
-
-#endif //LAB_5_TREE_H
