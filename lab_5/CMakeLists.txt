@@ -3,7 +3,11 @@ project(lab_5)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(lab_5 main.cpp Tree.cpp)
+add_executable(lab_5 main.cpp Tree.cpp
+        Subscriber.cpp
+        Subscriber.h
+        Book.cpp
+        Book.h)
 
 Include(FetchContent)
 
@@ -15,7 +19,11 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-add_executable(tests Test/test.cpp)
+add_executable(tests Test/test.cpp
+        Subscriber.cpp
+        Subscriber.h
+        Book.cpp
+        Book.h)
 
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 
