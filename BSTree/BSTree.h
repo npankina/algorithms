@@ -15,8 +15,8 @@ private:
     {
     public:
         Node_() : data_(), left_(nullptr), right_(nullptr) {}
-        Node_(const T &data, Node_* left=nullptr, Node_* right=nullptr): data_(data), left_(left), right_(right) {}
-        Node_(T &&data, Node_* left=nullptr, Node_* right=nullptr): data_(std::move(data)), left_(left), right_(right) {}
+        Node_(const T &data, Node_ *left=nullptr, Node_ *right=nullptr): data_(data), left_(left), right_(right) {}
+        Node_(T &&data, Node_ *left=nullptr, Node_ *right=nullptr): data_(std::move(data)), left_(left), right_(right) {}
 
     private:
         Node_ *left_;

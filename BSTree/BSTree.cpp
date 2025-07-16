@@ -1,49 +1,45 @@
 #include "BSTree.h"
+#include "BSTree.h"
 
 
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>::BSTree(void)
+BSTree<T>::BSTree(void) : root_(nullptr)
 {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>::
-~BSTree(void)
+BSTree<T>::~BSTree(void)
 {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>::
-BSTree(const T &d)
+BSTree<T>::BSTree(const T &d) : root_(new Node_(d))
 {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>::
-BSTree(const std::initializer_list<T> &t)
+BSTree<T>::BSTree(const std::initializer_list<T> &t)
 {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>::
-BSTree(const BSTree &other)
+BSTree<T>::BSTree(const BSTree &other) // copy ctor
 {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>::
-BSTree(BSTree &&other) noexcept
+BSTree<T>::BSTree(BSTree &&other) noexcept // move ctor
 {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>& BSTree<T>::
-operator=(BSTree &&other) noexcept
+BSTree<T>& BSTree<T>::operator=(BSTree &&other) noexcept // move asign
 {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>& BSTree<T>::
-operator=(const BSTree &other)
+BSTree<T>& BSTree<T>::operator=(const BSTree &other) // copy assign
 {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 bool BSTree<T>::empty() const noexcept
-{}
+{
+    return root_ == nullptr;
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 size_t BSTree<T>::count() const noexcept
