@@ -17,7 +17,13 @@ BSTree<T>::BSTree(const T &d) : root_(new Node_(d))
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 BSTree<T>::BSTree(const std::initializer_list<T> &t)
-{}
+{
+    if (t.empty())
+        return;
+
+    for (auto it = t.begin(), end = t.end(); it != end; ++it)
+        insert(*it);
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 BSTree<T>::BSTree(const BSTree &other) // copy ctor
@@ -49,26 +55,50 @@ template <typename T>
 size_t BSTree<T>::height() const noexcept
 {}
 //----------------------------------------------------------------------------------------------------
-template <typename T>
-T BSTree<T>::find(const Key &key) const
-{}
-//----------------------------------------------------------------------------------------------------
-template <typename T>
-bool BSTree<T>::insert(const Key &key, const T &v)
-{}
+// template <typename T>
+// T BSTree<T>::find(const Key &key) const
+// {}
+// //----------------------------------------------------------------------------------------------------
+// template <typename T>
+// bool BSTree<T>::insert(const Key &key, const T &v)
+// {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 bool BSTree<T>::insert(const T &d)
-{}
+{
+    if (root_ == nullptr)
+        root_ = new Node_(d);
+
+    Node_ *parent = nullptr, *left = nullptr, *right = nullptr;
+    auto pointer = root_;
+
+    while (pointer != nullptr)
+    {
+        parent = pointer;
+
+        if (pointer->data_ > d)
+        {
+            parent = pointer->left_;
+            if (pointer == nullptr)
+            {
+                Node_ *next = new Node_(d);
+
+            }
+        }
+        else
+            pointer = pointer->right_;
+
+    }
+}
 //----------------------------------------------------------------------------------------------------
-template <typename T>
-bool BSTree<T>::replace(const Key &key, const T &v)
-{}
-//----------------------------------------------------------------------------------------------------
-template <typename T>
-bool BSTree<T>::erase(const Key &key)
-{}
-//----------------------------------------------------------------------------------------------------
+// template <typename T>
+// bool BSTree<T>::replace(const Key &key, const T &v)
+// {}
+// //----------------------------------------------------------------------------------------------------
+// template <typename T>
+// bool BSTree<T>::erase(const Key &key)
+// {}
+// //----------------------------------------------------------------------------------------------------
 template <typename T>
 void BSTree<T>::clear()
 {}

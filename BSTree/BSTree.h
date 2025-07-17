@@ -7,8 +7,8 @@ class BSTree
 public :
     using value_type = T;
     using size_type = size_t;
-    using Key = std::pair<value_type, value_type>;
-    using Compare = std::less<value_type>;
+    // using Key = std::pair<value_type, value_type>;
+    // using Compare = std::less<value_type>;
 
 private:
     class Node_
@@ -39,11 +39,11 @@ public:
     bool empty() const noexcept;
     size_t count() const noexcept;
     size_t height() const noexcept;
-    T find(const Key &key) const;
-    bool insert(const Key &key, const T &v);
+    // T find(const Key &key) const;
+    // bool insert(const Key &key, const T &v);
     bool insert(const T &d);
-    bool replace(const Key &key, const T &v);
-    bool erase(const Key &key);
+    // bool replace(const Key &key, const T &v);
+    // bool erase(const Key &key);
     void clear();
     void swap(BSTree &t) noexcept;
 };
