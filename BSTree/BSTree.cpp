@@ -66,29 +66,51 @@ size_t BSTree<T>::height() const noexcept
 template <typename T>
 bool BSTree<T>::insert(const T &d)
 {
-    if (root_ == nullptr)
-        root_ = new Node_(d);
-
+    bool flag = false; // left == false, right == true
+    bool inserted = false; // если повтор == false, если не было == true
     Node_ *parent = nullptr, *left = nullptr, *right = nullptr;
     auto pointer = root_;
 
-    while (pointer != nullptr)
+    if (root_ == nullptr) // если дерево пустое создаем корень
     {
-        parent = pointer;
+        root_ = new Node_(d);
+        return true;
+    }
 
-        if (pointer->data_ > d)
+    while (pointer != nullptr) // иначе идем по дереву
+    {
+        parent = pointer; // сохраняем значение ноды, чтобе иметь доступ, когда найдем место для вставки, ведь там указатель будет на nullptr
+
+        if (d >= pointer->data_) // сравниваем с текущим эелементом
         {
-            parent = pointer->left_;
-            if (pointer == nullptr)
-            {
-                Node_ *next = new Node_(d);
+            if (d == pointer->data_) // не будем вставлять дубликаты
+                return false;
 
-            }
+            pointer = pointer->right_;
+            flag = true; // right child
         }
         else
-            pointer = pointer->right_;
+        {
+            pointer = pointer->left_;
+            flag = false; // left child
+        }
 
+        if (pointer == nullptr)
+        {
+            if (flag) // right child
+            {
+                parent->right_ = new Node_(d);
+                inserted = false;
+            }
+            else // left child
+            {
+                parent->left_ = new Node_(d);
+                inserted = true;
+            }
+        }
     }
+
+    return inserted;
 }
 //----------------------------------------------------------------------------------------------------
 // template <typename T>
