@@ -66,9 +66,9 @@ size_t BSTree<T>::height() const noexcept
 template <typename T>
 bool BSTree<T>::insert(const T &d)
 {
-    bool flag = false; // left == false, right == true
-    bool inserted = false; // если повтор == false, если не было == true
-    Node_ *parent = nullptr, *left = nullptr, *right = nullptr;
+    // insert должен вернуть true, если элемент был успешно добавлен, и false, если такой элемент уже был в дереве.
+
+    Node_ *parent = nullptr;
     auto pointer = root_;
 
     if (root_ == nullptr) // если дерево пустое создаем корень
@@ -81,36 +81,30 @@ bool BSTree<T>::insert(const T &d)
     {
         parent = pointer; // сохраняем значение ноды, чтобе иметь доступ, когда найдем место для вставки, ведь там указатель будет на nullptr
 
-        if (d >= pointer->data_) // сравниваем с текущим эелементом
-        {
-            if (d == pointer->data_) // не будем вставлять дубликаты
-                return false;
+        if (d == pointer->data_) // не будем вставлять дубликаты
+            return false;
 
+        if (d > pointer->data_) // сравниваем с текущим эелементом
+        {
             pointer = pointer->right_;
-            flag = true; // right child
+
+            if (pointer == nullptr)
+            {
+                parent->right_ = new Node_(d);
+                return true;
+            }
         }
         else
         {
             pointer = pointer->left_;
-            flag = false; // left child
-        }
 
-        if (pointer == nullptr)
-        {
-            if (flag) // right child
-            {
-                parent->right_ = new Node_(d);
-                inserted = false;
-            }
-            else // left child
+            if (pointer == nullptr)
             {
                 parent->left_ = new Node_(d);
-                inserted = true;
+                return true;
             }
         }
     }
-
-    return inserted;
 }
 //----------------------------------------------------------------------------------------------------
 // template <typename T>
