@@ -58,7 +58,6 @@ template <typename T>
 const T* BSTree<T>::find(const T &f) const
 {
     auto pointer = root_;
-    Node_ *parent = nullptr;
 
     if (pointer == nullptr) // дерево пустое
         return nullptr;
@@ -67,8 +66,6 @@ const T* BSTree<T>::find(const T &f) const
     {
         if (pointer->data_ == f)
             return &(pointer->data_);
-
-        parent = pointer; // сохраняем указатель на предыдущий элемент
 
         if (f >= pointer->data_) // идем вправо
             pointer = pointer->right_;
