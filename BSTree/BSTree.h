@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <iterator>
 
 template <typename T>
 class BSTree
@@ -18,7 +19,6 @@ private:
         Node_(const T &data, Node_ *left=nullptr, Node_ *right=nullptr): data_(data), left_(left), right_(right) {}
         Node_(T &&data, Node_ *left=nullptr, Node_ *right=nullptr): data_(std::move(data)), left_(left), right_(right) {}
 
-    private:
         Node_ *left_;
         Node_ *right_;
         T data_;
@@ -39,7 +39,7 @@ public:
     bool empty() const noexcept;
     size_t count() const noexcept;
     size_t height() const noexcept;
-    // T find(const Key &key) const;
+    const T* find(const T &f) const;
     // bool insert(const Key &key, const T &v);
     bool insert(const T &d);
     // bool replace(const Key &key, const T &v);

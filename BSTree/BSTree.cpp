@@ -1,5 +1,4 @@
 #include "BSTree.h"
-#include "BSTree.h"
 
 
 //----------------------------------------------------------------------------------------------------
@@ -55,10 +54,31 @@ template <typename T>
 size_t BSTree<T>::height() const noexcept
 {}
 //----------------------------------------------------------------------------------------------------
-// template <typename T>
-// T BSTree<T>::find(const Key &key) const
-// {}
-// //----------------------------------------------------------------------------------------------------
+template <typename T>
+const T* BSTree<T>::find(const T &f) const
+{
+    auto pointer = root_;
+    Node_ *parent = nullptr;
+
+    if (pointer == nullptr) // дерево пустое
+        return nullptr;
+
+    while (pointer != nullptr)
+    {
+        if (pointer->data_ == f)
+            return &(pointer->data_);
+
+        parent = pointer; // сохраняем указатель на предыдущий элемент
+
+        if (f >= pointer->data_) // идем вправо
+            pointer = pointer->right_;
+        else // идем влево
+            pointer = pointer->left_;
+    }
+
+    return nullptr; // искомого элемента в дереве нет
+}
+//----------------------------------------------------------------------------------------------------
 // template <typename T>
 // bool BSTree<T>::insert(const Key &key, const T &v)
 // {}
@@ -66,7 +86,7 @@ size_t BSTree<T>::height() const noexcept
 template <typename T>
 bool BSTree<T>::insert(const T &d)
 {
-    // insert должен вернуть true, если элемент был успешно добавлен, и false, если такой элемент уже был в дереве.
+    // insert должен вернуть true, если элемент был успешно добавлен, и false, если такой элемент уже был в дереве, дубликаты не вставляются.
 
     Node_ *parent = nullptr;
     auto pointer = root_;
