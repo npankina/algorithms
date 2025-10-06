@@ -1,0 +1,7 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/BSTree",
+    "cmake.buildDirectory": "${workspaceFolder}/BSTree/build",
+    "cmake.configureOnOpen": false,
+    "cmake.generator": "Unix Makefiles",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+}
