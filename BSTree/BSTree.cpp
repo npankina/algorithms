@@ -8,11 +8,15 @@ BSTree<T>::BSTree(void) : root_(nullptr)
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 BSTree<T>::~BSTree(void)
-{}
+{
+    clear();
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>::BSTree(const T &d) : root_(new Node_(d))
-{}
+BSTree<T>::BSTree(const T &d) : BSTree()
+{
+    insert(d);
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 BSTree<T>::BSTree(const std::initializer_list<T> &t)
@@ -26,7 +30,13 @@ BSTree<T>::BSTree(const std::initializer_list<T> &t)
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 BSTree<T>::BSTree(const BSTree &other) // copy ctor
-{}
+{
+    size_ = other.size_;
+    height_ = other.height_;
+
+    root_ = new Node_();
+    root_.copy(other);
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 BSTree<T>::BSTree(BSTree &&other) noexcept // move ctor
@@ -47,12 +57,22 @@ bool BSTree<T>::empty() const noexcept
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-size_t BSTree<T>::count() const noexcept
-{}
+size_t BSTree<T>::size() const noexcept
+{
+    return size_;
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 size_t BSTree<T>::height() const noexcept
-{}
+{
+    return height_;
+}
+//----------------------------------------------------------------------------------------------------
+template <typename T>
+void BSTree<T>::in_order()
+{
+
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 const T* BSTree<T>::find(const T &f) const
@@ -75,10 +95,6 @@ const T* BSTree<T>::find(const T &f) const
 
     return nullptr; // искомого элемента в дереве нет
 }
-//----------------------------------------------------------------------------------------------------
-// template <typename T>
-// bool BSTree<T>::insert(const Key &key, const T &v)
-// {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 bool BSTree<T>::insert(const T &d)
@@ -127,14 +143,22 @@ bool BSTree<T>::insert(const T &d)
 // template <typename T>
 // bool BSTree<T>::replace(const Key &key, const T &v)
 // {}
-// //----------------------------------------------------------------------------------------------------
-// template <typename T>
-// bool BSTree<T>::erase(const Key &key)
-// {}
-// //----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+template <typename T>
+bool BSTree<T>::erase(const T &key)
+{
+
+}
+//----------------------------------------------------------------------------------------------------
 template <typename T>
 void BSTree<T>::clear()
 {}
+//----------------------------------------------------------------------------------------------------
+template <typename T>
+void BSTree<T>::copy()
+{
+
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 void BSTree<T>::swap(BSTree &t) noexcept
