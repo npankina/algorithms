@@ -13,13 +13,13 @@ private:
     class Node_
     {
     public:
-        Node_() : data_(), left_(nullptr), right_(nullptr) {}
+        Node_() = delete; // forbidden to create an empty node
         Node_(const T &data, Node_ *left=nullptr, Node_ *right=nullptr): data_(data), left_(left), right_(right) {}
         Node_(T &&data, Node_ *left=nullptr, Node_ *right=nullptr): data_(std::move(data)), left_(left), right_(right) {}
 
+        T data_;
         Node_ *left_;
         Node_ *right_;
-        T data_;
     };
 
     Node_ *root_;
