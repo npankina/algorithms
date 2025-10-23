@@ -27,7 +27,7 @@ private:
     size_t height_;
 
 public:
-    BSTree(void);
+    BSTree(void) noexcept;
     virtual ~BSTree(void);
     BSTree(const T &d);
     BSTree(const std::initializer_list<T> &t);
