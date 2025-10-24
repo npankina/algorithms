@@ -22,7 +22,7 @@ BSTree<T>::BSTree(const T &d) : BSTree()
 template <typename T>
 BSTree<T>::BSTree(const std::initializer_list<T> &t)
 {
-    if (t.empty())
+    if (t.empty() )
         return;
 
     for (auto it = t.begin(), end = t.end(); it != end; ++it)
@@ -30,13 +30,21 @@ BSTree<T>::BSTree(const std::initializer_list<T> &t)
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-BSTree<T>::BSTree(const BSTree &other) // copy ctor
+BSTree<T>::BSTree(const BSTree &other) : BSTree() // copy ctor
 {
+    if (other.root_ == nullptr)
+        return;
+
     size_ = other.size_;
     height_ = other.height_;
 
     root_ = new Node_();
-    root_.copy(other);
+
+    for (int i = 0; i < other.size_; i++)
+    {
+        if (other.left_ == nullpt)
+
+    }
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
