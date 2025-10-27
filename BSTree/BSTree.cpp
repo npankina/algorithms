@@ -35,16 +35,11 @@ BSTree<T>::BSTree(const BSTree &other) : BSTree() // copy ctor
     if (other.root_ == nullptr)
         return;
 
+    Node_ *new_root = copy(other.root_);
+    root_ = new_root;
+
     size_ = other.size_;
     height_ = other.height_;
-
-    root_ = new Node_();
-
-    for (int i = 0; i < other.size_; i++)
-    {
-        if (other.left_ == nullpt)
-
-    }
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
@@ -57,7 +52,15 @@ BSTree<T>& BSTree<T>::operator=(BSTree &&other) noexcept // move asign
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 BSTree<T>& BSTree<T>::operator=(const BSTree &other) // copy assign
-{}
+{
+    if (this != &other)
+    {
+        BSTree temp(other); // get deep copy
+        swap(temp);
+    }
+
+    return *this;
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 bool BSTree<T>::empty() const noexcept
@@ -171,5 +174,7 @@ void BSTree<T>::copy()
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 void BSTree<T>::swap(BSTree &t) noexcept
-{}
+{
+
+}
 //----------------------------------------------------------------------------------------------------
