@@ -51,16 +51,8 @@ BSTree<T>::BSTree(BSTree &&other) noexcept // move ctor
 template <typename T>
 BSTree<T>& BSTree<T>::operator=(BSTree &&other) noexcept // move asign
 {
-    if (this != &other)
-    {
-        root_ = std::move(other.root_);
-        size_ = other.size_;
-        height_ = other.height_;
-
-        other.root_ = nullptr;
-        other.size_ = 0;
-        other.height_ = 0;
-    }
+    BSTree temp(std::move(other));
+    swap(temp);
 
     return *this;
 }
