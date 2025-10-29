@@ -44,8 +44,11 @@ BSTree<T>::BSTree(const BSTree &other) : BSTree() // copy ctor
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 BSTree<T>::BSTree(BSTree &&other) noexcept // move ctor
+: root_(other.root_), size_(other.size_), height_(other.height_)
 {
-
+    other.root_ = nullptr;
+    other.size_ = 0;
+    other.height_ = 0;
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
