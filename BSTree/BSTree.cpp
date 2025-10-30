@@ -177,7 +177,35 @@ void BSTree<T>::clear()
 {}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-void BSTree<T>::copy()
+BSTree<T>::Node_* BSTree<T>::copy(const Node_ *temp)
+{ // гарантия: либо скопировано всё дерево, либо не создано ничего.
+    if (temp == nullptr)
+        return nullptr;
+
+    Node_ *new_node = new Node_(temp->data_);
+    Node_ *left = nullptr;
+    Node_ *right = nullptr;
+
+    try
+    {
+        left = copy(temp->left_);
+        right = copy(temp->right_);
+    }
+    catch (...) {
+        destroy_subtree(left);
+        destroy_subtree(right);
+        delete new_node;
+        throw;
+    }
+
+    new_node->left_ = left;
+    new_node->right_ = right;
+
+    return new_node;
+}
+//----------------------------------------------------------------------------------------------------
+template <typename T>
+bool BSTree<T>::destroy_subtree(Node_ *temp)
 {
 
 }

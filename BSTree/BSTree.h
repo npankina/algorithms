@@ -5,10 +5,6 @@
 template <typename T>
 class BSTree
 {
-public :
-    using value_type = T;
-    using size_type = size_t;
-
 private:
     class Node_
     {
@@ -21,10 +17,6 @@ private:
         Node_ *left_;
         Node_ *right_;
     };
-
-    Node_ *root_;
-    size_t size_;
-    size_t height_;
 
 public:
     BSTree(void) noexcept;
@@ -45,6 +37,13 @@ public:
     // bool replace(const Key &key, const T &v);
     bool erase(const T &key);
     void clear();
-    void copy();
     void swap(BSTree &t) noexcept;
+
+private:
+    Node_* copy(const Node_ *temp);
+    bool destroy_subtree(Node_ *temp);
+
+    Node_ *root_;
+    size_t size_;
+    size_t height_;
 };
