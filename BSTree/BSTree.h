@@ -41,7 +41,7 @@ public:
 
 private:
     Node_* copy(const Node_ *temp);
-    bool destroy_subtree(Node_ *temp);
+    void destroy_subtree(Node_ *temp) noexcept;
 
     Node_ *root_;
     size_t size_;

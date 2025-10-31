@@ -174,7 +174,12 @@ bool BSTree<T>::erase(const T &key)
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 void BSTree<T>::clear()
-{}
+{
+    destroy_subtree(root_);
+    root_ = nullptr;
+    size_ = 0;
+    height_ = 0;
+}
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 BSTree<T>::Node_* BSTree<T>::copy(const Node_ *temp)
@@ -205,9 +210,14 @@ BSTree<T>::Node_* BSTree<T>::copy(const Node_ *temp)
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-bool BSTree<T>::destroy_subtree(Node_ *temp)
+void BSTree<T>::destroy_subtree(Node_ *temp) noexcept
 {
+    if (temp == nullptr)
+        return;
 
+    destroy_subtree(temp->left_);
+    destroy_subtree(temp->right_);
+    delete temp;
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
