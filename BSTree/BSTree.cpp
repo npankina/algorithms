@@ -73,25 +73,53 @@ BSTree<T>& BSTree<T>::operator=(const BSTree &other) // copy assign
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-bool BSTree<T>::empty() const noexcept
+bool BSTree<T>::is_empty() const noexcept
 {
     return root_ == nullptr;
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-size_t BSTree<T>::size() const noexcept
+bool BSTree<T>::is_balanced() const noexcept
+{
+    
+}
+//----------------------------------------------------------------------------------------------------
+template <typename T>
+bool BSTree<T>::is_equals(const BSTree&) const noexcept
+{}
+//----------------------------------------------------------------------------------------------------
+template <typename T>
+size_t BSTree<T>::get_size() const noexcept
 {
     return size_;
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-size_t BSTree<T>::height() const noexcept
+size_t BSTree<T>::get_height() const noexcept
 {
     return height_;
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-void BSTree<T>::in_order()
+void BSTree<T>::inorder_traversal() // симметричный (L-Root-R)
+{
+
+}
+//----------------------------------------------------------------------------------------------------
+template <typename T>
+void BSTree<T>::preorder_traversal() // прямой (Root-L-R) -- удобно для копирования
+{
+
+}
+//----------------------------------------------------------------------------------------------------
+template <typename T>
+void BSTree<T>::postorder_traversal() // обратный (L-R-Root) -- полезно при удалении
+{
+
+}
+//----------------------------------------------------------------------------------------------------
+template <typename T>
+void BSTree<T>::level_order() // обход в ширину
 {
 
 }

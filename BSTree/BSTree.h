@@ -28,10 +28,17 @@ public:
     BSTree& operator=(BSTree &&other) noexcept;
     BSTree& operator=(const BSTree &other);
 
-    bool empty() const noexcept;
-    size_t size() const noexcept;
-    size_t height() const noexcept;
-    void in_order();
+    bool is_empty() const noexcept;
+    bool is_balanced() const noexcept;
+    bool is_equals(const BSTree&) const noexcept;
+    size_t get_size() const noexcept;
+    size_t get_height() const noexcept;
+
+    void inorder_traversal();
+    void preorder_traversal();
+    void postorder_traversal();
+    void levelorder_traversal();
+
     const T* find(const T &f) const;
     bool insert(const T &d);
     // bool replace(const Key &key, const T &v);
