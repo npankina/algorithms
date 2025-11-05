@@ -119,7 +119,7 @@ void BSTree<T>::postorder_traversal() // обратный (L-R-Root) -- поле
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
-void BSTree<T>::level_order() // обход в ширину
+void BSTree<T>::levelorder_traversal() // обход в ширину
 {
 
 }
@@ -137,7 +137,7 @@ const T* BSTree<T>::find(const T &f) const
         if (pointer->data_ == f)
             return &(pointer->data_);
 
-        if (f >= pointer->data_) // идем вправо
+        if (f > pointer->data_) // идем вправо
             pointer = pointer->right_;
         else // идем влево
             pointer = pointer->left_;
@@ -198,8 +198,23 @@ bool BSTree<T>::insert(const T &d)
 //----------------------------------------------------------------------------------------------------
 template <typename T>
 bool BSTree<T>::erase(const T &key)
-{
+{ // Удалить узел с ключом key из BST, сохранив инвариант BST. Вернуть true, если удалили, и false, если ключа не было.
 
+    auto link = root_;
+
+    if (link == nullptr)
+        return false;
+
+    while (link != nullptr)
+   {
+        if (key == link->data_)
+        {
+           // как будто здесь надо сделать что-то, что должно перестроить дерево
+           // то есть если этот ключ находится где-то посередине дерева, то как мы должны поступить?
+            delete link;
+            return true;
+        }
+   }
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
