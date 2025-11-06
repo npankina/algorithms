@@ -214,6 +214,14 @@ bool BSTree<T>::erase(const T &key)
             delete link;
             return true;
         }
+        else if (key < link->data_) // left side
+        {
+
+        }
+        else // right side
+        {
+
+        }
    }
 }
 //----------------------------------------------------------------------------------------------------
