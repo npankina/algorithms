@@ -207,22 +207,27 @@ bool BSTree<T>::erase(const T &key)
 
     while (link != nullptr)
    {
-        if (key == link->data_)
+        if (key == link->data_) // нашли
         {
-           // как будто здесь надо сделать что-то, что должно перестроить дерево
-           // то есть если этот ключ находится где-то посередине дерева, то как мы должны поступить?
+            if (link->left_ == nullptr or link->right_ == nullptr) // no leaves
+                link = nullptr;
+            if (link->left_)
+
+            --size_;
             delete link;
             return true;
         }
         else if (key < link->data_) // left side
         {
-
+            link = link->left_;
         }
         else // right side
         {
-
+            link = link->right_;
         }
    }
+
+    return false;
 }
 //----------------------------------------------------------------------------------------------------
 template <typename T>
